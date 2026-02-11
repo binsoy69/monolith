@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
+import { Toaster } from "sonner";
 import * as React from "react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -12,6 +13,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
     >
       {children}
+      <Toaster richColors position="bottom-right" />
     </NextThemesProvider>
   );
 }

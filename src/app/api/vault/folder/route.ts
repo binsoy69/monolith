@@ -14,8 +14,8 @@ export async function POST(request: Request) {
 
     await vaultService.createFolder(folderPath);
     return NextResponse.json({ success: true }, { status: 201 });
-  } catch (error: any) {
-    if (error.message === "Path traversal detected") {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === "Path traversal detected") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     console.error("Failed to create folder:", error);

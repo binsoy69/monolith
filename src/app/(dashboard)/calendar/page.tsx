@@ -1,10 +1,15 @@
+import { CalendarView } from "@/components/calendar/CalendarView";
+
 export default function CalendarPage() {
   return (
-    <div className="flex h-full flex-col items-center justify-center space-y-4 text-center">
-      <h1 className="text-4xl font-bold tracking-tight text-text-primary">
-        Calendar
-      </h1>
-      <p className="text-lg text-text-secondary">Coming in Phase 3</p>
+    <div className="mx-auto max-w-5xl space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Calendar</h1>
+        <p className="text-sm text-muted-foreground">
+          View habits, journal entries, and task deadlines in one place
+        </p>
+      </div>
+      <CalendarView />
     </div>
   );
 }

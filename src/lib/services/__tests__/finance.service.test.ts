@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import * as schema from "@/lib/db/schema";
-import { toISODate } from "@/lib/utils/dates";
 import { formatCurrency, toCents, fromCents } from "@/lib/utils/currency";
 
 const sqlite = new Database(":memory:");

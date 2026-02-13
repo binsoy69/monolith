@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
-import { journalEntries, journalTags, journalImages } from "@/lib/db/schema";
-import { eq, and, gte, lte, desc, asc, isNull, like, sql, inArray } from "drizzle-orm";
+import { journalEntries, journalTags } from "@/lib/db/schema";
+import { eq, and, gte, lte, desc, asc, isNull, sql, inArray } from "drizzle-orm";
 
 // --- Types ---
 
@@ -24,11 +24,44 @@ export interface CreateEntryInput {
 
 let ftsInitialized = false;
 
+interface SqliteExecClient {
+  exec: (query: string) => void;
+}
+
+interface SqlitePreparedStatement {
+  all: (...params: unknown[]) => unknown[];
+}
+
+interface SqliteFtsClient extends SqliteExecClient {
+  prepare: (query: string) => SqlitePreparedStatement;
+}
+
+function getSessionClient(): unknown {
+  return (db as unknown as { session?: { client?: unknown } }).session?.client;
+}
+
+function isSqliteExecClient(client: unknown): client is SqliteExecClient {
+  return (
+    typeof client === "object" &&
+    client !== null &&
+    "exec" in client &&
+    typeof client.exec === "function"
+  );
+}
+
+function isSqliteFtsClient(client: unknown): client is SqliteFtsClient {
+  return (
+    isSqliteExecClient(client) &&
+    "prepare" in client &&
+    typeof client.prepare === "function"
+  );
+}
+
 async function ensureFts(): Promise<void> {
   if (ftsInitialized) return;
   try {
-    const sqliteDb = (db as any).session?.client;
-    if (sqliteDb?.exec) {
+    const sqliteDb = getSessionClient();
+    if (isSqliteExecClient(sqliteDb)) {
       sqliteDb.exec(`
         CREATE VIRTUAL TABLE IF NOT EXISTS journal_fts USING fts5(
           title, content, entry_id UNINDEXED
@@ -194,8 +227,8 @@ export const journalService = {
   async syncFtsEntry(id: number): Promise<void> {
     await ensureFts();
     try {
-      const sqliteDb = (db as any).session?.client;
-      if (!sqliteDb?.exec) return;
+      const sqliteDb = getSessionClient();
+      if (!isSqliteExecClient(sqliteDb)) return;
 
       const entry = await db
         .select()
@@ -221,8 +254,8 @@ export const journalService = {
   async removeFtsEntry(id: number): Promise<void> {
     await ensureFts();
     try {
-      const sqliteDb = (db as any).session?.client;
-      if (sqliteDb?.exec) {
+      const sqliteDb = getSessionClient();
+      if (isSqliteExecClient(sqliteDb)) {
         sqliteDb.exec(`DELETE FROM journal_fts WHERE entry_id = ${id}`);
       }
     } catch (e) {
@@ -236,8 +269,8 @@ export const journalService = {
   ): Promise<JournalEntryWithTags[]> {
     await ensureFts();
     try {
-      const sqliteDb = (db as any).session?.client;
-      if (!sqliteDb) return [];
+      const sqliteDb = getSessionClient();
+      if (!isSqliteFtsClient(sqliteDb)) return [];
 
       const safeQuery = query.replace(/['"]/g, "").trim();
       if (!safeQuery) return [];
@@ -252,7 +285,7 @@ export const journalService = {
 
       if (ftsResults.length === 0) return [];
 
-      const entries = [];
+      const entries: JournalEntryWithTags[] = [];
       for (const row of ftsResults) {
         const entry = await this.getEntry(row.id);
         if (entry) entries.push(entry);

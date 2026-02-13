@@ -16,24 +16,31 @@ export function VaultLayout() {
   const [createOpen, setCreateOpen] = useState(false);
   const [quickOpenOpen, setQuickOpenOpen] = useState(false);
 
-  const fetchTree = useCallback(async () => {
+  const fetchTree = useCallback(async (): Promise<TreeNode[]> => {
     try {
       const res = await fetch("/api/vault/tree");
-      if (res.ok) setTree(await res.json());
+      if (res.ok) {
+        return (await res.json()) as TreeNode[];
+      }
     } catch {
       // Tree will be empty
     }
+    return [];
   }, []);
 
   useEffect(() => {
-    fetchTree();
+    void fetchTree().then((nextTree) => {
+      setTree(nextTree);
+    });
   }, [fetchTree]);
 
   // Listen for file deletion
   useEffect(() => {
     function onDeleted() {
       setActivePath(null);
-      fetchTree();
+      void fetchTree().then((nextTree) => {
+        setTree(nextTree);
+      });
     }
     window.addEventListener("vault-file-deleted", onDeleted);
     return () => window.removeEventListener("vault-file-deleted", onDeleted);
@@ -122,7 +129,9 @@ export function VaultLayout() {
         onOpenChange={setCreateOpen}
         currentFolder={getCurrentFolder()}
         onCreated={() => {
-          fetchTree();
+          void fetchTree().then((nextTree) => {
+            setTree(nextTree);
+          });
         }}
       />
 

@@ -44,15 +44,16 @@ export function QuickOpenDialog({
     return () => clearTimeout(timer);
   }, [query, search]);
 
-  useEffect(() => {
-    if (!open) {
+  const handleOpenChange = useCallback((nextOpen: boolean) => {
+    if (!nextOpen) {
       setQuery("");
       setResults([]);
     }
-  }, [open]);
+    onOpenChange(nextOpen);
+  }, [onOpenChange]);
 
   return (
-    <CommandDialog open={open} onOpenChange={onOpenChange}>
+    <CommandDialog open={open} onOpenChange={handleOpenChange}>
       <CommandInput
         placeholder="Search files..."
         value={query}

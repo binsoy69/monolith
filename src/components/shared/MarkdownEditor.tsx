@@ -16,7 +16,6 @@ const MDXEditorComponent = dynamic(
         linkPlugin,
         linkDialogPlugin,
         codeBlockPlugin,
-        codeMirrorPlugin,
         toolbarPlugin,
         BoldItalicUnderlineToggles,
         BlockTypeSelect,

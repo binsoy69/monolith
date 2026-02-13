@@ -16,9 +16,10 @@ const MOODS = [
 interface MoodPickerProps {
   value: string | null;
   onChange: (mood: string | null) => void;
+  disabled?: boolean;
 }
 
-export function MoodPicker({ value, onChange }: MoodPickerProps) {
+export function MoodPicker({ value, onChange, disabled }: MoodPickerProps) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {MOODS.map((mood) => (
@@ -26,12 +27,14 @@ export function MoodPicker({ value, onChange }: MoodPickerProps) {
           key={mood.value}
           type="button"
           title={mood.label}
+          disabled={disabled}
           onClick={() => onChange(value === mood.value ? null : mood.value)}
           className={cn(
             "h-9 w-9 rounded-md text-lg flex items-center justify-center transition-colors",
             value === mood.value
               ? "bg-accent/20 ring-2 ring-accent"
               : "hover:bg-muted",
+            disabled && "opacity-50 cursor-not-allowed hover:bg-transparent",
           )}
         >
           {mood.emoji}

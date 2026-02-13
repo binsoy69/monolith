@@ -40,7 +40,12 @@ export function FinanceOverview() {
     year: "numeric",
   });
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (): Promise<{
+    summary: MonthlySummary | null;
+    budgets: BudgetWithSpent[];
+    goals: SavingsGoal[];
+    accounts: FinanceAccount[];
+  } | null> => {
     try {
       const [summaryRes, budgetsRes, goalsRes, accountsRes] = await Promise.all([
         fetch(`/api/finance/summary?year=${year}&month=${month}`),
@@ -49,16 +54,27 @@ export function FinanceOverview() {
         fetch("/api/finance/accounts"),
       ]);
 
-      if (summaryRes.ok) setSummary(await summaryRes.json());
-      if (budgetsRes.ok) setBudgets(await budgetsRes.json());
-      if (goalsRes.ok) setGoals(await goalsRes.json());
-      if (accountsRes.ok) setAccounts(await accountsRes.json());
+      const summary = summaryRes.ok
+        ? (await summaryRes.json()) as MonthlySummary
+        : null;
+      const budgets = budgetsRes.ok
+        ? (await budgetsRes.json()) as BudgetWithSpent[]
+        : [];
+      const goals = goalsRes.ok
+        ? (await goalsRes.json()) as SavingsGoal[]
+        : [];
+      const accounts = accountsRes.ok
+        ? (await accountsRes.json()) as FinanceAccount[]
+        : [];
+
+      return { summary, budgets, goals, accounts };
     } catch {
       toast.error("Failed to load finance data");
+      return null;
     }
   }, [year, month]);
 
-  const fetchTrend = useCallback(async () => {
+  const fetchTrend = useCallback(async (): Promise<TrendData[]> => {
     try {
       // Manually build trend from summaries for 6 months
       const data: TrendData[] = [];
@@ -73,15 +89,24 @@ export function FinanceOverview() {
           data.push({ month: label, income: s.totalIncome, expense: s.totalExpense });
         }
       }
-      setTrend(data);
+      return data;
     } catch {
       // Trend is non-critical
+      return [];
     }
   }, [year, month]);
 
   useEffect(() => {
-    fetchData();
-    fetchTrend();
+    void fetchData().then((data) => {
+      if (!data) return;
+      setSummary(data.summary);
+      setBudgets(data.budgets);
+      setGoals(data.goals);
+      setAccounts(data.accounts);
+    });
+    void fetchTrend().then((data) => {
+      setTrend(data);
+    });
   }, [fetchData, fetchTrend]);
 
   function prevMonth() {

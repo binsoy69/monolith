@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import path from "path";
 import fs from "fs";
+import { SettingsClient } from "@/components/shared/SettingsClient";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -83,8 +84,10 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
+      <SettingsClient />
+
       <div className="text-center text-xs text-text-secondary pt-8">
-        Monolith v0.1.0 - Phase 1 Foundation
+        Monolith v0.3.0 - Phase 3 Integration
       </div>
     </div>
   );

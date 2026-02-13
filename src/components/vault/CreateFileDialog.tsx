@@ -70,8 +70,8 @@ export function CreateFileDialog({
       setName("");
       onOpenChange(false);
       onCreated();
-    } catch (err: any) {
-      toast.error(err.message || `Failed to create ${type}`);
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : `Failed to create ${type}`);
     } finally {
       setLoading(false);
     }

@@ -4,8 +4,8 @@ import {
   habitLogs,
   habitCategories,
 } from "@/lib/db/schema";
-import { eq, and, gte, lte, desc, asc, sql, isNull } from "drizzle-orm";
-import { toISODate, getDaysInRange } from "@/lib/utils/dates";
+import { eq, and, gte, lte, desc, asc, sql } from "drizzle-orm";
+import { toISODate } from "@/lib/utils/dates";
 
 // --- Types ---
 

@@ -14,8 +14,8 @@ export async function GET(request: Request) {
 
     const result = await vaultService.readFile(filePath);
     return NextResponse.json(result);
-  } catch (error: any) {
-    if (error.code === "ENOENT") {
+  } catch (error: unknown) {
+    if (typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT") {
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
     console.error("Failed to read file:", error);
@@ -34,8 +34,8 @@ export async function PUT(request: Request) {
     const body = await request.json();
     await vaultService.writeFile(filePath, body.content ?? "");
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    if (error.message === "Path traversal detected") {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === "Path traversal detected") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     console.error("Failed to write file:", error);
@@ -53,11 +53,11 @@ export async function POST(request: Request) {
 
     await vaultService.createFile(filePath, content ?? "");
     return NextResponse.json({ success: true }, { status: 201 });
-  } catch (error: any) {
-    if (error.message === "File already exists") {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === "File already exists") {
       return NextResponse.json({ error: "File already exists" }, { status: 409 });
     }
-    if (error.message === "Path traversal detected") {
+    if (error instanceof Error && error.message === "Path traversal detected") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     console.error("Failed to create file:", error);
@@ -75,8 +75,8 @@ export async function DELETE(request: Request) {
 
     await vaultService.deleteFile(filePath);
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    if (error.code === "ENOENT") {
+  } catch (error: unknown) {
+    if (typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT") {
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
     console.error("Failed to delete file:", error);

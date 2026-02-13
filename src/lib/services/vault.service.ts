@@ -121,8 +121,8 @@ export const vaultService = {
     try {
       await fs.access(fullPath);
       throw new Error("File already exists");
-    } catch (e: any) {
-      if (e.message === "File already exists") throw e;
+    } catch (e: unknown) {
+      if (e instanceof Error && e.message === "File already exists") throw e;
       // File doesn't exist — good, create it
     }
 

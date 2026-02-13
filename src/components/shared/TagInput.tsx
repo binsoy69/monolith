@@ -3,15 +3,20 @@
 import { useState, useRef, type KeyboardEvent } from "react";
 import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 
 interface TagInputProps {
   tags: string[];
   onChange: (tags: string[]) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
-export function TagInput({ tags, onChange, placeholder = "Add tag..." }: TagInputProps) {
+export function TagInput({
+  tags,
+  onChange,
+  placeholder = "Add tag...",
+  disabled = false,
+}: TagInputProps) {
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -39,7 +44,11 @@ export function TagInput({ tags, onChange, placeholder = "Add tag..." }: TagInpu
   return (
     <div
       className="flex flex-wrap items-center gap-1.5 rounded-md border border-input bg-background px-3 py-2 text-sm cursor-text"
-      onClick={() => inputRef.current?.focus()}
+      onClick={() => {
+        if (!disabled) {
+          inputRef.current?.focus();
+        }
+      }}
     >
       {tags.map((tag) => (
         <Badge key={tag} variant="secondary" className="gap-1 px-2 py-0.5">
@@ -51,6 +60,7 @@ export function TagInput({ tags, onChange, placeholder = "Add tag..." }: TagInpu
               removeTag(tag);
             }}
             className="ml-0.5 rounded-full hover:bg-muted-foreground/20"
+            disabled={disabled}
           >
             <X className="h-3 w-3" />
           </button>
@@ -65,6 +75,7 @@ export function TagInput({ tags, onChange, placeholder = "Add tag..." }: TagInpu
         onBlur={() => { if (input) addTag(input); }}
         placeholder={tags.length === 0 ? placeholder : ""}
         className="flex-1 min-w-[80px] bg-transparent outline-none placeholder:text-muted-foreground"
+        disabled={disabled}
       />
     </div>
   );

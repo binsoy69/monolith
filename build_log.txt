@@ -1,0 +1,19 @@
+▲ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 9.7s
+  Running TypeScript ...
+Failed to compile.
+
+./src/app/api/backup/export/route.ts:32:25
+Type error: Argument of type 'Buffer<ArrayBufferLike>' is not assignable to parameter of type 'BodyInit | null | undefined'.
+  Type 'Buffer<ArrayBufferLike>' is missing the following properties from type 'URLSearchParams': size, append, delete, get, and 2 more.
+
+[0m [90m 30 |[39m     [36mconst[39m date [33m=[39m [36mnew[39m [33mDate[39m()[33m.[39mtoISOString()[33m.[39msplit([32m"T"[39m)[[35m0[39m][33m;[39m
+ [90m 31 |[39m
+[31m[1m>[22m[39m[90m 32 |[39m     [36mreturn[39m [36mnew[39m [33mResponse[39m(compressed[33m,[39m {
+ [90m    |[39m                         [31m[1m^[22m[39m
+ [90m 33 |[39m       headers[33m:[39m {
+ [90m 34 |[39m         [32m"Content-Type"[39m[33m:[39m [32m"application/gzip"[39m[33m,[39m
+ [90m 35 |[39m         [32m"Content-Disposition"[39m[33m:[39m [32m`attachment; filename="monolith-backup-${date}.db.gz"`[39m[33m,[39m[0m
+Next.js build worker exited with code: 1 and signal: null

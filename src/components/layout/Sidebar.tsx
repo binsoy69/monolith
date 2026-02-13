@@ -63,6 +63,7 @@ export function Sidebar() {
           size="icon"
           className="ml-auto"
           onClick={() => setIsCollapsed(!isCollapsed)}
+          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {isCollapsed ? (
             <Menu className="h-4 w-4" />

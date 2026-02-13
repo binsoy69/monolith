@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Monolith
+
+A comprehensive, offline-first personal productivity application built with Next.js. Monolith integrates habit tracking, finance management, journaling, task management, and a markdown vault into a single, cohesive interface.
+
+## Features
+
+- **Habit Tracking**: Track daily, weekly, and custom frequency habits with streak calculation and history visualization.
+- **Finance**: Manage budgets, track transactions, and visualize spending trends.
+- **Journal**: Daily journaling with mood tracking, tagging, and markdown support. Entries can be encrypted.
+- **Tasks**: Hierarchical task management with priorities, due dates, and tagging.
+- **Vault**: A file-system based markdown knowledge base.
+- **Offline-First**: Uses local SQLite database and file system. Data stays on your machine.
+- **Customizable**: Dark/Light mode, command palette for quick navigation.
+
+## Tech Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **UI**: React 19, TailwindCSS v4, Shadcn/ui
+- **Database**: SQLite (via `better-sqlite3`)
+- **ORM**: Drizzle ORM
+- **Testing**: Vitest (Unit/Integration), Playwright (E2E)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm or pnpm
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Generate database migrations:
+   ```bash
+   npx drizzle-kit generate
+   ```
+   _Note: This creates the SQLite database schema in `src/lib/db/migrations`._
+
+### Running the App
+
+Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Unit & Integration Tests
 
-## Learn More
+Run the Vitest suite:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm test
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### End-to-End Tests
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run Playwright tests:
 
-## Deploy on Vercel
+```bash
+npx playwright test
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/app`: Next.js App Router pages and layouts
+- `src/components`: React components organized by feature (dashboard, habits, finance, etc.)
+- `src/lib/db`: Database schema, migrations, and client
+- `src/lib/services`: Business logic and data access layer
+- `src/lib/utils`: Helper functions
+- `tests`: Test suites (unit, integration, e2e)
+
+## License
+
+MIT

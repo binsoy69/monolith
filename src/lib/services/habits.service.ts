@@ -1,9 +1,5 @@
 import { db } from "@/lib/db";
-import {
-  habits,
-  habitLogs,
-  habitCategories,
-} from "@/lib/db/schema";
+import { habits, habitLogs, habitCategories } from "@/lib/db/schema";
 import { eq, and, gte, lte, desc, asc, sql } from "drizzle-orm";
 import { toISODate } from "@/lib/utils/dates";
 
@@ -51,10 +47,7 @@ export const habitsService = {
     color: string;
     icon?: string;
   }): Promise<HabitCategory> {
-    const result = await db
-      .insert(habitCategories)
-      .values(data)
-      .returning();
+    const result = await db.insert(habitCategories).values(data).returning();
     return result[0];
   },
 
@@ -95,7 +88,9 @@ export const habitsService = {
 
     const today = opts?.date || toISODate(new Date());
     const thirtyDaysAgo = toISODate(
-      new Date(new Date(today + "T00:00:00").getTime() - 30 * 24 * 60 * 60 * 1000),
+      new Date(
+        new Date(today + "T00:00:00").getTime() - 30 * 24 * 60 * 60 * 1000,
+      ),
     );
 
     const results: HabitWithLogs[] = [];
@@ -178,7 +173,9 @@ export const habitsService = {
 
   async updateHabit(
     id: number,
-    data: Partial<CreateHabitInput & { isArchived: boolean; sortOrder: number }>,
+    data: Partial<
+      CreateHabitInput & { isArchived: boolean; sortOrder: number }
+    >,
   ): Promise<void> {
     await db
       .update(habits)
@@ -302,7 +299,9 @@ export const habitsService = {
     const totalResult = await db
       .select({ count: sql<number>`count(*)` })
       .from(habitLogs)
-      .where(and(eq(habitLogs.habitId, habitId), eq(habitLogs.completed, true)));
+      .where(
+        and(eq(habitLogs.habitId, habitId), eq(habitLogs.completed, true)),
+      );
 
     return {
       currentStreak: streak.current,
@@ -314,6 +313,13 @@ export const habitsService = {
 };
 
 // --- Streak Helpers ---
+// Exported for unit testing
+export const streakHelpers = {
+  calculateDailyStreak,
+  calculateEveryNDaysStreak,
+  calculateWeeklyStreak,
+  calculateMonthlyStreak,
+};
 
 function calculateDailyStreak(sortedDatesDesc: string[]): {
   current: number;
@@ -332,7 +338,8 @@ function calculateDailyStreak(sortedDatesDesc: string[]): {
     for (let i = 1; i < sortedDatesDesc.length; i++) {
       const prev = new Date(sortedDatesDesc[i - 1] + "T00:00:00");
       const curr = new Date(sortedDatesDesc[i] + "T00:00:00");
-      const diffDays = (prev.getTime() - curr.getTime()) / (24 * 60 * 60 * 1000);
+      const diffDays =
+        (prev.getTime() - curr.getTime()) / (24 * 60 * 60 * 1000);
       if (diffDays === 1) {
         current++;
       } else {
@@ -471,7 +478,9 @@ function calculateMonthlyStreak(sortedDatesDesc: string[]): {
 } {
   if (sortedDatesDesc.length === 0) return { current: 0, best: 0 };
 
-  const months = [...new Set(sortedDatesDesc.map(getMonthKey))].sort().reverse();
+  const months = [...new Set(sortedDatesDesc.map(getMonthKey))]
+    .sort()
+    .reverse();
   const currentMonth = getMonthKey(toISODate(new Date()));
   const lastMonth = getMonthKey(
     toISODate(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1)),

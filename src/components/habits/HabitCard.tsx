@@ -21,7 +21,9 @@ const FREQUENCY_LABELS: Record<string, string> = {
 };
 
 export function HabitCard({ habit, today, onToggle }: HabitCardProps) {
-  const isCompletedToday = habit.logs.some((l) => l.logDate === today && l.completed);
+  const isCompletedToday = habit.logs.some(
+    (l) => l.logDate === today && l.completed,
+  );
   const currentStreak = habit.stats?.currentStreak ?? 0;
 
   return (
@@ -30,6 +32,7 @@ export function HabitCard({ habit, today, onToggle }: HabitCardProps) {
         checked={isCompletedToday}
         onCheckedChange={(checked) => onToggle(habit.id, !!checked)}
         className="h-5 w-5"
+        aria-label={`Mark "${habit.name}" as ${isCompletedToday ? "incomplete" : "complete"}`}
       />
       <Link
         href={`/habits/${habit.id}`}
@@ -37,11 +40,16 @@ export function HabitCard({ habit, today, onToggle }: HabitCardProps) {
       >
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`font-medium truncate ${isCompletedToday ? "line-through text-muted-foreground" : ""}`}>
+            <span
+              className={`font-medium truncate ${isCompletedToday ? "line-through text-muted-foreground" : ""}`}
+            >
               {habit.name}
             </span>
             {habit.category && (
-              <CategoryBadge name={habit.category.name} color={habit.category.color} />
+              <CategoryBadge
+                name={habit.category.name}
+                color={habit.category.color}
+              />
             )}
           </div>
           <p className="text-xs text-muted-foreground mt-0.5">

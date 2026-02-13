@@ -5,13 +5,23 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Pencil, Trash2, Flame, Trophy, TrendingUp } from "lucide-react";
+import {
+  ArrowLeft,
+  Pencil,
+  Trash2,
+  Flame,
+  Trophy,
+  TrendingUp,
+} from "lucide-react";
 import { toast } from "sonner";
 import { StreakGraph } from "./StreakGraph";
 import { HabitHistory } from "./HabitHistory";
 import { HabitFormDialog } from "./HabitFormDialog";
 import { CategoryBadge } from "./CategoryBadge";
-import type { HabitWithLogs, HabitCategory } from "@/lib/services/habits.service";
+import type {
+  HabitWithLogs,
+  HabitCategory,
+} from "@/lib/services/habits.service";
 import Link from "next/link";
 
 const FREQUENCY_LABELS: Record<string, string> = {
@@ -80,21 +90,33 @@ export function HabitDetail({ habitId }: HabitDetailProps) {
   }
 
   if (!habit) {
-    return <div className="py-12 text-center text-muted-foreground">Loading...</div>;
+    return (
+      <div className="py-12 text-center text-muted-foreground">Loading...</div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/habits"><ArrowLeft className="h-4 w-4" /></Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            asChild
+            aria-label="Back to habits"
+          >
+            <Link href="/habits">
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
           </Button>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">{habit.name}</h1>
               {habit.category && (
-                <CategoryBadge name={habit.category.name} color={habit.category.color} />
+                <CategoryBadge
+                  name={habit.category.name}
+                  color={habit.category.color}
+                />
               )}
             </div>
             <p className="text-sm text-muted-foreground">
@@ -122,7 +144,9 @@ export function HabitDetail({ habitId }: HabitDetailProps) {
         <Card>
           <CardContent className="pt-6 text-center">
             <Flame className="h-5 w-5 mx-auto text-orange-500 mb-1" />
-            <p className="text-2xl font-bold">{habit.stats?.currentStreak ?? 0}</p>
+            <p className="text-2xl font-bold">
+              {habit.stats?.currentStreak ?? 0}
+            </p>
             <p className="text-xs text-muted-foreground">Current Streak</p>
           </CardContent>
         </Card>
@@ -136,7 +160,9 @@ export function HabitDetail({ habitId }: HabitDetailProps) {
         <Card>
           <CardContent className="pt-6 text-center">
             <TrendingUp className="h-5 w-5 mx-auto text-blue-500 mb-1" />
-            <p className="text-2xl font-bold">{habit.stats?.completionRate30d ?? 0}%</p>
+            <p className="text-2xl font-bold">
+              {habit.stats?.completionRate30d ?? 0}%
+            </p>
             <p className="text-xs text-muted-foreground">30-day Rate</p>
           </CardContent>
         </Card>

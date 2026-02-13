@@ -62,7 +62,11 @@ export function TaskItem({
         <GripVertical className="h-4 w-4 shrink-0 cursor-grab text-muted-foreground opacity-0 group-hover:opacity-100" />
 
         {hasSubtasks && (
-          <button onClick={() => setExpanded(!expanded)} className="shrink-0">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="shrink-0"
+            aria-label={expanded ? "Collapse subtasks" : "Expand subtasks"}
+          >
             <ChevronRight
               className={cn(
                 "h-4 w-4 text-muted-foreground transition-transform",
@@ -76,6 +80,7 @@ export function TaskItem({
           checked={task.isCompleted ?? false}
           onCheckedChange={() => onToggle(task.id)}
           className="shrink-0"
+          aria-label={`Mark "${task.title}" as ${task.isCompleted ? "incomplete" : "complete"}`}
         />
 
         <div className="flex-1 min-w-0">
@@ -129,6 +134,7 @@ export function TaskItem({
             size="icon"
             className="h-7 w-7 opacity-0 group-hover:opacity-100"
             onClick={() => onEdit(task)}
+            aria-label="Edit task"
           >
             <Edit className="h-3.5 w-3.5" />
           </Button>
@@ -137,6 +143,7 @@ export function TaskItem({
             size="icon"
             className="h-7 w-7 opacity-0 group-hover:opacity-100 text-destructive"
             onClick={() => onDelete(task.id)}
+            aria-label="Delete task"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>

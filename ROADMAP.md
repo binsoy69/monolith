@@ -115,12 +115,12 @@
 
 | #   | Task                           | Details                                                                 | Status |
 | --- | ------------------------------ | ----------------------------------------------------------------------- | ------ |
-| 4.1 | Unit test suite                | Vitest: services + utils (streak calc, budget math, crypto, MD parsing) | ⬜     |
-| 4.2 | Integration test suite         | API + DB roundtrips with temp SQLite files                              | ⬜     |
+| 4.1 | Unit test suite                | Vitest: services + utils (streak calc, budget math, crypto, MD parsing) | ✅     |
+| 4.2 | Integration test suite         | API + DB roundtrips with temp SQLite files                              | ✅     |
 | 4.3 | E2E test suite                 | Playwright: create habit, log transaction, journal entry, vault file    | ⬜     |
 | 4.4 | Performance: lazy loading      | Dynamic imports for heavy components (editor, charts)                   | ⬜     |
 | 4.5 | Performance: virtualized lists | For large habit/transaction/journal lists                               | ⬜     |
-| 4.6 | Accessibility audit            | Keyboard nav, focus management, ARIA, contrast                          | ⬜     |
+| 4.6 | Accessibility audit            | Keyboard nav, focus management, ARIA, contrast                          | ✅     |
 | 4.7 | README + setup guide           | Installation, dev workflow, architecture overview                       | ⬜     |
 | 4.8 | Tauri compatibility check      | Verify Drizzle + better-sqlite3 works in Tauri, document path           | ⬜     |
 
@@ -150,5 +150,5 @@
 | Phase 1: Foundation     | 10          | 10   | ✅✅✅✅✅✅✅✅✅✅ |
 | Phase 2: Core Modules   | 33          | 33   | ✅✅✅✅✅✅✅✅✅✅ |
 | Phase 3: Integration    | 11          | 0    | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ |
-| Phase 4: Polish         | 8           | 0    | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ |
+| Phase 4: Polish         | 8           | 2    | ✅✅⬜⬜⬜⬜⬜⬜⬜⬜ |
 | Phase 5: Tauri (future) | 6           | 0    | ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ |

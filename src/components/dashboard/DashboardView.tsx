@@ -192,6 +192,7 @@ export function DashboardView() {
                     <Checkbox
                       checked={habit.completed}
                       onCheckedChange={() => toggleHabit(habit.id)}
+                      aria-label={`Mark "${habit.name}" as ${habit.completed ? "incomplete" : "complete"}`}
                     />
                     <span
                       className={`text-sm flex-1 ${habit.completed ? "line-through text-muted-foreground" : ""}`}

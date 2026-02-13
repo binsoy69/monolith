@@ -6,18 +6,30 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
 import { MonthlySummaryCard } from "./MonthlySummaryCard";
-import { CategoryPieChart } from "./CategoryPieChart";
-import { TrendLineChart } from "./TrendLineChart";
+import { Suspense, lazy } from "react";
+// Lazy load heavy chart components
+const CategoryPieChart = lazy(() => import("./CategoryPieChart"));
+const TrendLineChart = lazy(() => import("./TrendLineChart"));
+import { Skeleton } from "@/components/ui/skeleton";
 import { BudgetStatusList } from "./BudgetStatusList";
 import { SavingsGoalCard } from "./SavingsGoalCard";
 import { AccountCard } from "./AccountCard";
-import type { BudgetWithSpent, SavingsGoal, FinanceAccount } from "@/lib/services/finance.service";
+import type {
+  BudgetWithSpent,
+  SavingsGoal,
+  FinanceAccount,
+} from "@/lib/services/finance.service";
 
 interface MonthlySummary {
   totalIncome: number;
   totalExpense: number;
   net: number;
-  byCategory: { categoryId: number; name: string; color: string; total: number }[];
+  byCategory: {
+    categoryId: number;
+    name: string;
+    color: string;
+    total: number;
+  }[];
 }
 
 interface TrendData {
@@ -47,24 +59,26 @@ export function FinanceOverview() {
     accounts: FinanceAccount[];
   } | null> => {
     try {
-      const [summaryRes, budgetsRes, goalsRes, accountsRes] = await Promise.all([
-        fetch(`/api/finance/summary?year=${year}&month=${month}`),
-        fetch("/api/finance/budgets"),
-        fetch("/api/finance/goals"),
-        fetch("/api/finance/accounts"),
-      ]);
+      const [summaryRes, budgetsRes, goalsRes, accountsRes] = await Promise.all(
+        [
+          fetch(`/api/finance/summary?year=${year}&month=${month}`),
+          fetch("/api/finance/budgets"),
+          fetch("/api/finance/goals"),
+          fetch("/api/finance/accounts"),
+        ],
+      );
 
       const summary = summaryRes.ok
-        ? (await summaryRes.json()) as MonthlySummary
+        ? ((await summaryRes.json()) as MonthlySummary)
         : null;
       const budgets = budgetsRes.ok
-        ? (await budgetsRes.json()) as BudgetWithSpent[]
+        ? ((await budgetsRes.json()) as BudgetWithSpent[])
         : [];
       const goals = goalsRes.ok
-        ? (await goalsRes.json()) as SavingsGoal[]
+        ? ((await goalsRes.json()) as SavingsGoal[])
         : [];
       const accounts = accountsRes.ok
-        ? (await accountsRes.json()) as FinanceAccount[]
+        ? ((await accountsRes.json()) as FinanceAccount[])
         : [];
 
       return { summary, budgets, goals, accounts };
@@ -85,8 +99,15 @@ export function FinanceOverview() {
         const res = await fetch(`/api/finance/summary?year=${y}&month=${m}`);
         if (res.ok) {
           const s = await res.json();
-          const label = d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
-          data.push({ month: label, income: s.totalIncome, expense: s.totalExpense });
+          const label = d.toLocaleDateString("en-US", {
+            month: "short",
+            year: "2-digit",
+          });
+          data.push({
+            month: label,
+            income: s.totalIncome,
+            expense: s.totalExpense,
+          });
         }
       }
       return data;
@@ -131,11 +152,23 @@ export function FinanceOverview() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={prevMonth}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={prevMonth}
+            aria-label="Previous month"
+          >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-          <span className="font-medium min-w-[160px] text-center">{monthLabel}</span>
-          <Button variant="ghost" size="icon" onClick={nextMonth}>
+          <span className="font-medium min-w-[160px] text-center">
+            {monthLabel}
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={nextMonth}
+            aria-label="Next month"
+          >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
@@ -153,11 +186,15 @@ export function FinanceOverview() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <CategoryPieChart data={summary?.byCategory ?? []} />
+        <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+          <CategoryPieChart data={summary?.byCategory ?? []} />
+        </Suspense>
         <AccountCard accounts={accounts} />
       </div>
 
-      <TrendLineChart data={trend} />
+      <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+        <TrendLineChart data={trend} />
+      </Suspense>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <BudgetStatusList budgets={budgets} />

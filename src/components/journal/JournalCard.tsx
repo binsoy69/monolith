@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils/dates";
-import { getMoodEmoji } from "./MoodPicker";
+import { getMoodEmoji, getMoodLabel } from "./MoodPicker";
 import type { JournalEntryWithTags } from "@/lib/services/journal.service";
 
 interface JournalCardProps {
@@ -17,22 +17,23 @@ export function JournalCard({ entry }: JournalCardProps) {
 
   return (
     <Link href={`/journal/${entry.id}`}>
-      <div className="rounded-lg border bg-card p-4 transition-colors hover:bg-muted/50">
-        <div className="flex items-start justify-between gap-2">
+      <div className="rounded-lg border bg-card p-4 transition-all hover:bg-muted/50 hover:shadow-sm">
+        <div className="flex items-start gap-3">
+          {/* Mood indicator */}
+          {entry.mood && (
+            <div className="shrink-0 flex flex-col items-center gap-0.5 pt-0.5">
+              <span className="text-2xl">{getMoodEmoji(entry.mood)}</span>
+              <span className="text-[10px] text-muted-foreground capitalize">{getMoodLabel(entry.mood)}</span>
+            </div>
+          )}
+
           <div className="min-w-0 flex-1">
             <p className="text-xs text-muted-foreground mb-1">
               {formatDate(entry.entryDate)}
             </p>
-            <div className="flex items-center gap-2">
-              <h3 className="font-medium truncate">
-                {entry.title || "Untitled"}
-              </h3>
-              {entry.mood && (
-                <span className="text-lg shrink-0" title={entry.mood}>
-                  {getMoodEmoji(entry.mood)}
-                </span>
-              )}
-            </div>
+            <h3 className="font-medium truncate">
+              {entry.title || "Untitled"}
+            </h3>
             {preview && (
               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                 {preview}...

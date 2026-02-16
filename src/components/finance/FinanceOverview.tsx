@@ -7,16 +7,17 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { MonthlySummaryCard } from "./MonthlySummaryCard";
 import { Suspense, lazy } from "react";
-// Lazy load heavy chart components
+import { WalletCard } from "./WalletCard";
+import { WalletFormDialog } from "./WalletFormDialog";
+import { CategoryManagerDialog } from "./CategoryManagerDialog";
+import { RecentTransactions } from "./RecentTransactions";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 const CategoryPieChart = lazy(() => import("./CategoryPieChart"));
 const TrendLineChart = lazy(() => import("./TrendLineChart"));
 import { Skeleton } from "@/components/ui/skeleton";
-import { BudgetStatusList } from "./BudgetStatusList";
-import { SavingsGoalCard } from "./SavingsGoalCard";
-import { AccountCard } from "./AccountCard";
 import type {
-  BudgetWithSpent,
-  SavingsGoal,
+  Transaction,
+  FinanceCategory,
   FinanceAccount,
 } from "@/lib/services/finance.service";
 
@@ -42,10 +43,15 @@ export function FinanceOverview() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [summary, setSummary] = useState<MonthlySummary | null>(null);
+  const [prevSummary, setPrevSummary] = useState<MonthlySummary | null>(null);
   const [trend, setTrend] = useState<TrendData[]>([]);
-  const [budgets, setBudgets] = useState<BudgetWithSpent[]>([]);
-  const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [accounts, setAccounts] = useState<FinanceAccount[]>([]);
+  const [recentTxns, setRecentTxns] = useState<Transaction[]>([]);
+  const [categories, setCategories] = useState<FinanceCategory[]>([]);
+  const [walletDialogOpen, setWalletDialogOpen] = useState(false);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [editingWallet, setEditingWallet] = useState<FinanceAccount | null>(null);
+  const [deletingWallet, setDeletingWallet] = useState<FinanceAccount | null>(null);
 
   const monthLabel = new Date(year, month - 1).toLocaleDateString("en-US", {
     month: "long",
@@ -54,34 +60,31 @@ export function FinanceOverview() {
 
   const fetchData = useCallback(async (): Promise<{
     summary: MonthlySummary | null;
-    budgets: BudgetWithSpent[];
-    goals: SavingsGoal[];
+    prevSummary: MonthlySummary | null;
     accounts: FinanceAccount[];
+    recentTxns: Transaction[];
+    categories: FinanceCategory[];
   } | null> => {
     try {
-      const [summaryRes, budgetsRes, goalsRes, accountsRes] = await Promise.all(
-        [
-          fetch(`/api/finance/summary?year=${year}&month=${month}`),
-          fetch("/api/finance/budgets"),
-          fetch("/api/finance/goals"),
-          fetch("/api/finance/accounts"),
-        ],
-      );
+      const prevDate = new Date(year, month - 2, 1);
+      const prevY = prevDate.getFullYear();
+      const prevM = prevDate.getMonth() + 1;
 
-      const summary = summaryRes.ok
-        ? ((await summaryRes.json()) as MonthlySummary)
-        : null;
-      const budgets = budgetsRes.ok
-        ? ((await budgetsRes.json()) as BudgetWithSpent[])
-        : [];
-      const goals = goalsRes.ok
-        ? ((await goalsRes.json()) as SavingsGoal[])
-        : [];
-      const accounts = accountsRes.ok
-        ? ((await accountsRes.json()) as FinanceAccount[])
-        : [];
+      const [summaryRes, prevSummaryRes, accountsRes, recentRes, categoriesRes] = await Promise.all([
+        fetch(`/api/finance/summary?year=${year}&month=${month}`),
+        fetch(`/api/finance/summary?year=${prevY}&month=${prevM}`),
+        fetch("/api/finance/accounts"),
+        fetch("/api/finance/transactions/recent"),
+        fetch("/api/finance/categories"),
+      ]);
 
-      return { summary, budgets, goals, accounts };
+      return {
+        summary: summaryRes.ok ? await summaryRes.json() : null,
+        prevSummary: prevSummaryRes.ok ? await prevSummaryRes.json() : null,
+        accounts: accountsRes.ok ? await accountsRes.json() : [],
+        recentTxns: recentRes.ok ? await recentRes.json() : [],
+        categories: categoriesRes.ok ? await categoriesRes.json() : [],
+      };
     } catch {
       toast.error("Failed to load finance data");
       return null;
@@ -90,7 +93,6 @@ export function FinanceOverview() {
 
   const fetchTrend = useCallback(async (): Promise<TrendData[]> => {
     try {
-      // Manually build trend from summaries for 6 months
       const data: TrendData[] = [];
       for (let i = 5; i >= 0; i--) {
         const d = new Date(year, month - 1 - i, 1);
@@ -112,23 +114,92 @@ export function FinanceOverview() {
       }
       return data;
     } catch {
-      // Trend is non-critical
       return [];
     }
   }, [year, month]);
 
-  useEffect(() => {
+  const refreshData = useCallback(() => {
     void fetchData().then((data) => {
       if (!data) return;
       setSummary(data.summary);
-      setBudgets(data.budgets);
-      setGoals(data.goals);
+      setPrevSummary(data.prevSummary);
       setAccounts(data.accounts);
+      setRecentTxns(data.recentTxns);
+      setCategories(data.categories);
     });
     void fetchTrend().then((data) => {
       setTrend(data);
     });
   }, [fetchData, fetchTrend]);
+
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
+  async function handleCreateWallet(data: {
+    name: string;
+    balance: number;
+    icon: string;
+    color: string;
+  }) {
+    try {
+      const res = await fetch("/api/finance/accounts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Wallet created");
+      setWalletDialogOpen(false);
+      refreshData();
+    } catch {
+      toast.error("Failed to create wallet");
+      throw new Error("Create wallet failed");
+    }
+  }
+
+  async function handleEditWallet(data: {
+    name: string;
+    balance: number;
+    icon: string;
+    color: string;
+  }) {
+    if (!editingWallet) return;
+    try {
+      const res = await fetch(`/api/finance/accounts/${editingWallet.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          icon: data.icon,
+          color: data.color,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Wallet updated");
+      setEditingWallet(null);
+      refreshData();
+    } catch {
+      toast.error("Failed to update wallet");
+      throw new Error("Update wallet failed");
+    }
+  }
+
+  async function handleDeleteWallet() {
+    if (!deletingWallet) return;
+    try {
+      const res = await fetch(`/api/finance/accounts/${deletingWallet.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Wallet deleted");
+      setDeletingWallet(null);
+      refreshData();
+    } catch {
+      toast.error("Failed to delete wallet");
+      throw new Error("Delete wallet failed");
+    }
+  }
 
   function prevMonth() {
     if (month === 1) {
@@ -172,16 +243,34 @@ export function FinanceOverview() {
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-        <Button variant="outline" asChild>
-          <Link href="/finance/transactions">View Transactions</Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCategoryDialogOpen(true)}
+          >
+            Manage Categories
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/finance/transactions">View Transactions</Link>
+          </Button>
+        </div>
       </div>
+
+      <WalletCard
+        accounts={accounts}
+        onAddWallet={() => setWalletDialogOpen(true)}
+        onEditWallet={(account) => setEditingWallet(account)}
+        onDeleteWallet={(account) => setDeletingWallet(account)}
+      />
 
       {summary && (
         <MonthlySummaryCard
           totalIncome={summary.totalIncome}
           totalExpense={summary.totalExpense}
           net={summary.net}
+          prevIncome={prevSummary?.totalIncome}
+          prevExpense={prevSummary?.totalExpense}
         />
       )}
 
@@ -189,17 +278,48 @@ export function FinanceOverview() {
         <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
           <CategoryPieChart data={summary?.byCategory ?? []} />
         </Suspense>
-        <AccountCard accounts={accounts} />
+        <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+          <TrendLineChart data={trend} />
+        </Suspense>
       </div>
 
-      <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
-        <TrendLineChart data={trend} />
-      </Suspense>
+      <RecentTransactions transactions={recentTxns} categories={categories} />
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <BudgetStatusList budgets={budgets} />
-        <SavingsGoalCard goals={goals} />
-      </div>
+      <WalletFormDialog
+        open={walletDialogOpen}
+        onOpenChange={setWalletDialogOpen}
+        onSubmit={handleCreateWallet}
+      />
+
+      <WalletFormDialog
+        open={!!editingWallet}
+        onOpenChange={(open) => {
+          if (!open) setEditingWallet(null);
+        }}
+        onSubmit={handleEditWallet}
+        initialData={editingWallet ? {
+          id: editingWallet.id,
+          name: editingWallet.name,
+          icon: editingWallet.icon,
+          color: editingWallet.color,
+        } : undefined}
+      />
+
+      <DeleteConfirmDialog
+        open={!!deletingWallet}
+        onOpenChange={(open) => {
+          if (!open) setDeletingWallet(null);
+        }}
+        title="Delete Wallet"
+        description={`This will permanently delete "${deletingWallet?.name}" and all its transactions. This action cannot be undone.`}
+        onConfirm={handleDeleteWallet}
+      />
+
+      <CategoryManagerDialog
+        open={categoryDialogOpen}
+        onOpenChange={setCategoryDialogOpen}
+        onCategoriesChanged={refreshData}
+      />
     </div>
   );
 }

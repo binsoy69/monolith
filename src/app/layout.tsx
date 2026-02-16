@@ -16,8 +16,16 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Monolith",
+  title: {
+    default: "Monolith",
+    template: "%s | Monolith",
+  },
   description: "Offline-first personal productivity app",
+  icons: {
+    icon: "/logo.svg",
+    shortcut: "/logo.svg",
+    apple: "/logo.svg",
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +35,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${jakarta.variable} ${jetbrains.variable} antialiased`}>
+      <body
+        className={`${jakarta.variable} ${jetbrains.variable} antialiased min-h-screen bg-bg-primary text-text-primary selection:bg-accent selection:text-white`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>

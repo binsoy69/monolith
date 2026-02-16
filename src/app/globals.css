@@ -43,13 +43,13 @@
 @layer base {
   :root {
     /* Light Mode */
-    --bg-primary: #fafafa;
-    --bg-secondary: #f5f5f4;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
     --bg-elevated: #ffffff;
-    --text-primary: #1a1a1a;
+    --text-primary: #111827;
     --text-secondary: #6b7280;
-    --accent: #3b82f6;
-    --border: #e5e7eb;
+    --accent: #6366f1;
+    --border: #e2e8f0;
     --danger: #ef4444;
     --success: #10b981;
     --primary-foreground: #ffffff;
@@ -61,41 +61,284 @@
 
   :root.dark {
     /* Dark Mode */
-    --bg-primary: #1a1a1a;
-    --bg-secondary: #232323;
-    --bg-elevated: #2a2a2a;
-    --text-primary: #ececec;
-    --text-secondary: #9ca3af;
-    --accent: #60a5fa;
-    --border: #333333;
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #171717;
+    --bg-elevated: #262626;
+    --text-primary: #ededed;
+    --text-secondary: #a1a1aa;
+    --accent: #818cf8;
+    --border: #262626;
     --danger: #f87171;
     --success: #34d399;
     --primary-foreground: #0f172a;
     --accent-foreground: #0f172a;
     --destructive-foreground: #0f172a;
   }
+
+  :root.tokyo-night {
+    --bg-primary: #1a1b26;
+    --bg-secondary: #24283b;
+    --bg-elevated: #292e42;
+    --text-primary: #c0caf5;
+    --text-secondary: #565f89;
+    --accent: #7aa2f7;
+    --border: #3b4261;
+    --danger: #f7768e;
+    --success: #9ece6a;
+    --primary-foreground: #1a1b26;
+    --accent-foreground: #1a1b26;
+    --destructive-foreground: #1a1b26;
+  }
+
+  :root.monokai {
+    --bg-primary: #272822;
+    --bg-secondary: #1e1f1c;
+    --bg-elevated: #3e3d32;
+    --text-primary: #f8f8f2;
+    --text-secondary: #75715e;
+    --accent: #f92672;
+    --border: #49483e;
+    --danger: #f92672;
+    --success: #a6e22e;
+    --primary-foreground: #f8f8f2;
+    --accent-foreground: #f8f8f2;
+    --destructive-foreground: #f8f8f2;
+  }
+
+  :root.abyss {
+    --bg-primary: #000c18;
+    --bg-secondary: #051336;
+    --bg-elevated: #082050;
+    --text-primary: #bbbbbb;
+    --text-secondary: #6688cc;
+    --accent: #6688cc;
+    --border: #113366;
+    --danger: #ff4444;
+    --success: #22aa44;
+    --primary-foreground: #ffffff;
+    --accent-foreground: #ffffff;
+    --destructive-foreground: #ffffff;
+  }
+
+  :root.dracula {
+    --bg-primary: #282a36;
+    --bg-secondary: #21222c;
+    --bg-elevated: #343746;
+    --text-primary: #f8f8f2;
+    --text-secondary: #6272a4;
+    --accent: #bd93f9;
+    --border: #44475a;
+    --danger: #ff5555;
+    --success: #50fa7b;
+    --primary-foreground: #282a36;
+    --accent-foreground: #282a36;
+    --destructive-foreground: #282a36;
+  }
+
+  :root.one-dark-pro {
+    --bg-primary: #282c34;
+    --bg-secondary: #21252b;
+    --bg-elevated: #2c313c;
+    --text-primary: #abb2bf;
+    --text-secondary: #5c6370;
+    --accent: #61afef;
+    --border: #3e4451;
+    --danger: #e06c75;
+    --success: #98c379;
+    --primary-foreground: #282c34;
+    --accent-foreground: #282c34;
+    --destructive-foreground: #282c34;
+  }
+
+  :root.nord {
+    --bg-primary: #2e3440;
+    --bg-secondary: #3b4252;
+    --bg-elevated: #434c5e;
+    --text-primary: #eceff4;
+    --text-secondary: #81a1c1;
+    --accent: #88c0d0;
+    --border: #4c566a;
+    --danger: #bf616a;
+    --success: #a3be8c;
+    --primary-foreground: #2e3440;
+    --accent-foreground: #2e3440;
+    --destructive-foreground: #2e3440;
+  }
 }
 
-/* Base resets */
+/* Base resets & Typography */
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-jakarta), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: -0.025em;
+  font-weight: 600;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 4px;
+  border-radius: 9999px;
+  transition: background-color 0.2s;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-secondary);
+}
+
+/* Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+:root.dark .glass,
+:root.tokyo-night .glass,
+:root.monokai .glass,
+:root.abyss .glass,
+:root.dracula .glass,
+:root.one-dark-pro .glass,
+:root.nord .glass {
+  background: rgba(10, 10, 10, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.animate-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button press feedback */
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Focus-visible ring */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth page transitions */
+main {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* ─── Journal Editor ─── */
+
+/* Borderless title input */
+.journal-title-input {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  color: var(--text-primary);
+  caret-color: var(--accent);
+  padding: 0;
+  margin-bottom: 0.25rem;
+}
+.journal-title-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.4;
+}
+.journal-title-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Remove all MDXEditor chrome in journal editor */
+.journal-editor .mdxeditor {
+  background: transparent !important;
+  border: none !important;
+}
+.journal-editor .mdxeditor-root-contenteditable {
+  padding: 0 !important;
+}
+.journal-editor [class*="ContentEditable"] {
+  caret-color: var(--accent);
+}
+
+/* Floating toolbar */
+.floating-toolbar {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  animation: floatIn 0.15s ease-out;
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.floating-toolbar button {
+  border-radius: 4px;
+  padding: 4px 6px;
+  color: var(--text-secondary);
+  transition: color 0.15s, background-color 0.15s;
+}
+.floating-toolbar button:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+.floating-toolbar button[data-state="on"],
+.floating-toolbar button.active {
+  background: var(--accent);
+  color: var(--primary-foreground);
+}
+/* Separator inside floating toolbar */
+.floating-toolbar [class*="toolbarSeparator"],
+.floating-toolbar [role="separator"] {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 2px;
 }

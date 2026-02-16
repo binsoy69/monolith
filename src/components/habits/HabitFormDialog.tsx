@@ -20,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FrequencyPicker } from "./FrequencyPicker";
+import { CategoryFormDialog } from "./CategoryFormDialog";
+import { Plus } from "lucide-react";
 import type { HabitWithLogs, HabitCategory } from "@/lib/services/habits.service";
 
 interface HabitFormDialogProps {
@@ -27,6 +29,7 @@ interface HabitFormDialogProps {
   onOpenChange: (open: boolean) => void;
   habit?: HabitWithLogs | null;
   categories: HabitCategory[];
+  onCategoryCreated?: () => void;
   onSubmit: (data: {
     name: string;
     description?: string;
@@ -42,6 +45,7 @@ export function HabitFormDialog({
   onOpenChange,
   habit,
   categories,
+  onCategoryCreated,
   onSubmit,
 }: HabitFormDialogProps) {
   const [name, setName] = useState("");
@@ -51,6 +55,7 @@ export function HabitFormDialog({
   const [frequencyValue, setFrequencyValue] = useState<number | null>(null);
   const [targetDays, setTargetDays] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(false);
+  const [catDialogOpen, setCatDialogOpen] = useState(false);
 
   useEffect(() => {
     if (habit) {
@@ -117,19 +122,35 @@ export function HabitFormDialog({
           </div>
           <div>
             <Label className="mb-1.5 block">Category</Label>
-            <Select value={categoryId} onValueChange={setCategoryId}>
-              <SelectTrigger>
-                <SelectValue placeholder="No category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No category</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.id.toString()}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2">
+              <Select value={categoryId} onValueChange={setCategoryId}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="No category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No category</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id.toString()}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => setCatDialogOpen(true)}
+                title="Add category"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            <CategoryFormDialog
+              open={catDialogOpen}
+              onOpenChange={setCatDialogOpen}
+              onCreated={() => onCategoryCreated?.()}
+            />
           </div>
           <FrequencyPicker
             frequency={frequency}

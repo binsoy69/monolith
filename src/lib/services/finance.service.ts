@@ -88,6 +88,14 @@ export const financeService = {
     return result[0] ?? null;
   },
 
+  async getRecentTransactions(limit: number = 5): Promise<Transaction[]> {
+    return db
+      .select()
+      .from(transactions)
+      .orderBy(desc(transactions.transactionDate), desc(transactions.id))
+      .limit(limit);
+  },
+
   async createTransaction(data: CreateTransactionInput): Promise<Transaction> {
     const result = await db
       .insert(transactions)
@@ -196,7 +204,21 @@ export const financeService = {
     return result[0];
   },
 
+  async updateCategory(
+    id: number,
+    data: Partial<{ name: string; type: "income" | "expense"; color: string; icon: string }>,
+  ): Promise<void> {
+    await db
+      .update(financeCategories)
+      .set(data)
+      .where(eq(financeCategories.id, id));
+  },
+
   async deleteCategory(id: number): Promise<void> {
+    await db
+      .update(transactions)
+      .set({ categoryId: null, updatedAt: sql`CURRENT_TIMESTAMP` })
+      .where(eq(transactions.categoryId, id));
     await db.delete(financeCategories).where(eq(financeCategories.id, id));
   },
 
@@ -213,6 +235,8 @@ export const financeService = {
     name: string;
     balance?: number;
     currency?: string;
+    icon?: string;
+    color?: string;
   }): Promise<FinanceAccount> {
     const result = await db
       .insert(financeAccounts)
@@ -220,6 +244,8 @@ export const financeService = {
         name: data.name,
         balance: data.balance ?? 0,
         currency: data.currency ?? "PHP",
+        icon: data.icon,
+        color: data.color,
       })
       .returning();
     return result[0];
@@ -236,7 +262,19 @@ export const financeService = {
   },
 
   async deleteAccount(id: number): Promise<void> {
+    await db.delete(transactions).where(eq(transactions.accountId, id));
+    await db.delete(transactions).where(eq(transactions.toAccountId, id));
     await db.delete(financeAccounts).where(eq(financeAccounts.id, id));
+  },
+
+  async updateAccount(
+    id: number,
+    data: Partial<{ name: string; icon: string; color: string }>,
+  ): Promise<void> {
+    await db
+      .update(financeAccounts)
+      .set({ ...data, updatedAt: sql`CURRENT_TIMESTAMP` })
+      .where(eq(financeAccounts.id, id));
   },
 
   // === Budgets ===

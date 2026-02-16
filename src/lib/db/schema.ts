@@ -129,6 +129,8 @@ export const financeAccounts = sqliteTable("finance_accounts", {
   name: text("name").notNull(),
   balance: integer("balance").notNull().default(0), // Cents or smallest unit
   currency: text("currency").default("PHP").notNull(),
+  icon: text("icon"), // lucide icon name (e.g., "smartphone", "wallet")
+  color: text("color"), // hex color (e.g., "#6366f1")
   createdAt: timestamp("created_at"),
   updatedAt: timestamp("updated_at"),
 });

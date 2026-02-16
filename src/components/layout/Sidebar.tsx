@@ -13,10 +13,16 @@ import {
   ListTodo,
   Calendar,
   Settings,
-  ChevronLeft,
-  Menu,
+  Pin,
+  PinOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const navItems = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -31,13 +37,16 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
+  const [isPinned, setIsPinned] = React.useState(false);
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  const isExpanded = isPinned || isHovered;
 
   React.useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "b") {
         event.preventDefault();
-        setIsCollapsed((prev) => !prev);
+        setIsPinned((prev) => !prev);
       }
     };
 
@@ -46,57 +55,79 @@ export function Sidebar() {
   }, []);
 
   return (
-    <aside
-      className={cn(
-        "group flex flex-col border-r bg-elevated transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-16" : "w-64",
-      )}
-    >
-      <div className="flex h-14 items-center justify-between border-b px-3">
-        {!isCollapsed && (
-          <span className="font-semibold text-lg tracking-tight px-2">
-            Monolith
-          </span>
+    <TooltipProvider delayDuration={0}>
+      <aside
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={cn(
+          "group flex flex-col border-r bg-bg-elevated transition-all duration-300 ease-in-out",
+          isExpanded ? "w-64" : "w-16",
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="ml-auto"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {isCollapsed ? (
-            <Menu className="h-4 w-4" />
+      >
+        <div className="flex h-14 items-center border-b px-3">
+          {isExpanded ? (
+            <>
+              <span className="font-semibold text-lg tracking-tight px-2 whitespace-nowrap">
+                Monolith
+              </span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="ml-auto h-7 w-7"
+                onClick={() => setIsPinned(!isPinned)}
+                aria-label={isPinned ? "Unpin sidebar" : "Pin sidebar"}
+              >
+                {isPinned ? (
+                  <Pin className="h-3.5 w-3.5 text-accent" />
+                ) : (
+                  <PinOff className="h-3.5 w-3.5 text-text-secondary" />
+                )}
+              </Button>
+            </>
           ) : (
-            <ChevronLeft className="h-4 w-4" />
+            <span className="mx-auto font-bold text-lg text-accent">M</span>
           )}
-        </Button>
-      </div>
+        </div>
 
-      <nav className="flex-1 space-y-1 p-2">
-        {navItems.map((item) => {
-          const isActive =
-            item.href === "/"
-              ? pathname === "/"
-              : pathname === item.href || pathname.startsWith(`${item.href}/`);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-accent/10 text-accent"
-                  : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary",
-                isCollapsed && "justify-center px-2",
-              )}
-            >
-              <item.icon className={cn("h-5 w-5", !isCollapsed && "mr-3")} />
-              {!isCollapsed && <span>{item.name}</span>}
-            </Link>
-          );
-        })}
-      </nav>
-    </aside>
+        <nav className="flex-1 space-y-1 p-2">
+          {navItems.map((item) => {
+            const isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+            const linkContent = (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-accent/10 text-accent border-l-2 border-accent"
+                    : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary",
+                  !isExpanded && "justify-center px-2",
+                )}
+              >
+                <item.icon className={cn("h-5 w-5 shrink-0", isExpanded && "mr-3")} />
+                {isExpanded && <span className="whitespace-nowrap">{item.name}</span>}
+              </Link>
+            );
+
+            if (!isExpanded) {
+              return (
+                <Tooltip key={item.href}>
+                  <TooltipTrigger asChild>{linkContent}</TooltipTrigger>
+                  <TooltipContent side="right" className="text-xs">
+                    {item.name}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            return <React.Fragment key={item.href}>{linkContent}</React.Fragment>;
+          })}
+        </nav>
+      </aside>
+    </TooltipProvider>
   );
 }

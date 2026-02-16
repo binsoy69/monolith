@@ -47,3 +47,7 @@ export function MoodPicker({ value, onChange, disabled }: MoodPickerProps) {
 export function getMoodEmoji(mood: string | null): string {
   return MOODS.find((m) => m.value === mood)?.emoji ?? "";
 }
+
+export function getMoodLabel(mood: string | null): string {
+  return MOODS.find((m) => m.value === mood)?.label ?? "";
+}

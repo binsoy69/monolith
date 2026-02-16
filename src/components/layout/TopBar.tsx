@@ -1,21 +1,39 @@
 "use client";
 
-import * as React from "react";
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Monitor } from "lucide-react";
+import { Moon, Sun, Palette } from "lucide-react";
+
+const emptySubscribe = () => () => {};
+function useMounted() {
+  return useSyncExternalStore(emptySubscribe, () => true, () => false);
+}
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+const THEME_OPTIONS = [
+  { id: "light", name: "Light" },
+  { id: "dark", name: "Dark" },
+  { id: "tokyo-night", name: "Tokyo Night" },
+  { id: "monokai", name: "Monokai" },
+  { id: "abyss", name: "Abyss" },
+  { id: "dracula", name: "Dracula" },
+  { id: "one-dark-pro", name: "One Dark Pro" },
+  { id: "nord", name: "Nord" },
+];
+
 export function TopBar() {
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const mounted = useMounted();
 
   return (
-    <header className="flex h-14 items-center justify-between border-b bg-elevated px-6">
+    <header className="flex h-14 items-center justify-between border-b bg-bg-elevated px-6">
       <div className="flex items-center">
         {/* Breadcrumbs or Title could go here */}
       </div>
@@ -30,18 +48,25 @@ export function TopBar() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => setTheme("light")}>
-              <Sun className="mr-2 h-4 w-4" />
-              <span>Light</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("dark")}>
-              <Moon className="mr-2 h-4 w-4" />
-              <span>Dark</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setTheme("system")}>
-              <Monitor className="mr-2 h-4 w-4" />
-              <span>System</span>
-            </DropdownMenuItem>
+            {THEME_OPTIONS.slice(0, 2).map((t) => (
+              <DropdownMenuItem key={t.id} onClick={() => setTheme(t.id)}>
+                {t.id === "light" ? (
+                  <Sun className="mr-2 h-4 w-4" />
+                ) : (
+                  <Moon className="mr-2 h-4 w-4" />
+                )}
+                <span>{t.name}</span>
+                {mounted && theme === t.id && <span className="ml-auto text-accent text-xs">&#10003;</span>}
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuSeparator />
+            {THEME_OPTIONS.slice(2).map((t) => (
+              <DropdownMenuItem key={t.id} onClick={() => setTheme(t.id)}>
+                <Palette className="mr-2 h-4 w-4" />
+                <span>{t.name}</span>
+                {mounted && theme === t.id && <span className="ml-auto text-accent text-xs">&#10003;</span>}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

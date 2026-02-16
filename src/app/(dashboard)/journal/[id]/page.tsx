@@ -6,9 +6,5 @@ export default async function EditJournalEntryPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return (
-    <div className="mx-auto max-w-3xl">
-      <EntryEditor entryId={parseInt(id)} />
-    </div>
-  );
+  return <EntryEditor entryId={parseInt(id)} />;
 }

@@ -5,14 +5,18 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Save, Trash2, Lock, Unlock } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
-import { MarkdownEditor } from "@/components/shared/MarkdownEditor";
-import { MoodPicker } from "./MoodPicker";
-import { TagInput } from "@/components/shared/TagInput";
+import { JournalMarkdownEditor } from "./JournalMarkdownEditor";
+import { PropertiesPanel } from "./PropertiesPanel";
 import { toISODate } from "@/lib/utils/dates";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -34,7 +38,6 @@ export function EntryEditor({ entryId }: EntryEditorProps) {
   const [mood, setMood] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [entryDate, setEntryDate] = useState(toISODate(new Date()));
-  const [frontMatterText, setFrontMatterText] = useState("");
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(isNew);
   const [isEncrypted, setIsEncrypted] = useState(false);
@@ -57,7 +60,7 @@ export function EntryEditor({ entryId }: EntryEditorProps) {
       if (entry.contentEncrypted) {
         setIsEncrypted(true);
         setIsLocked(true);
-        setContent(""); // Don't show encrypted content
+        setContent("");
       } else {
         setContent(entry.content ?? "");
       }
@@ -65,14 +68,6 @@ export function EntryEditor({ entryId }: EntryEditorProps) {
       setMood(entry.mood);
       setTags(entry.tags);
       setEntryDate(entry.entryDate.split(" ")[0]);
-      if (entry.frontMatter && typeof entry.frontMatter === "object") {
-        const fm = entry.frontMatter as Record<string, string>;
-        setFrontMatterText(
-          Object.entries(fm)
-            .map(([k, v]) => `${k}: ${v}`)
-            .join("\n"),
-        );
-      }
       setLoaded(true);
     } catch {
       toast.error("Failed to load entry");
@@ -84,28 +79,16 @@ export function EntryEditor({ entryId }: EntryEditorProps) {
     fetchEntry();
   }, [fetchEntry]);
 
-  function parseFrontMatterText(text: string): Record<string, string> {
-    const result: Record<string, string> = {};
-    for (const line of text.split("\n")) {
-      const idx = line.indexOf(":");
-      if (idx > 0) {
-        result[line.substring(0, idx).trim()] = line.substring(idx + 1).trim();
-      }
-    }
-    return result;
-  }
-
-  async function handleSave() {
+  const handleSave = useCallback(async () => {
+    if (isLocked) return;
     setLoading(true);
     try {
-      const fm = parseFrontMatterText(frontMatterText);
       const body = {
         title: title || undefined,
         content,
         mood,
         entryDate: entryDate + " 00:00:00",
         tags,
-        frontMatter: Object.keys(fm).length > 0 ? fm : undefined,
       };
 
       if (isNew) {
@@ -132,7 +115,19 @@ export function EntryEditor({ entryId }: EntryEditorProps) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [title, content, mood, entryDate, tags, isNew, entryId, isLocked, router]);
+
+  // Ctrl+S / Cmd+S to save
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        handleSave();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleSave]);
 
   async function handleDelete() {
     if (!entryId || !confirm("Delete this entry?")) return;
@@ -180,11 +175,6 @@ export function EntryEditor({ entryId }: EntryEditorProps) {
 
         setContent(data.content);
         setIsLocked(false);
-        // Note: We don't verify encryption removal here, just unlock for viewing/editing
-        // If user saves, it will overwrite encrypted content with plaintext unless we handle that.
-        // For now, let's assume unlocking allows editing as plaintext.
-        // Use caution: saving an unlocked entry will effectively "decrypt" it permanently in DB if we use the normal PUT endpoint.
-        // Actually, the PUT endpoint just updates content. So yes, saving after unlock removes encryption.
         setIsEncrypted(false);
       }
       setPasswordOpen(false);
@@ -197,96 +187,113 @@ export function EntryEditor({ entryId }: EntryEditorProps) {
 
   if (!loaded) {
     return (
-      <div className="py-12 text-center text-muted-foreground">Loading...</div>
+      <div className="flex h-full items-center justify-center text-text-secondary">
+        Loading...
+      </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/journal">
-            <ArrowLeft className="h-4 w-4 mr-1.5" />
-            Back
-          </Link>
-        </Button>
-        <div className="flex gap-2">
-          {!isNew && !isLocked && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => openPasswordDialog("encrypt")}
-              disabled={isEncrypted} // Can't double encrypt
-            >
-              <Lock className="h-4 w-4 mr-1.5" />
-              Encrypt
-            </Button>
-          )}
-          {!isNew && (
-            <Button variant="outline" size="sm" onClick={handleDelete}>
-              <Trash2 className="h-4 w-4 mr-1.5" />
-              Delete
-            </Button>
-          )}
-          <Button size="sm" onClick={handleSave} disabled={loading || isLocked}>
-            <Save className="h-4 w-4 mr-1.5" />
-            {loading ? "Saving..." : "Save"}
-          </Button>
-        </div>
-      </div>
+    <div>
+      {/* Slim top bar */}
+      <TooltipProvider delayDuration={300}>
+        <div className="sticky top-0 z-10 flex items-center justify-between py-1.5 border-b border-border/40 bg-bg-primary/80 backdrop-blur-sm -mx-6 -mt-6 px-6 mb-4">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                <Link href="/journal">
+                  <ArrowLeft className="h-4 w-4" />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Back to journal</TooltipContent>
+          </Tooltip>
 
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="title" className="mb-1.5 block">
-            Title
-          </Label>
-          <Input
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Entry title..."
-            disabled={isLocked}
-          />
-        </div>
-
-        <div className="flex gap-4 flex-wrap">
-          <div>
-            <Label htmlFor="date" className="mb-1.5 block">
-              Date
-            </Label>
-            <Input
-              id="date"
-              type="date"
-              value={entryDate}
-              onChange={(e) => setEntryDate(e.target.value)}
-              className="w-[180px]"
-              disabled={isLocked}
-            />
+          <div className="flex items-center gap-1">
+            {!isNew && !isLocked && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => openPasswordDialog("encrypt")}
+                    disabled={isEncrypted}
+                  >
+                    <Lock className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Encrypt entry</TooltipContent>
+              </Tooltip>
+            )}
+            {!isNew && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:text-destructive"
+                    onClick={handleDelete}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Delete entry</TooltipContent>
+              </Tooltip>
+            )}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-accent hover:text-accent"
+                  onClick={handleSave}
+                  disabled={loading || isLocked}
+                >
+                  <Save className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                Save (Ctrl+S)
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
+      </TooltipProvider>
 
-        <div>
-          <Label className="mb-1.5 block">Mood</Label>
-          <MoodPicker value={mood} onChange={setMood} disabled={isLocked} />
-        </div>
+      {/* Writing area */}
+      <div>
+        <div className="max-w-3xl mx-auto">
+          {/* Title */}
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Untitled"
+            disabled={isLocked}
+            className="journal-title-input"
+          />
 
-        <div>
-          <Label className="mb-1.5 block">Tags</Label>
-          <TagInput
+          {/* Properties */}
+          <PropertiesPanel
+            date={entryDate}
+            onDateChange={setEntryDate}
+            mood={mood}
+            onMoodChange={setMood}
             tags={tags}
-            onChange={setTags}
-            placeholder="Add tags..."
+            onTagsChange={setTags}
             disabled={isLocked}
           />
-        </div>
 
-        <div>
-          <Label className="mb-1.5 block">Content</Label>
+          {/* Separator */}
+          <div className="border-b border-border/30 mb-6" />
+
+          {/* Editor or locked state */}
           {isLocked ? (
-            <div className="flex flex-col items-center justify-center rounded-md border border-dashed p-12 text-center">
-              <Lock className="h-10 w-10 text-muted-foreground mb-4" />
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <Lock className="h-10 w-10 text-text-secondary mb-4" />
               <h3 className="text-lg font-medium">This entry is encrypted</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <p className="text-sm text-text-secondary mb-4">
                 Enter the password to view and edit content.
               </p>
               <Button onClick={() => openPasswordDialog("decrypt")}>
@@ -295,33 +302,16 @@ export function EntryEditor({ entryId }: EntryEditorProps) {
               </Button>
             </div>
           ) : (
-            <MarkdownEditor
+            <JournalMarkdownEditor
               value={content}
               onChange={setContent}
-              placeholder="Write your thoughts..."
+              placeholder="Start writing..."
             />
           )}
         </div>
-
-        {!isLocked && (
-          <Card>
-            <CardContent className="pt-4">
-              <Label className="mb-1.5 block text-xs text-muted-foreground">
-                Front Matter (key: value, one per line)
-              </Label>
-              <textarea
-                value={frontMatterText}
-                onChange={(e) => setFrontMatterText(e.target.value)}
-                placeholder="location: Home&#10;weather: Sunny"
-                rows={3}
-                className="w-full resize-none rounded-md border bg-background px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
-                disabled={isLocked}
-              />
-            </CardContent>
-          </Card>
-        )}
       </div>
 
+      {/* Password dialog */}
       <Dialog open={passwordOpen} onOpenChange={setPasswordOpen}>
         <DialogContent>
           <DialogHeader>
@@ -340,7 +330,7 @@ export function EntryEditor({ entryId }: EntryEditorProps) {
                 autoFocus
               />
               {passwordMode === "encrypt" && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-text-secondary">
                   Make sure you remember this password. There is no way to
                   recover it.
                 </p>

@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, balance, currency } = body;
+    const { name, balance, currency, icon, color } = body;
 
     if (!name || typeof name !== "string" || !name.trim()) {
       return NextResponse.json({ error: "Name required" }, { status: 400 });
@@ -27,6 +27,8 @@ export async function POST(request: Request) {
       name: name.trim(),
       balance,
       currency,
+      icon,
+      color,
     });
     return NextResponse.json(account, { status: 201 });
   } catch (error) {

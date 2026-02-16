@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import path from "path";
 import fs from "fs";
 import { SettingsClient } from "@/components/shared/SettingsClient";
+import { ThemePicker } from "@/components/settings/ThemePicker";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -73,21 +74,18 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Appearance</CardTitle>
           <CardDescription>
-            Customize the look and feel of the application.
+            Choose a theme for the application.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-text-secondary">
-            Use the theme toggle in the top bar to switch between Light, Dark,
-            and System modes.
-          </p>
+          <ThemePicker />
         </CardContent>
       </Card>
 
       <SettingsClient />
 
       <div className="text-center text-xs text-text-secondary pt-8">
-        Monolith v0.3.0 - Phase 3 Integration
+        Monolith v0.4.0
       </div>
     </div>
   );

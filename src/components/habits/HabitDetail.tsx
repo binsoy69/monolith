@@ -201,6 +201,12 @@ export function HabitDetail({ habitId }: HabitDetailProps) {
         onOpenChange={setEditOpen}
         habit={habit}
         categories={categories}
+        onCategoryCreated={() => {
+          fetch("/api/habits/categories")
+            .then((r) => r.json())
+            .then(setCategories)
+            .catch(() => {});
+        }}
         onSubmit={handleEdit}
       />
     </div>

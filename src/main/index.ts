@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import { getDb, closeDb } from './db/connection'
@@ -9,8 +9,10 @@ if (!app.requestSingleInstanceLock()) {
   app.quit()
 }
 
+let mainWindow: BrowserWindow | null = null
+
 function createWindow(): void {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     frame: false,
@@ -26,16 +28,27 @@ function createWindow(): void {
 
   // DevTools only in development
   if (is.dev) {
-    win.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
   }
 
   // Load the remote URL for development or the local html file for production
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    win.loadURL(process.env['ELECTRON_RENDERER_URL'])
+    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
-    win.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
+
+// Window control IPC handlers
+ipcMain.on('window:minimize', () => mainWindow?.minimize())
+ipcMain.on('window:maximize', () => {
+  if (mainWindow?.isMaximized()) {
+    mainWindow.unmaximize()
+  } else {
+    mainWindow?.maximize()
+  }
+})
+ipcMain.on('window:close', () => mainWindow?.close())
 
 app.whenReady().then(() => {
   // Initialize DB + run migrations

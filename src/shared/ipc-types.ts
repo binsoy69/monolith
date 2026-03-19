@@ -9,8 +9,15 @@ export interface SettingsAPI {
   set: (settings: Partial<AppSettings>) => Promise<void>
 }
 
+export interface WindowAPI {
+  minimize: () => void;
+  maximize: () => void;
+  close: () => void;
+}
+
 export interface API {
   settings: SettingsAPI
+  window: WindowAPI
   // Stubs for Phase 2 — uncommented when module IPC handlers are built
   // habits: HabitsAPI;
   // planner: PlannerAPI;

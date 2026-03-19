@@ -1,0 +1,77 @@
+@import "tailwindcss";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+
+@theme {
+  /* Color palette — cool charcoal dark theme */
+  --color-bg-base: #16161e;
+  --color-bg-elevated: #1a1a2e;
+  --color-bg-overlay: #1e1e30;
+  --color-bg-subtle: #22223a;
+
+  /* Text hierarchy */
+  --color-text-primary: #e8e8f0;
+  --color-text-secondary: #9494a8;
+  --color-text-muted: #5a5a72;
+  --color-text-disabled: #3a3a52;
+
+  /* Accent — electric indigo blue */
+  --color-accent: #6366f1;
+  --color-accent-hover: #818cf8;
+  --color-accent-subtle: rgba(99, 102, 241, 0.15);
+
+  /* Border */
+  --color-border: rgba(255, 255, 255, 0.07);
+  --color-border-focused: rgba(99, 102, 241, 0.5);
+
+  /* Type scale — base 12px, tight line heights */
+  --font-size-micro: 10px;
+  --font-size-caption: 11px;
+  --font-size-label: 12px;
+  --font-size-body: 13px;
+  --font-size-heading: 15px;
+  --font-size-display: 18px;
+
+  --line-height-tight: 1.3;
+  --line-height-normal: 1.5;
+
+  /* Spacing — 4px grid */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Sidebar */
+  --sidebar-width: 52px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Transitions */
+  --duration-fast: 80ms;
+  --duration-normal: 150ms;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-normal);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  user-select: none; /* Desktop app convention */
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

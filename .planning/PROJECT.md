@@ -12,7 +12,9 @@ Opening one app in the morning gives you a complete picture of your day — habi
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Keyboard-driven navigation and data entry shortcuts — Validated in Phase 01: Foundation
+- [x] Dark, dense UI — information-rich, dev-tool aesthetic (Raycast/Warp style) — Validated in Phase 01: Foundation
+- [x] Instant performance — no loading spinners, snappy transitions, fast data entry — Validated in Phase 01: Foundation
 
 ### Active
 
@@ -24,11 +26,8 @@ Opening one app in the morning gives you a complete picture of your day — habi
 - [ ] Wallets with balances (auto-deduct on expense, manual adjustments)
 - [ ] Daily notes — freeform text area per day
 - [ ] Tags/labels across all modules (habits, tasks, expenses)
-- [ ] Keyboard-driven navigation and data entry shortcuts
 - [ ] Desktop notifications for unchecked habits
-- [ ] Dark, dense UI — information-rich, dev-tool aesthetic (Raycast/Warp style)
 - [ ] Polished visual design — not generic, not AI-looking
-- [ ] Instant performance — no loading spinners, snappy transitions, fast data entry
 
 ### Out of Scope
 
@@ -61,11 +60,11 @@ Opening one app in the morning gives you a complete picture of your day — habi
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Electron + React | User's chosen stack, familiar web tech | — Pending |
-| SQLite local storage | No server complexity, works offline, fast queries | — Pending |
-| Shared shell, independent modules | Simpler architecture, modules don't need to sync data | — Pending |
-| Dark + dense aesthetic | User preference, aligns with power-user identity | — Pending |
-| Keyboard-first design | Speed priority, reduces friction for daily use | — Pending |
+| Electron + React | User's chosen stack, familiar web tech | Validated — Phase 01 |
+| SQLite local storage | No server complexity, works offline, fast queries | Validated — Phase 01 |
+| Shared shell, independent modules | Simpler architecture, modules don't need to sync data | Validated — Phase 01 |
+| Dark + dense aesthetic | User preference, aligns with power-user identity | Validated — Phase 01 |
+| Keyboard-first design | Speed priority, reduces friction for daily use | Validated — Phase 01 |
 
 ---
-*Last updated: 2026-03-19 after initialization*
+*Last updated: 2026-03-20 — Phase 01 (Foundation) complete: Electron shell, SQLite DB, design tokens, settings persistence, keyboard-first UX*

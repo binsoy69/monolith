@@ -216,7 +216,7 @@ Layout: single scrollable page, content max-width 560px, centered in content are
 - Title: "Keyboard Shortcuts" at --font-size-display (18px), weight 600, --color-text-primary
 - Section heading: --font-size-body (13px), weight 600, --color-text-secondary, uppercase
 - Shortcut row: label (--color-text-secondary) left, key badge(s) right
-- Key badge: --font-size-small (11px), --color-text-primary, background --color-accent-subtle, border 1px solid rgba(99,102,241,0.3), border-radius --radius-sm (4px), padding 2px 6px
+- Key badge: --font-size-small (11px), --color-text-primary, background --color-accent-subtle, border 1px solid rgba(99,102,241,0.3), border-radius --radius-sm (4px), padding 4px 8px
 - Phase 1 shortcuts listed:
   - Navigation: Alt+1 (Dashboard), Alt+2 (Habits), Alt+3 (Planner), Alt+4 (Expenses)
   - Global: ? (This overlay), Escape (Close / Go to Dashboard)

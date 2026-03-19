@@ -48,9 +48,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **SHELL-01**: Dashboard shows today's habits, tasks, and spending at a glance
 - [ ] **SHELL-02**: Sidebar navigation between dashboard and modules
-- [ ] **SHELL-03**: Dark, dense, information-rich UI (Raycast/Warp aesthetic)
+- [x] **SHELL-03**: Dark, dense, information-rich UI (Raycast/Warp aesthetic)
 - [x] **SHELL-04**: Sub-100ms transitions, no loading spinners
-- [ ] **SHELL-05**: Design feels handcrafted — not generic, not AI-generated
+- [x] **SHELL-05**: Design feels handcrafted — not generic, not AI-generated
 
 ### Keyboard & UX
 
@@ -121,9 +121,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SHELL-03 | Phase 1 | Pending |
+| SHELL-03 | Phase 1 | Complete |
 | SHELL-04 | Phase 1 | Complete |
-| SHELL-05 | Phase 1 | Pending |
+| SHELL-05 | Phase 1 | Complete |
 | SET-01 | Phase 1 | Pending |
 | HAB-01 | Phase 2 | Pending |
 | HAB-02 | Phase 2 | Pending |

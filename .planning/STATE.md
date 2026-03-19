@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-stopped_at: Completed 01-foundation/01-01-PLAN.md
-last_updated: "2026-03-19T21:49:09.832Z"
+status: executing
+stopped_at: Completed 01-foundation/01-02-PLAN.md
+last_updated: "2026-03-20T21:54:00.000Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
+  completed_plans: 2
 ---
 
 # Project State
@@ -24,26 +24,26 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 1
-- Average duration: 14 min
-- Total execution time: 14 min
+- Total plans completed: 2
+- Average duration: 8.5 min
+- Total execution time: 17 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 1/4 | 14 min | 14 min/plan |
+| 01-foundation | 2/4 | 17 min | 8.5 min/plan |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (14 min)
-- Trend: -
+- Last 5 plans: 01-01 (14 min), 01-02 (3 min)
+- Trend: faster
 
 *Updated after each plan completion*
 
@@ -63,6 +63,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Migration runner (user_version pragma) in connection.ts, schema SQL in migrations.ts — separation of concerns
 - [Phase 01-foundation]: IPC handlers have placeholder returns in Plan 01 — proper electron-store integration in Plan 03
 - [Phase 01-foundation]: Inter font bundled via @fontsource/inter (offline-capable) instead of Google Fonts CDN
+- [Phase 01-foundation, Plan 02]: Active sidebar indicator uses inset box-shadow (inset 2px 0 0 var(--color-accent)) — simpler than absolute-positioned pseudo-element
+- [Phase 01-foundation, Plan 02]: macOS window control detection via navigator.platform.toLowerCase().includes('mac')
+- [Phase 01-foundation, Plan 02]: WindowAPI (minimize/maximize/close) added to IPC bridge with module-level mainWindow variable in main/index.ts
 
 ### Pending Todos
 
@@ -76,6 +79,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T21:49:09.828Z
-Stopped at: Completed 01-foundation/01-01-PLAN.md
+Last session: 2026-03-20T21:54:00.000Z
+Stopped at: Completed 01-foundation/01-02-PLAN.md
 Resume file: None

@@ -5,6 +5,7 @@ status: draft
 shadcn_initialized: false
 preset: none
 created: 2026-03-19
+revised: 2026-03-19
 ---
 
 # Phase 1 — UI Design Contract
@@ -29,7 +30,7 @@ created: 2026-03-19
 
 **Rationale — Lucide over Phosphor:** Lucide has smaller bundle, consistent 1.5px stroke at all sizes, and active maintenance at 2026-03-19. Phosphor is acceptable fallback if Lucide lacks a needed glyph.
 
-**Rationale — @fontsource/inter over Google Fonts CDN:** Electron apps must not depend on network for core UI (RESEARCH.md Open Questions item 3). Bundle Inter 400/500/600 weights locally.
+**Rationale — @fontsource/inter over Google Fonts CDN:** Electron apps must not depend on network for core UI (RESEARCH.md Open Questions item 3). Bundle Inter 400/600 weights locally.
 
 ---
 
@@ -40,10 +41,8 @@ Declared values — 4px grid (locked decision from CONTEXT.md "Very dense UI —
 | Token | CSS Variable | Value | Usage |
 |-------|-------------|-------|-------|
 | 1 | --space-1 | 4px | Icon gaps, inline element padding, tight row padding |
-| 2 | --space-2 | 8px | Compact element spacing, button padding (horizontal) |
-| 3 | --space-3 | 12px | Form field padding, list item padding, sidebar icon vertical spacing |
-| 4 | --space-4 | 16px | Section internal padding, card padding |
-| 5 | --space-5 | 20px | Between grouped form controls |
+| 2 | --space-2 | 8px | Compact element spacing, button padding (horizontal), form field padding, list item padding, sidebar icon vertical spacing |
+| 4 | --space-4 | 16px | Section internal padding, card padding, between grouped form controls |
 | 6 | --space-6 | 24px | Section breaks within a page |
 | 8 | --space-8 | 32px | Between major layout regions |
 
@@ -53,24 +52,24 @@ Exceptions:
 - Window drag region: 36px height (--drag-region-height — OS window management constraint)
 - Window control buttons (min/max/close): 12px diameter, 8px gap between them
 
-**Source:** RESEARCH.md Pattern 4 CSS token definitions + CONTEXT.md "4px spacing grid" locked decision.
+**Source:** RESEARCH.md Pattern 4 CSS token definitions + CONTEXT.md "4px spacing grid" locked decision. --space-3 (12px) and --space-5 (20px) removed — non-standard steps; their usages reassigned to --space-2 (8px) and --space-4 (16px) respectively.
 
 ---
 
 ## Typography
 
-Font: Inter. Base size: 13px (locked decision — "12-13px base font size"). Six distinct sizes covering all Phase 1 UI needs.
+Font: Inter. Base size: 13px (locked decision — "12-13px base font size"). Four distinct sizes covering all Phase 1 UI needs.
 
 | Role | CSS Variable | Size | Weight | Line Height | Usage |
 |------|-------------|------|--------|-------------|-------|
-| Micro | --font-size-micro | 10px | 400 | 1.3 | Keyboard shortcut badges, version strings |
-| Caption | --font-size-caption | 11px | 400 | 1.3 | Secondary labels, timestamps, setting hints |
-| Label | --font-size-label | 12px | 500 | 1.3 | Form labels, sidebar tooltips, section headers in settings |
-| Body | --font-size-body | 13px | 400 | 1.5 | Default text, setting values, descriptions |
+| Small | --font-size-small | 11px | 400 | 1.3 | Keyboard shortcut badges, version strings, secondary labels, timestamps, setting hints |
+| Body | --font-size-body | 13px | 400 | 1.5 | Default text, form labels, setting values, descriptions, sidebar tooltips, section headers in settings |
 | Heading | --font-size-heading | 15px | 600 | 1.3 | Module header bar title, settings page heading, shortcut overlay section titles |
 | Display | --font-size-display | 18px | 600 | 1.2 | Shortcut overlay modal title only |
 
-**Weights used: exactly 2 — 400 (regular) and 600 (semibold).** Weight 500 used only for Label role (form labels, nav items) — this counts as a controlled exception to the 2-weight guideline given the density requirements. If a stricter 2-weight constraint is applied, collapse Label to 400.
+**Weights used: exactly 2 — 400 (regular) and 600 (semibold).** Weight 400 covers all body, label, and small-text roles. Weight 600 covers all heading and display roles. No intermediate weight (500) is used.
+
+**Size consolidation rationale:** The former Micro (10px) and Caption (11px) sizes both served compact-label purposes (badges, hints, timestamps). These are merged into a single Small (11px) size. The former Label (12px) size is subsumed into Body (13px) — at this density the 1px difference is imperceptible and the 4-size limit takes priority. Weight 500 (formerly Label) is collapsed to 400 per the consolidation path noted in the original spec.
 
 **Source:** RESEARCH.md Pattern 4 CSS token definitions + CONTEXT.md "12-13px base font size, tight line height" locked decision.
 
@@ -109,18 +108,18 @@ All values are exact hex or rgba strings defined as CSS custom properties in glo
 
 | Token | CSS Variable | Value | Usage |
 |-------|-------------|-------|-------|
-| Accent | --color-accent | #6366f1 | Active sidebar icon fill, primary save button background, active module indicator |
+| Accent | --color-accent | #6366f1 | Active sidebar icon fill, active module indicator |
 | Accent hover | --color-accent-hover | #818cf8 | Accent element hover state |
 | Accent subtle | --color-accent-subtle | rgba(99,102,241,0.15) | Active sidebar icon background, selected setting row background |
 
 **Accent reserved for (explicit list):**
 1. Active sidebar navigation icon — fill + subtle background ring
-2. Settings "Save" / "Apply" primary button — background fill
+2. Settings auto-save flash — brief accent background on the changed row (150ms transition, then fade back to rest state; no persistent accent fill)
 3. Currently active module indicator (left-edge line on sidebar icon)
 4. Form input focus ring (via --color-border-focused)
 5. Keyboard shortcut overlay: highlighted key badge background
 
-**Accent is NOT used for:** regular text, borders in rest state, hover states on non-interactive surfaces, section headers.
+**Accent is NOT used for:** regular text, borders in rest state, hover states on non-interactive surfaces, section headers, persistent button backgrounds (no explicit save button exists in Phase 1).
 
 ### Semantic
 
@@ -160,6 +159,7 @@ Phase 1 renders exactly these components. No feature module components yet.
   - Rest state: icon color --color-text-muted; no background
   - Hover state: icon color --color-text-secondary; background --color-bg-subtle; border-radius --radius-md (6px)
   - Active state: icon color --color-accent; background --color-accent-subtle; left edge: 2px solid --color-accent; border-radius 0 --radius-md --radius-md 0
+- Vertical padding between icon buttons: --space-2 (8px)
 - Tooltip: browser-native `title` attribute — no custom tooltip component in Phase 1
 - Settings icon: pinned to bottom via `margin-top: auto`
 - Module icons (top-to-bottom): LayoutDashboard, Activity, CheckSquare, Wallet (Lucide names)
@@ -170,7 +170,7 @@ Phase 1 renders exactly these components. No feature module components yet.
 - Height: 40px
 - Background: --color-bg-base (blends with content area)
 - Bottom border: 1px solid --color-border
-- Left content: module name text at --font-size-heading, weight 600, --color-text-primary
+- Left content: module name text at --font-size-heading (15px), weight 600, --color-text-primary
 - Right content: 0-2 action buttons (Phase 1 shell shows none — placeholder slots for Phase 2+)
 - Left padding: --space-4 (16px)
 - Right padding: --space-4 (16px)
@@ -181,7 +181,7 @@ Phase 1 renders exactly these components. No feature module components yet.
 Layout: single scrollable page, content max-width 560px, centered in content area.
 
 **Settings section structure:**
-- Section heading: --font-size-label (12px), weight 600, --color-text-secondary, uppercase letter-spacing 0.08em
+- Section heading: --font-size-body (13px), weight 600, --color-text-secondary, uppercase letter-spacing 0.08em
 - Section top padding: --space-6 (24px); first section: --space-4 (16px) top
 - Between sections: --space-6 (24px)
 - Section separator: 1px solid --color-border
@@ -192,6 +192,7 @@ Layout: single scrollable page, content max-width 560px, centered in content are
 - Label: --font-size-body (13px), weight 400, --color-text-primary (left-aligned)
 - Control: right-aligned (select, input, or toggle)
 - Hover state: background --color-bg-subtle, border-radius --radius-md
+- Between grouped form controls: --space-4 (16px)
 
 **Phase 1 settings rows:**
 1. Date Format — `<select>` with options "DD/MM/YYYY" and "MM/DD/YYYY"
@@ -213,9 +214,9 @@ Layout: single scrollable page, content max-width 560px, centered in content are
 - Modal border-radius: --radius-lg (8px)
 - Padding: --space-6 (24px)
 - Title: "Keyboard Shortcuts" at --font-size-display (18px), weight 600, --color-text-primary
-- Section heading: --font-size-label (12px), weight 600, --color-text-secondary, uppercase
+- Section heading: --font-size-body (13px), weight 600, --color-text-secondary, uppercase
 - Shortcut row: label (--color-text-secondary) left, key badge(s) right
-- Key badge: --font-size-micro (10px), --color-text-primary, background --color-accent-subtle, border 1px solid rgba(99,102,241,0.3), border-radius --radius-sm (4px), padding 2px 6px
+- Key badge: --font-size-small (11px), --color-text-primary, background --color-accent-subtle, border 1px solid rgba(99,102,241,0.3), border-radius --radius-sm (4px), padding 2px 6px
 - Phase 1 shortcuts listed:
   - Navigation: Alt+1 (Dashboard), Alt+2 (Habits), Alt+3 (Planner), Alt+4 (Expenses)
   - Global: ? (This overlay), Escape (Close / Go to Dashboard)
@@ -273,7 +274,7 @@ Phase 1 has minimal user-facing copy — this is infrastructure. The shell and s
 | Keyboard overlay section: Global | "Global" |
 | Module placeholder (habits, planner, expenses) | "Coming in Phase 2" — --color-text-muted, centered, --font-size-body |
 | Dashboard placeholder | "Dashboard" — --color-text-muted, centered, --font-size-body |
-| Window title (frameless) | "Monolith" — --font-size-label, weight 500, --color-text-secondary, centered in drag region |
+| Window title (frameless) | "Monolith" — --font-size-body (13px), weight 400, --color-text-secondary, centered in drag region |
 
 **Empty states (Phase 1 placeholders):** Each module slot shows the module name in muted text, centered in the content area. No illustration, no icon, no CTA. Phase 2 will replace these with real empty states.
 
@@ -318,8 +319,9 @@ No component registry used. All components are hand-authored. lucide-react and @
 3. `user-select: none` on `<body>` — desktop app convention, already in RESEARCH.md globals.css baseline.
 4. `-webkit-font-smoothing: antialiased` on `<body>` — required for Inter at small sizes on macOS.
 5. The drag region element must have `-webkit-app-region: drag`. All buttons inside it must have `-webkit-app-region: no-drag` or they will not receive click events.
-6. Import Inter as: `import '@fontsource/inter/400.css'; import '@fontsource/inter/500.css'; import '@fontsource/inter/600.css';` — do not use Google Fonts URL.
+6. Import Inter as: `import '@fontsource/inter/400.css'; import '@fontsource/inter/600.css';` — do not use Google Fonts URL. Weight 500 is not used; do not import it.
 7. BrowserWindow backgroundColor must be `'#16161e'` (--color-bg-base) to prevent white flash on app startup.
+8. CSS token for font sizes: remove `--font-size-micro` (10px), `--font-size-caption` (11px), and `--font-size-label` (12px) from `@theme`. Replace with `--font-size-small: 11px`. Remove `--space-3: 12px` and `--space-5: 20px` — not in the declared scale.
 
 ---
 

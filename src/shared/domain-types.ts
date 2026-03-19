@@ -1,0 +1,39 @@
+export interface Habit {
+  id: string
+  name: string
+  daysOfWeek: string // '1111111' = every day, '1000010' = Mon+Sat
+  archived: boolean
+  createdAt: string
+}
+
+export interface Task {
+  id: string
+  title: string
+  notes: string | null
+  date: string // ISO date YYYY-MM-DD
+  completed: boolean
+  position: number
+  createdAt: string
+}
+
+export interface Category {
+  id: string
+  name: string
+  color: string | null
+}
+
+export interface Wallet {
+  id: string
+  name: string
+  balance: number // stored as integer cents
+}
+
+export interface Expense {
+  id: string
+  amount: number // stored as integer cents
+  date: string // ISO date YYYY-MM-DD
+  categoryId: string
+  walletId: string | null
+  notes: string | null
+  createdAt: string
+}

@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-foundation/01-02-PLAN.md
-last_updated: "2026-03-20T21:54:00.000Z"
+stopped_at: Completed 01-foundation/01-03-PLAN.md
+last_updated: "2026-03-19T22:01:47.635Z"
 progress:
   total_phases: 5
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 01 (foundation) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 
 ## Performance Metrics
 
@@ -38,11 +38,11 @@ Plan: 3 of 4
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 2/4 | 17 min | 8.5 min/plan |
+| 01-foundation | 3/4 | 24 min | 8 min/plan |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (14 min), 01-02 (3 min)
+- Last 5 plans: 01-01 (14 min), 01-02 (3 min), 01-03 (7 min)
 - Trend: faster
 
 *Updated after each plan completion*
@@ -66,6 +66,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation, Plan 02]: Active sidebar indicator uses inset box-shadow (inset 2px 0 0 var(--color-accent)) — simpler than absolute-positioned pseudo-element
 - [Phase 01-foundation, Plan 02]: macOS window control detection via navigator.platform.toLowerCase().includes('mac')
 - [Phase 01-foundation, Plan 02]: WindowAPI (minimize/maximize/close) added to IPC bridge with module-level mainWindow variable in main/index.ts
+- [Phase 01-foundation]: Per-key settingsStore.set(key, value) used in IPC handler — triggers electron-store atomic write per key
+- [Phase 01-foundation]: staleTime: Infinity for settings TanStack Query — settings do not change from external sources
+- [Phase 01-foundation]: Auto-save settings on change with 450ms accent flash (no explicit save button) — desktop app convention
 
 ### Pending Todos
 
@@ -79,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T21:54:00.000Z
-Stopped at: Completed 01-foundation/01-02-PLAN.md
+Last session: 2026-03-19T22:01:47.631Z
+Stopped at: Completed 01-foundation/01-03-PLAN.md
 Resume file: None

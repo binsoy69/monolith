@@ -66,7 +66,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Settings
 
-- [ ] **SET-01**: App settings screen for preferences (notification times, date format)
+- [x] **SET-01**: App settings screen for preferences (notification times, date format)
 
 ## v2 Requirements
 
@@ -124,7 +124,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHELL-03 | Phase 1 | Complete |
 | SHELL-04 | Phase 1 | Complete |
 | SHELL-05 | Phase 1 | Complete |
-| SET-01 | Phase 1 | Pending |
+| SET-01 | Phase 1 | Complete |
 | HAB-01 | Phase 2 | Pending |
 | HAB-02 | Phase 2 | Pending |
 | HAB-03 | Phase 2 | Pending |

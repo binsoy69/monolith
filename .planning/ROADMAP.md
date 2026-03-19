@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The IPC bridge is operational — renderer can call typed channel functions and receive typed responses without accessing Node.js APIs directly
   4. SQLite database is created at the correct userData path with a migration runner that executes versioned migrations on startup
   5. An app settings screen exists and persists at least one preference (e.g., date format or notification time) across restarts
-**Plans:** 2/4 plans executed
+**Plans:** 3/4 plans executed
 
 Plans:
 - [x] 01-01-PLAN.md — Electron scaffolding, IPC bridge, SQLite + migrations, vitest setup
@@ -115,7 +115,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/4 | In Progress |  |
+| 1. Foundation | 3/4 | In Progress|  |
 | 2. Module Core | 0/6 | Not started | - |
 | 3. Dashboard + Navigation | 0/3 | Not started | - |
 | 4. Depth + Differentiators | 0/3 | Not started | - |

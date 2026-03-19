@@ -30,14 +30,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The IPC bridge is operational — renderer can call typed channel functions and receive typed responses without accessing Node.js APIs directly
   4. SQLite database is created at the correct userData path with a migration runner that executes versioned migrations on startup
   5. An app settings screen exists and persists at least one preference (e.g., date format or notification time) across restarts
-**Plans**: TBD
+**Plans:** 4 plans
 
 Plans:
-- [ ] 01-01: Electron project scaffolding with electron-vite, TypeScript, correct security config (contextIsolation: true, nodeIntegration: false)
-- [ ] 01-02: SQLite setup with Drizzle ORM, migration runner, and all three module schemas defined
-- [ ] 01-03: Design token system — CSS custom properties for type scale, color palette, spacing grid, and dark theme baseline
-- [ ] 01-04: Shell layout — sidebar with module navigation slots and global keyboard router
-- [ ] 01-05: App settings screen with persistent preferences via electron-store
+- [ ] 01-01-PLAN.md — Electron scaffolding, IPC bridge, SQLite + migrations, vitest setup
+- [ ] 01-02-PLAN.md — Design token system (globals.css), shell layout (Sidebar, WindowChrome, ModuleHeader, App.tsx)
+- [ ] 01-03-PLAN.md — Settings screen with electron-store persistence, TanStack Query hooks, auto-save
+- [ ] 01-04-PLAN.md — Global keyboard router (Alt+1-4, ?, Escape) and keyboard shortcut overlay modal
 
 ### Phase 2: Module Core
 **Goal**: Each of the three modules has a complete, working data entry loop — a user can add, view, check off, and persist items in habits, planner, and expenses, with optimistic updates throughout.
@@ -112,11 +111,11 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/5 | Not started | - |
+| 1. Foundation | 0/4 | Not started | - |
 | 2. Module Core | 0/6 | Not started | - |
 | 3. Dashboard + Navigation | 0/3 | Not started | - |
 | 4. Depth + Differentiators | 0/3 | Not started | - |

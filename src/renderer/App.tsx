@@ -1,16 +1,34 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Sidebar } from './shell/Sidebar';
 import { WindowChrome } from './shell/WindowChrome';
 import { ModuleHeader } from './shell/ModuleHeader';
 import { SettingsView } from './settings/SettingsView';
+import { KeyboardRouter } from './shell/KeyboardRouter';
+import { KeyboardShortcutOverlay } from './shell/KeyboardShortcutOverlay';
 
 export type ModuleId = 'dashboard' | 'habits' | 'planner' | 'expenses' | 'settings';
 
 export default function App() {
   const [activeModule, setActiveModule] = useState<ModuleId>('dashboard');
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
+  const handleEscape = useCallback(() => {
+    if (showShortcuts) {
+      setShowShortcuts(false);
+      return;
+    }
+    if (activeModule !== 'dashboard') {
+      setActiveModule('dashboard');
+    }
+  }, [showShortcuts, activeModule]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      <KeyboardRouter
+        onNavigate={setActiveModule}
+        onShowShortcuts={() => setShowShortcuts(true)}
+        onEscape={handleEscape}
+      />
       <WindowChrome />
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Sidebar activeModule={activeModule} onNavigate={setActiveModule} />
@@ -37,6 +55,10 @@ export default function App() {
           </main>
         </div>
       </div>
+      <KeyboardShortcutOverlay
+        isOpen={showShortcuts}
+        onClose={() => setShowShortcuts(false)}
+      />
     </div>
   );
 }

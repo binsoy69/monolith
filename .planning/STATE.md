@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-foundation/01-03-PLAN.md
-last_updated: "2026-03-19T22:01:47.635Z"
+stopped_at: Completed 01-foundation/01-04-PLAN.md
+last_updated: "2026-03-20T00:00:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 3
+  completed_plans: 4
 ---
 
 # Project State
@@ -23,26 +23,26 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 
 ## Current Position
 
-Phase: 01 (foundation) — EXECUTING
-Plan: 4 of 4
+Phase: 01 (foundation) — COMPLETE
+Plan: 4 of 4 (all complete)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 2
-- Average duration: 8.5 min
-- Total execution time: 17 min
+- Total plans completed: 4
+- Average duration: 6.5 min
+- Total execution time: 26 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 3/4 | 24 min | 8 min/plan |
+| 01-foundation | 4/4 | 26 min | 6.5 min/plan |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01 (14 min), 01-02 (3 min), 01-03 (7 min)
+- Last 5 plans: 01-01 (14 min), 01-02 (3 min), 01-03 (7 min), 01-04 (2 min)
 - Trend: faster
 
 *Updated after each plan completion*
@@ -69,6 +69,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Per-key settingsStore.set(key, value) used in IPC handler — triggers electron-store atomic write per key
 - [Phase 01-foundation]: staleTime: Infinity for settings TanStack Query — settings do not change from external sources
 - [Phase 01-foundation]: Auto-save settings on change with 450ms accent flash (no explicit save button) — desktop app convention
+- [Phase 01-foundation, Plan 04]: KeyboardRouter returns null — pure behavior component with no DOM output
+- [Phase 01-foundation, Plan 04]: Escape hierarchy: closes overlay first, then navigates to dashboard if nothing is open
+- [Phase 01-foundation, Plan 04]: Click-outside uses setTimeout(0) to avoid immediate close from the ? keypress that opened the overlay
 
 ### Pending Todos
 
@@ -82,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T22:01:47.631Z
-Stopped at: Completed 01-foundation/01-03-PLAN.md
+Last session: 2026-03-20T00:00:00.000Z
+Stopped at: Completed 01-foundation/01-04-PLAN.md
 Resume file: None

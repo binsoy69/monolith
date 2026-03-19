@@ -121,13 +121,52 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (populated during roadmap creation) | | |
+| SHELL-03 | Phase 1 | Pending |
+| SHELL-04 | Phase 1 | Pending |
+| SHELL-05 | Phase 1 | Pending |
+| SET-01 | Phase 1 | Pending |
+| HAB-01 | Phase 2 | Pending |
+| HAB-02 | Phase 2 | Pending |
+| HAB-03 | Phase 2 | Pending |
+| HAB-05 | Phase 2 | Pending |
+| PLAN-01 | Phase 2 | Pending |
+| PLAN-02 | Phase 2 | Pending |
+| PLAN-03 | Phase 2 | Pending |
+| PLAN-04 | Phase 2 | Pending |
+| PLAN-05 | Phase 2 | Pending |
+| PLAN-09 | Phase 2 | Pending |
+| EXP-01 | Phase 2 | Pending |
+| EXP-02 | Phase 2 | Pending |
+| EXP-03 | Phase 2 | Pending |
+| EXP-06 | Phase 2 | Pending |
+| EXP-07 | Phase 2 | Pending |
+| EXP-08 | Phase 2 | Pending |
+| EXP-09 | Phase 2 | Pending |
+| SHELL-01 | Phase 3 | Pending |
+| SHELL-02 | Phase 3 | Pending |
+| KBD-01 | Phase 3 | Pending |
+| KBD-02 | Phase 3 | Pending |
+| KBD-03 | Phase 3 | Pending |
+| HAB-04 | Phase 4 | Pending |
+| HAB-06 | Phase 4 | Pending |
+| HAB-07 | Phase 4 | Pending |
+| HAB-08 | Phase 4 | Pending |
+| PLAN-06 | Phase 4 | Pending |
+| PLAN-07 | Phase 4 | Pending |
+| PLAN-08 | Phase 4 | Pending |
+| EXP-04 | Phase 4 | Pending |
+| EXP-05 | Phase 4 | Pending |
+| EXP-10 | Phase 4 | Pending |
+| TAG-01 | Phase 5 | Pending |
+| TAG-02 | Phase 5 | Pending |
+| KBD-04 | Phase 5 | Pending |
+| HAB-09 | Phase 5 | Pending |
 
 **Coverage:**
-- v1 requirements: 35 total
-- Mapped to phases: 0
-- Unmapped: 35
+- v1 requirements: 40 total
+- Mapped to phases: 40
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-19*
-*Last updated: 2026-03-19 after initial definition*
+*Last updated: 2026-03-19 after roadmap creation (traceability populated)*

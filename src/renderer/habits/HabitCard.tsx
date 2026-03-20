@@ -23,6 +23,12 @@ export function HabitCard({ habit, onToggle, onContextMenu, isScheduledToday }: 
 
   const hasStreaks = habit.currentStreak > 0 || habit.bestStreak > 0
 
+  // Opacity states per UI-SPEC:
+  // Unscheduled: opacity: 0.35, Checked: opacity: 0.5, Active: 1
+  let cardOpacity = 1
+  if (!isScheduledToday) cardOpacity = 0.35
+  else if (habit.completedToday) cardOpacity = 0.5
+
   const cardBg = flashAnimation
     ? 'var(--color-accent-subtle)'
     : isHovered && isScheduledToday && !habit.completedToday
@@ -44,7 +50,7 @@ export function HabitCard({ habit, onToggle, onContextMenu, isScheduledToday }: 
         border: '1px solid var(--color-border)',
         borderRadius: 'var(--radius-md)',
         cursor: isScheduledToday ? 'pointer' : 'default',
-        opacity: !isScheduledToday ? 0.35 : habit.completedToday ? 0.5 : 1,
+        opacity: cardOpacity,
         transition: `background-color var(--duration-normal) ease-out, opacity var(--duration-normal) ease-out`,
         userSelect: 'none',
       }}

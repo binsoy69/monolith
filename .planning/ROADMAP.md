@@ -48,15 +48,15 @@ Plans:
   3. User can log an expense with amount, date, category, optional notes, and a wallet selection; the wallet balance auto-deducts immediately; user can create custom categories, create and manually adjust wallets, and view an expense list filtered by date or category
   4. All write operations (habit check-off, task creation, expense logging) feel instantaneous — the UI updates before the IPC round-trip completes (optimistic updates)
   5. Each module is isolated — an error in the expense module does not crash the habit module or planner
-**Plans**: TBD
+**Plans:** 6 plans
 
 Plans:
-- [ ] 02-01: Habit module — repositories, IPC handlers, Zustand store, and today view UI (checklist + streak counter)
-- [ ] 02-02: Habit module — create/edit/archive flow and day-of-week scheduling
-- [ ] 02-03: Planner module — repositories, IPC handlers, Zustand store, task list UI, date navigation
-- [ ] 02-04: Planner module — task add/complete/delete, reorder, daily notes textarea
-- [ ] 02-05: Expense module — repositories, IPC handlers, Zustand store, wallet management
-- [ ] 02-06: Expense module — expense log form, category management, expense list with filtering
+- [ ] 02-01-PLAN.md — Shared infrastructure (IPC types, toast, context menu, error boundary) + habit backend + today view UI
+- [ ] 02-02-PLAN.md — Habit create/edit/archive flow, day-of-week scheduling, keyboard shortcut
+- [ ] 02-03-PLAN.md — Planner backend + task list UI with quick-add and date navigation
+- [ ] 02-04-PLAN.md — Planner task edit/delete, drag-and-drop reorder, daily notes, keyboard nav
+- [ ] 02-05-PLAN.md — Expense backend + wallet management UI with balance adjustment
+- [ ] 02-06-PLAN.md — Expense log modal, category management, expense list with filtering
 
 ### Phase 3: Dashboard + Navigation
 **Goal**: The unified dashboard aggregates real data from all three modules into a single at-a-glance today view, and full keyboard navigation is operational across the entire app.
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-19 |
-| 2. Module Core | 0/6 | Not started | - |
+| 2. Module Core | 0/6 | In progress | - |
 | 3. Dashboard + Navigation | 0/3 | Not started | - |
 | 4. Depth + Differentiators | 0/3 | Not started | - |
 | 5. Cross-Module + Distribution | 0/4 | Not started | - |

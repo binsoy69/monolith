@@ -35,7 +35,6 @@ Declared values (4px grid):
 |-------|-------|-------|
 | --space-1 | 4px | Icon gaps, inline padding, checkbox gaps |
 | --space-2 | 8px | Compact element spacing, sidebar item gaps |
-| --space-3 | 12px | Card vertical padding — compact card feel without full 16px |
 | --space-4 | 16px | Default element spacing, card horizontal padding, header padding |
 | --space-6 | 24px | Section padding, module content padding |
 | --space-8 | 32px | Layout gaps, major section separation |
@@ -45,6 +44,8 @@ Exceptions:
 - ModuleHeader height: 40px (established in Phase 1, not a spacing token)
 - Drag region height: 36px (WindowChrome, established Phase 1)
 - Wallet sidebar panel width: 200px (Claude's discretion — see Component Inventory)
+- HabitCard vertical padding: 12px — exception to spacing scale, compact card feel (falls between --space-2 and --space-4; use literal value `12px` in component styles, do not reference a token)
+- WalletCard vertical padding: 12px — same exception as HabitCard, compact card feel (use literal value `12px`)
 
 ---
 
@@ -371,7 +372,7 @@ Primary focal point: habit card list with accent-filled checkboxes. Progress sum
 └─────────────────────────────────────────────────────────────┘
 ```
 
-- Card padding: 16px horizontal (--space-4), 12px vertical (--space-3)
+- Card padding: 16px horizontal (--space-4), 12px vertical (compact card exception — use literal `12px`)
 - Card gap: 8px between cards (--space-2)
 - Content padding: 16px horizontal, 16px top (--space-4)
 
@@ -422,7 +423,7 @@ Primary focal point: ExpenseList right panel with the most recent expense row at
 
 - Wallet panel border-right: 1px solid --color-border
 - Wallet panel padding: 16px (--space-4)
-- Wallet card padding: 12px (--space-3)
+- Wallet card padding: 12px vertical (compact card exception — use literal `12px`), 16px horizontal (--space-4)
 - Wallet card gap: 8px (--space-2)
 - Expense row height: 36px
 - Expense row padding: 8px horizontal (--space-2)

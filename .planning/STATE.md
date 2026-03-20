@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-module-core-03-PLAN.md
-last_updated: "2026-03-20T21:18:46.352Z"
+stopped_at: Completed 02-module-core-02-PLAN.md
+last_updated: "2026-03-20T21:20:06.978Z"
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 10
-  completed_plans: 7
+  completed_plans: 8
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 02 (module-core) — EXECUTING
-Plan: 3 of 6
+Plan: 5 of 6
 
 ## Performance Metrics
 
@@ -48,6 +48,8 @@ Plan: 3 of 6
 *Updated after each plan completion*
 | Phase 02-module-core P01 | 17 | 2 tasks | 21 files |
 | Phase 02-module-core P03 | 5 | 2 tasks | 11 files |
+| Phase 02-module-core P05 | 310 | 2 tasks | 11 files |
+| Phase 02-module-core P02 | 5 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -80,6 +82,11 @@ Recent decisions affecting current work:
 - [Phase 02-module-core]: Pure JS date arithmetic in planner-store (no date-fns) — avoids ESM packaging bug, consistent with habits-store pattern
 - [Phase 02-module-core]: PlannerView owns its ModuleHeader — App.tsx planner branch no longer wraps duplicate header
 - [Phase 02-module-core]: TaskCheckbox uses border-radius: var(--radius-sm) square vs HabitCheckbox 50% circle — intentional visual distinction
+- [Phase 02-module-core]: ExpenseRepository.create/update/delete all use db.transaction() for atomic wallet balance changes
+- [Phase 02-module-core]: adjustWalletBalance uses optimistic update pattern (immediate Zustand state, rollback on IPC error)
+- [Phase 02-module-core]: seedDefaultCategories checks COUNT and inserts 7 default categories only when table is empty
+- [Phase 02-module-core]: newItemTrigger counter in App.tsx: increment passes to HabitsView via prop, useEffect opens form when counter changes — avoids ref forwarding
+- [Phase 02-module-core]: Archive confirmation swaps HabitCard in-place using archivingHabit state check in sorted map — no separate confirmation list needed
 
 ### Pending Todos
 
@@ -93,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T21:18:46.347Z
-Stopped at: Completed 02-module-core-03-PLAN.md
+Last session: 2026-03-20T21:20:06.974Z
+Stopped at: Completed 02-module-core-02-PLAN.md
 Resume file: None

@@ -10,6 +10,7 @@ import { ToastContainer } from './shared/ToastContainer';
 import { HabitsView } from './habits/HabitsView';
 import { PlannerView } from './planner/PlannerView';
 import { ExpensesView } from './expenses/ExpensesView';
+import { usePlannerStore } from './planner/planner-store';
 
 export type ModuleId = 'dashboard' | 'habits' | 'planner' | 'expenses' | 'settings';
 
@@ -18,6 +19,9 @@ export default function App() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   // Increment to signal HabitsView (and future modules) to open new item form
   const [newItemTrigger, setNewItemTrigger] = useState(0);
+
+  const plannerNavigateDay = usePlannerStore((s) => s.navigateDay);
+  const plannerGoToToday = usePlannerStore((s) => s.goToToday);
 
   const handleEscape = useCallback(() => {
     if (showShortcuts) {
@@ -45,6 +49,8 @@ export default function App() {
         onEscape={handleEscape}
         activeModule={activeModule}
         onNewItem={handleNewItem}
+        onNavigateDay={plannerNavigateDay}
+        onGoToToday={plannerGoToToday}
       />
       <WindowChrome />
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
@@ -72,7 +78,7 @@ export default function App() {
           ) : activeModule === 'expenses' ? (
             <ErrorBoundary moduleName="Expenses">
               <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <ExpensesView />
+                <ExpensesView newItemTrigger={newItemTrigger} />
               </main>
             </ErrorBoundary>
           ) : (

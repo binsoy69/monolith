@@ -33,15 +33,15 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Expenses
 
-- [ ] **EXP-01**: User can log an expense with amount, date, and category
-- [ ] **EXP-02**: User can create custom expense categories
-- [ ] **EXP-03**: User can view expense history with filtering by date/category
+- [x] **EXP-01**: User can log an expense with amount, date, and category
+- [x] **EXP-02**: User can create custom expense categories
+- [x] **EXP-03**: User can view expense history with filtering by date/category
 - [ ] **EXP-04**: User can see monthly spending totals
 - [ ] **EXP-05**: User can see spending breakdown by category (chart)
 - [x] **EXP-06**: User can create wallets with balances
 - [x] **EXP-07**: Logging an expense auto-deducts from the selected wallet
 - [x] **EXP-08**: User can manually adjust wallet balances
-- [ ] **EXP-09**: User can add optional notes to expenses
+- [x] **EXP-09**: User can add optional notes to expenses
 - [ ] **EXP-10**: User can view spending trends over 6-12 months (line chart)
 
 ### Shell & UI
@@ -135,13 +135,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAN-04 | Phase 2 | Complete |
 | PLAN-05 | Phase 2 | Complete |
 | PLAN-09 | Phase 2 | Complete |
-| EXP-01 | Phase 2 | Pending |
-| EXP-02 | Phase 2 | Pending |
-| EXP-03 | Phase 2 | Pending |
+| EXP-01 | Phase 2 | Complete |
+| EXP-02 | Phase 2 | Complete |
+| EXP-03 | Phase 2 | Complete |
 | EXP-06 | Phase 2 | Complete |
 | EXP-07 | Phase 2 | Complete |
 | EXP-08 | Phase 2 | Complete |
-| EXP-09 | Phase 2 | Pending |
+| EXP-09 | Phase 2 | Complete |
 | SHELL-01 | Phase 3 | Pending |
 | SHELL-02 | Phase 3 | Pending |
 | KBD-01 | Phase 3 | Pending |

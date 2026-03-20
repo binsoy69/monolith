@@ -13,7 +13,7 @@ Five phases build Monolith from nothing to a shippable daily-driver desktop app.
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Electron shell, SQLite + migrations, design token system, keyboard router, app settings (completed 2026-03-19)
-- [ ] **Phase 2: Module Core** - Minimum viable data entry loops for all three modules (habits, planner, expenses)
+- [x] **Phase 2: Module Core** - Minimum viable data entry loops for all three modules (habits, planner, expenses) (completed 2026-03-20)
 - [ ] **Phase 3: Dashboard + Navigation** - Unified dashboard with real data, full keyboard navigation, sidebar complete
 - [ ] **Phase 4: Depth + Differentiators** - Charts, heatmaps, task carry-forward, habit scheduling, spending trends
 - [ ] **Phase 5: Cross-Module + Distribution** - Tags, global search, desktop notifications, packaging, code signing
@@ -48,7 +48,7 @@ Plans:
   3. User can log an expense with amount, date, category, optional notes, and a wallet selection; the wallet balance auto-deducts immediately; user can create custom categories, create and manually adjust wallets, and view an expense list filtered by date or category
   4. All write operations (habit check-off, task creation, expense logging) feel instantaneous — the UI updates before the IPC round-trip completes (optimistic updates)
   5. Each module is isolated — an error in the expense module does not crash the habit module or planner
-**Plans:** 4/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 - [x] 02-01-PLAN.md — Shared infrastructure (IPC types, toast, context menu, error boundary) + habit backend + today view UI
@@ -56,7 +56,7 @@ Plans:
 - [x] 02-03-PLAN.md — Planner backend + task list UI with quick-add and date navigation
 - [x] 02-04-PLAN.md — Planner task edit/delete, drag-and-drop reorder, daily notes, keyboard nav
 - [x] 02-05-PLAN.md — Expense backend + wallet management UI with balance adjustment
-- [ ] 02-06-PLAN.md — Expense log modal, category management, expense list with filtering
+- [x] 02-06-PLAN.md — Expense log modal, category management, expense list with filtering
 
 ### Phase 3: Dashboard + Navigation
 **Goal**: The unified dashboard aggregates real data from all three modules into a single at-a-glance today view, and full keyboard navigation is operational across the entire app.
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-19 |
-| 2. Module Core | 4/6 | In Progress|  |
+| 2. Module Core | 6/6 | Complete   | 2026-03-20 |
 | 3. Dashboard + Navigation | 0/3 | Not started | - |
 | 4. Depth + Differentiators | 0/3 | Not started | - |
 | 5. Cross-Module + Distribution | 0/4 | Not started | - |

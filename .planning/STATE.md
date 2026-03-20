@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-module-core-04-PLAN.md
-last_updated: "2026-03-20T21:29:13.304Z"
+stopped_at: Completed 02-module-core-02-06-PLAN.md
+last_updated: "2026-03-20T21:30:08.869Z"
 progress:
   total_phases: 5
   completed_phases: 2
@@ -51,6 +51,7 @@ Plan: 6 of 6
 | Phase 02-module-core P05 | 310 | 2 tasks | 11 files |
 | Phase 02-module-core P02 | 5 | 2 tasks | 8 files |
 | Phase 02-module-core P04 | 15 | 2 tasks | 10 files |
+| Phase 02-module-core P06 | 342 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -91,6 +92,9 @@ Recent decisions affecting current work:
 - [Phase 02-module-core]: SortableContext wraps only incompleteTasks — completed tasks render as PlainTaskRow (non-draggable), per dnd-kit pitfall 4
 - [Phase 02-module-core]: DailyNotesView uses hasChanged ref to skip debounce on initial load — same pattern as settings auto-save from Phase 1
 - [Phase 02-module-core]: Move-to-date uses hidden native <input type=date> positioned at context menu click coordinates — no custom date picker needed
+- [Phase 02-module-core]: ExpenseContextMenu implemented inline in ExpensesView — no separate file needed, avoids empty stub
+- [Phase 02-module-core]: Date formatting in ExpenseRow uses pure JS array lookup — avoids date-fns ESM bug in vitest
+- [Phase 02-module-core]: CategoryManageView embedded in ExpensesView via toggle — no new route or modal layer needed
 
 ### Pending Todos
 
@@ -104,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T21:28:49.051Z
-Stopped at: Completed 02-module-core-04-PLAN.md
+Last session: 2026-03-20T21:30:08.865Z
+Stopped at: Completed 02-module-core-02-06-PLAN.md
 Resume file: None

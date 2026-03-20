@@ -4,6 +4,7 @@ import { WalletPanel } from './WalletPanel'
 import { BalanceAdjustModal } from './BalanceAdjustModal'
 import { ExpenseLogModal } from './ExpenseLogModal'
 import { ExpenseList } from './ExpenseList'
+import { CategoryManageView } from './CategoryManageView'
 import { useExpensesStore } from './expenses-store'
 import { useContextMenu } from '../shared/useContextMenu'
 import { ContextMenu } from '../shared/ContextMenu'
@@ -29,6 +30,8 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
     updateExpense,
     deleteExpense,
     createCategory,
+    updateCategory,
+    deleteCategory,
     setFilters,
     clearFilters,
   } = useExpensesStore()
@@ -37,6 +40,7 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
   const [showLogModal, setShowLogModal] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
   const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null)
+  const [showCategoryManage, setShowCategoryManage] = useState(false)
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu()
 
   useEffect(() => {
@@ -146,17 +150,60 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
           }}
           onAdjustBalance={(wallet) => setAdjustingWallet(wallet)}
         />
-        {/* Right panel — expense list */}
+        {/* Right panel — expense list + category management */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <ExpenseList
-            expenses={expenses}
-            categories={categories}
-            wallets={wallets}
-            filters={filters}
-            onFiltersChange={(f) => setFilters(f)}
-            onClearFilters={clearFilters}
-            onContextMenu={handleExpenseContextMenu}
-          />
+          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <ExpenseList
+              expenses={expenses}
+              categories={categories}
+              wallets={wallets}
+              filters={filters}
+              onFiltersChange={(f) => setFilters(f)}
+              onClearFilters={clearFilters}
+              onContextMenu={handleExpenseContextMenu}
+            />
+          </div>
+
+          {/* Manage categories toggle */}
+          <div
+            style={{
+              padding: 'var(--space-2) var(--space-4)',
+              borderTop: showCategoryManage ? 'none' : '1px solid var(--color-border)',
+              flexShrink: 0,
+            }}
+          >
+            <button
+              onClick={() => setShowCategoryManage((v) => !v)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 'var(--font-size-small)',
+                color: showCategoryManage ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                padding: 0,
+              }}
+              onMouseEnter={(e) => {
+                ;(e.currentTarget as HTMLElement).style.color = showCategoryManage
+                  ? 'var(--color-accent-hover)'
+                  : 'var(--color-text-secondary)'
+              }}
+              onMouseLeave={(e) => {
+                ;(e.currentTarget as HTMLElement).style.color = showCategoryManage
+                  ? 'var(--color-accent)'
+                  : 'var(--color-text-muted)'
+              }}
+            >
+              {showCategoryManage ? 'Hide categories' : 'Manage categories'}
+            </button>
+
+            {showCategoryManage && (
+              <CategoryManageView
+                categories={categories}
+                onUpdate={(id, data) => updateCategory(id, data)}
+                onDelete={deleteCategory}
+              />
+            )}
+          </div>
         </div>
       </div>
 

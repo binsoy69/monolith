@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-module-core-02-PLAN.md
-last_updated: "2026-03-20T21:20:06.978Z"
+stopped_at: Completed 02-module-core-04-PLAN.md
+last_updated: "2026-03-20T21:29:13.304Z"
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 10
-  completed_plans: 8
+  completed_plans: 10
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 02 (module-core) — EXECUTING
-Plan: 5 of 6
+Plan: 6 of 6
 
 ## Performance Metrics
 
@@ -50,6 +50,7 @@ Plan: 5 of 6
 | Phase 02-module-core P03 | 5 | 2 tasks | 11 files |
 | Phase 02-module-core P05 | 310 | 2 tasks | 11 files |
 | Phase 02-module-core P02 | 5 | 2 tasks | 8 files |
+| Phase 02-module-core P04 | 15 | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -87,6 +88,9 @@ Recent decisions affecting current work:
 - [Phase 02-module-core]: seedDefaultCategories checks COUNT and inserts 7 default categories only when table is empty
 - [Phase 02-module-core]: newItemTrigger counter in App.tsx: increment passes to HabitsView via prop, useEffect opens form when counter changes — avoids ref forwarding
 - [Phase 02-module-core]: Archive confirmation swaps HabitCard in-place using archivingHabit state check in sorted map — no separate confirmation list needed
+- [Phase 02-module-core]: SortableContext wraps only incompleteTasks — completed tasks render as PlainTaskRow (non-draggable), per dnd-kit pitfall 4
+- [Phase 02-module-core]: DailyNotesView uses hasChanged ref to skip debounce on initial load — same pattern as settings auto-save from Phase 1
+- [Phase 02-module-core]: Move-to-date uses hidden native <input type=date> positioned at context menu click coordinates — no custom date picker needed
 
 ### Pending Todos
 
@@ -100,6 +104,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T21:20:06.974Z
-Stopped at: Completed 02-module-core-02-PLAN.md
+Last session: 2026-03-20T21:28:49.051Z
+Stopped at: Completed 02-module-core-04-PLAN.md
 Resume file: None

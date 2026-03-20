@@ -21,6 +21,13 @@ export function HabitCard({ habit, onToggle, onContextMenu, isScheduledToday }: 
     onToggle()
   }
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (onContextMenu) {
+      onContextMenu(e)
+    }
+  }
+
   const hasStreaks = habit.currentStreak > 0 || habit.bestStreak > 0
 
   // Opacity states per UI-SPEC:
@@ -38,9 +45,10 @@ export function HabitCard({ habit, onToggle, onContextMenu, isScheduledToday }: 
   return (
     <div
       onClick={handleClick}
-      onContextMenu={onContextMenu}
+      onContextMenu={handleContextMenu}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      title={!isScheduledToday ? 'Not scheduled for today' : undefined}
       style={{
         display: 'flex',
         alignItems: 'center',

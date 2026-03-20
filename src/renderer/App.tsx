@@ -9,6 +9,7 @@ import { ErrorBoundary } from './shared/ErrorBoundary';
 import { ToastContainer } from './shared/ToastContainer';
 import { HabitsView } from './habits/HabitsView';
 import { PlannerView } from './planner/PlannerView';
+import { ExpensesView } from './expenses/ExpensesView';
 
 export type ModuleId = 'dashboard' | 'habits' | 'planner' | 'expenses' | 'settings';
 
@@ -69,25 +70,11 @@ export default function App() {
               </main>
             </ErrorBoundary>
           ) : activeModule === 'expenses' ? (
-            <>
-              <ModuleHeader moduleId={activeModule} />
-              <main style={{ flex: 1, overflow: 'auto' }}>
-                <ErrorBoundary moduleName="Expenses">
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      height: '100%',
-                    }}
-                  >
-                    <span style={{ color: 'var(--color-text-muted)', fontSize: 'var(--font-size-body)' }}>
-                      Expenses — coming soon
-                    </span>
-                  </div>
-                </ErrorBoundary>
+            <ErrorBoundary moduleName="Expenses">
+              <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <ExpensesView />
               </main>
-            </>
+            </ErrorBoundary>
           ) : (
             <>
               <ModuleHeader moduleId={activeModule} />

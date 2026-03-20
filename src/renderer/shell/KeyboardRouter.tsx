@@ -7,14 +7,18 @@ interface KeyboardRouterProps {
   onEscape: () => void;
   activeModule: ModuleId;
   onNewItem: () => void;
+  onNavigateDay?: (direction: -1 | 1) => void;
+  onGoToToday?: () => void;
 }
 
 export function KeyboardRouter({
   onNavigate,
   onShowShortcuts,
   onEscape,
-  activeModule: _activeModule,
+  activeModule,
   onNewItem,
+  onNavigateDay,
+  onGoToToday,
 }: KeyboardRouterProps) {
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Input guard — check if user is typing in an editable field
@@ -55,8 +59,28 @@ export function KeyboardRouter({
         onNewItem();
         return;
       }
+
+      // Planner day navigation — ArrowLeft / ArrowRight
+      if (e.key === 'ArrowLeft' && activeModule === 'planner') {
+        e.preventDefault();
+        onNavigateDay?.(-1);
+        return;
+      }
+
+      if (e.key === 'ArrowRight' && activeModule === 'planner') {
+        e.preventDefault();
+        onNavigateDay?.(1);
+        return;
+      }
+
+      // Planner jump to today — T key
+      if ((e.key === 't' || e.key === 'T') && activeModule === 'planner') {
+        e.preventDefault();
+        onGoToToday?.();
+        return;
+      }
     }
-  }, [onNavigate, onShowShortcuts, onEscape, onNewItem]);
+  }, [onNavigate, onShowShortcuts, onEscape, onNewItem, activeModule, onNavigateDay, onGoToToday]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);

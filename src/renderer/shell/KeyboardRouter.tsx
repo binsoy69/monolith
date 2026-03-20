@@ -5,9 +5,17 @@ interface KeyboardRouterProps {
   onNavigate: (module: ModuleId) => void;
   onShowShortcuts: () => void;
   onEscape: () => void;
+  activeModule: ModuleId;
+  onNewItem: () => void;
 }
 
-export function KeyboardRouter({ onNavigate, onShowShortcuts, onEscape }: KeyboardRouterProps) {
+export function KeyboardRouter({
+  onNavigate,
+  onShowShortcuts,
+  onEscape,
+  activeModule: _activeModule,
+  onNewItem,
+}: KeyboardRouterProps) {
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Input guard — check if user is typing in an editable field
     const target = e.target as HTMLElement;
@@ -40,8 +48,15 @@ export function KeyboardRouter({ onNavigate, onShowShortcuts, onEscape }: Keyboa
         onShowShortcuts();
         return;
       }
+
+      // "N" — trigger new item for current module
+      if (e.key === 'n' || e.key === 'N') {
+        e.preventDefault();
+        onNewItem();
+        return;
+      }
     }
-  }, [onNavigate, onShowShortcuts, onEscape]);
+  }, [onNavigate, onShowShortcuts, onEscape, onNewItem]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);

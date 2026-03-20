@@ -9,7 +9,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Habits
 
-- [ ] **HAB-01**: User can create, edit, and archive habits
+- [x] **HAB-01**: User can create, edit, and archive habits
 - [x] **HAB-02**: User can check off habits daily with a single click/keystroke
 - [x] **HAB-03**: User can see current streak and best streak per habit
 - [ ] **HAB-04**: User can view completion history (last 7/30 days)
@@ -125,7 +125,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SHELL-04 | Phase 1 | Complete |
 | SHELL-05 | Phase 1 | Complete |
 | SET-01 | Phase 1 | Complete |
-| HAB-01 | Phase 2 | Pending |
+| HAB-01 | Phase 2 | Complete |
 | HAB-02 | Phase 2 | Complete |
 | HAB-03 | Phase 2 | Complete |
 | HAB-05 | Phase 2 | Complete |

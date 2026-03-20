@@ -21,10 +21,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Planner
 
-- [ ] **PLAN-01**: User can create tasks with a title and optional notes
+- [x] **PLAN-01**: User can create tasks with a title and optional notes
 - [ ] **PLAN-02**: User can check off and delete tasks
-- [ ] **PLAN-03**: User can assign tasks to specific dates
-- [ ] **PLAN-04**: User can navigate between days (past and future)
+- [x] **PLAN-03**: User can assign tasks to specific dates
+- [x] **PLAN-04**: User can navigate between days (past and future)
 - [ ] **PLAN-05**: User can reorder tasks within a day
 - [ ] **PLAN-06**: User can set priority levels (P1/P2/P3) on tasks
 - [ ] **PLAN-07**: Unfinished tasks automatically carry forward to today
@@ -129,10 +129,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HAB-02 | Phase 2 | Complete |
 | HAB-03 | Phase 2 | Complete |
 | HAB-05 | Phase 2 | Complete |
-| PLAN-01 | Phase 2 | Pending |
+| PLAN-01 | Phase 2 | Complete |
 | PLAN-02 | Phase 2 | Pending |
-| PLAN-03 | Phase 2 | Pending |
-| PLAN-04 | Phase 2 | Pending |
+| PLAN-03 | Phase 2 | Complete |
+| PLAN-04 | Phase 2 | Complete |
 | PLAN-05 | Phase 2 | Pending |
 | PLAN-09 | Phase 2 | Pending |
 | EXP-01 | Phase 2 | Pending |

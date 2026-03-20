@@ -53,9 +53,9 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Shared infrastructure (IPC types, toast, context menu, error boundary) + habit backend + today view UI
 - [ ] 02-02-PLAN.md — Habit create/edit/archive flow, day-of-week scheduling, keyboard shortcut
-- [ ] 02-03-PLAN.md — Planner backend + task list UI with quick-add and date navigation
+- [x] 02-03-PLAN.md — Planner backend + task list UI with quick-add and date navigation
 - [ ] 02-04-PLAN.md — Planner task edit/delete, drag-and-drop reorder, daily notes, keyboard nav
-- [ ] 02-05-PLAN.md — Expense backend + wallet management UI with balance adjustment
+- [x] 02-05-PLAN.md — Expense backend + wallet management UI with balance adjustment
 - [ ] 02-06-PLAN.md — Expense log modal, category management, expense list with filtering
 
 ### Phase 3: Dashboard + Navigation

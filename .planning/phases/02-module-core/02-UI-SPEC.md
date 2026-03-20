@@ -29,13 +29,14 @@ No shadcn. No third-party component registry. All UI is built with inline React 
 
 ## Spacing Scale
 
-Declared values (4px grid — no 12px or 20px steps):
+Declared values (4px grid):
 
 | Token | Value | Usage |
 |-------|-------|-------|
 | --space-1 | 4px | Icon gaps, inline padding, checkbox gaps |
 | --space-2 | 8px | Compact element spacing, sidebar item gaps |
-| --space-4 | 16px | Default element spacing, card padding, header padding |
+| --space-3 | 12px | Card vertical padding — compact card feel without full 16px |
+| --space-4 | 16px | Default element spacing, card horizontal padding, header padding |
 | --space-6 | 24px | Section padding, module content padding |
 | --space-8 | 32px | Layout gaps, major section separation |
 
@@ -109,7 +110,7 @@ Border tokens:
 6. Progress summary accent color ("3" in "3/5 completed" — the completed count only)
 7. Input focus border (--color-border-focused)
 
-Accent is NOT used for: general hover states, card backgrounds (unChecked), body text, category color dots (those use the preset palette), or wallet balance numbers.
+Accent is NOT used for: general hover states, card backgrounds (unchecked), body text, category color dots (those use the preset palette), or wallet balance numbers.
 
 ---
 
@@ -128,7 +129,7 @@ New components required for Phase 2. All use inline styles + CSS var tokens, mat
 | DayPicker | habits/DayPicker.tsx | Row of 7 checkboxes labeled Mon–Sun |
 | HabitProgressBar | habits/HabitProgressBar.tsx | "3/5 completed" text with accent on completed count |
 | HabitContextMenu | habits/HabitContextMenu.tsx | Right-click menu: Edit, Archive |
-| ArchiveConfirmation | habits/ArchiveConfirmation.tsx | Inline prompt replacing card temporarily: "Archive [name]?" + Confirm / Cancel |
+| ArchiveConfirmation | habits/ArchiveConfirmation.tsx | Inline prompt replacing card temporarily: "Archive [name]?" + Confirm / Keep Habit |
 | ArchivedHabitsView | habits/ArchivedHabitsView.tsx | Alternate view shown by ModuleHeader toggle; lists archived habits |
 
 ### Planner Module
@@ -144,7 +145,7 @@ New components required for Phase 2. All use inline styles + CSS var tokens, mat
 | TaskEditForm | planner/TaskEditForm.tsx | Inline expansion below task row — title input + notes textarea |
 | DateNav | planner/DateNav.tsx | Left arrow, date label, right arrow — "Today" label gets accent highlight |
 | DailyNotesView | planner/DailyNotesView.tsx | Plain auto-saving textarea — full content area height |
-| DeleteConfirmation | planner/DeleteConfirmation.tsx | Inline confirmation row: "Delete this task?" + Confirm / Cancel |
+| DeleteConfirmation | planner/DeleteConfirmation.tsx | Inline confirmation row: "Delete this task?" + Confirm / Keep Task |
 
 ### Expenses Module
 
@@ -253,7 +254,7 @@ Source: `globals.css` transition tokens.
 | Streak display (zero) | (hidden entirely) |
 | Archive confirmation | Archive "{name}"? This habit will be hidden from today's view. |
 | Archive confirm button | Archive |
-| Archive cancel button | Cancel |
+| Archive cancel button | Keep Habit |
 | Archived habits toggle label (active view) | Show Archived |
 | Archived habits toggle label (archived view) | Show Active |
 | IPC error toast | Failed to save habit. Changes were not applied. |
@@ -275,7 +276,7 @@ Source: `globals.css` transition tokens.
 | Notes placeholder | Write anything about today... |
 | Task delete confirmation | Delete this task? |
 | Delete confirm button | Delete |
-| Delete cancel button | Cancel |
+| Delete cancel button | Keep Task |
 | Move to date menu item | Move to date |
 | Context menu: Edit | Edit |
 | Context menu: Delete | Delete |
@@ -307,17 +308,18 @@ Source: `globals.css` transition tokens.
 | Notes field label | Notes (optional) |
 | Notes placeholder | What was this for? |
 | Modal submit button | Log Expense |
-| Modal cancel button | Cancel |
+| Modal cancel button | Discard |
 | Filter bar: date range label | Date range |
 | Filter bar: category label | Category |
 | Filter bar: clear button | Clear filters |
 | Balance adjust modal: set option | Set balance |
 | Balance adjust modal: delta option | Add / Subtract |
+| Balance adjust modal cancel button | Discard |
 | Wallet delete blocked | Can't delete — this wallet has expenses |
 | Category delete blocked | Can't delete — this category is in use |
 | Expense delete confirmation | Delete this expense? This will reverse the wallet deduction. |
 | Delete confirm button | Delete |
-| Delete cancel button | Cancel |
+| Delete cancel button | Keep Expense |
 | IPC error toast | Failed to save expense. Changes were not applied. |
 
 ### Shared
@@ -335,13 +337,13 @@ Source: `globals.css` transition tokens.
 
 All destructive actions follow the same inline confirmation pattern: a brief prompt replaces the trigger element in-place (no modal). Two buttons: confirm (--color-destructive text) and cancel.
 
-| Action | Trigger | Confirmation Copy | Reversal Effect |
-|--------|---------|-------------------|-----------------|
-| Archive habit | Right-click context menu | Archive "{name}"? | Hides from today view; reversible via archived view |
-| Delete task | Right-click > Delete | Delete this task? | Permanent — no undo |
-| Delete expense | Right-click > Delete | Delete this expense? This will reverse the wallet deduction. | Wallet balance restored |
-| Delete wallet | Edit wallet > Delete | Can't delete — this wallet has expenses (blocked — no confirm needed) | n/a |
-| Delete category | Manage > Delete | Can't delete — this category is in use (blocked — no confirm needed) | n/a |
+| Action | Trigger | Confirmation Copy | Cancel Label | Reversal Effect |
+|--------|---------|-------------------|--------------|-----------------|
+| Archive habit | Right-click context menu | Archive "{name}"? | Keep Habit | Hides from today view; reversible via archived view |
+| Delete task | Right-click > Delete | Delete this task? | Keep Task | Permanent — no undo |
+| Delete expense | Right-click > Delete | Delete this expense? This will reverse the wallet deduction. | Keep Expense | Wallet balance restored |
+| Delete wallet | Edit wallet > Delete | Can't delete — this wallet has expenses (blocked — no confirm needed) | n/a | n/a |
+| Delete category | Manage > Delete | Can't delete — this category is in use (blocked — no confirm needed) | n/a | n/a |
 
 Destructive confirmation button color: `--color-destructive` (#ef4444) text, transparent background. Cancel button: `--color-text-secondary` text.
 
@@ -350,6 +352,8 @@ Destructive confirmation button color: `--color-destructive` (#ef4444) text, tra
 ## Layout Contracts
 
 ### Habits Module Layout
+
+Primary focal point: habit card list with accent-filled checkboxes. Progress summary is secondary. Header bar is navigational only.
 
 ```
 ┌─ ModuleHeader (40px) ──────────────────────────────────────┐
@@ -367,11 +371,13 @@ Destructive confirmation button color: `--color-destructive` (#ef4444) text, tra
 └─────────────────────────────────────────────────────────────┘
 ```
 
-- Card padding: 16px horizontal, 12px vertical (--space-4 / 3×4px)
+- Card padding: 16px horizontal (--space-4), 12px vertical (--space-3)
 - Card gap: 8px between cards (--space-2)
 - Content padding: 16px horizontal, 16px top (--space-4)
 
 ### Planner Module Layout
+
+Primary focal point: QuickAddInput at top of task list — draws eye to the main action. Task list is secondary. Date navigation is tertiary.
 
 ```
 ┌─ ModuleHeader (40px) ──────────────────────────────────────┐
@@ -394,6 +400,8 @@ Destructive confirmation button color: `--color-destructive` (#ef4444) text, tra
 
 ### Expenses Module Layout
 
+Primary focal point: ExpenseList right panel with the most recent expense row at top. WalletPanel is secondary. FilterBar is tertiary.
+
 ```
 ┌─ ModuleHeader (40px) ──────────────────────────────────────┐
 │  [Expenses]                              [+ Log Expense]    │
@@ -414,7 +422,7 @@ Destructive confirmation button color: `--color-destructive` (#ef4444) text, tra
 
 - Wallet panel border-right: 1px solid --color-border
 - Wallet panel padding: 16px (--space-4)
-- Wallet card padding: 12px (3×4px)
+- Wallet card padding: 12px (--space-3)
 - Wallet card gap: 8px (--space-2)
 - Expense row height: 36px
 - Expense row padding: 8px horizontal (--space-2)
@@ -422,6 +430,8 @@ Destructive confirmation button color: `--color-destructive` (#ef4444) text, tra
 - Filter bar border-bottom: 1px solid --color-border
 
 ### Modal Layout (Expense Log)
+
+Primary focal point: amount input field — the first and most important field users fill.
 
 - Overlay: fixed, full viewport, bg rgba(0,0,0,0.6)
 - Modal: centered, width 400px, bg --color-bg-overlay, border-radius --radius-lg (8px)

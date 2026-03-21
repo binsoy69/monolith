@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { GripVertical } from 'lucide-react'
+import { GripVertical, FileText } from 'lucide-react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { TaskCheckbox } from './TaskCheckbox'
@@ -18,6 +18,8 @@ interface TaskRowProps {
   onConfirmDelete?: (id: string) => void
   onCancelDelete?: () => void
   isDraggable?: boolean
+  isExpanded?: boolean
+  onClickRow?: () => void
 }
 
 function SortableTaskRow({
@@ -30,6 +32,8 @@ function SortableTaskRow({
   onCancelEdit,
   onConfirmDelete,
   onCancelDelete,
+  isExpanded,
+  onClickRow,
 }: TaskRowProps) {
   const [isHovered, setIsHovered] = useState(false)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -53,6 +57,8 @@ function SortableTaskRow({
       />
     )
   }
+
+  const hasNotes = task.notes && task.notes.trim()
 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
@@ -96,22 +102,72 @@ function SortableTaskRow({
           <TaskCheckbox checked={task.completed} />
         </div>
 
-        <span
+        <div
           style={{
-            fontSize: 'var(--font-size-body)',
-            color: 'var(--color-text-primary)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-1)',
             flex: 1,
             overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            textDecoration: task.completed ? 'line-through' : 'none',
-            opacity: task.completed ? 0.45 : 1,
-            transition: `opacity var(--duration-fast) ease-out`,
+            cursor: 'pointer',
+          }}
+          onClick={onClickRow}
+        >
+          <span
+            style={{
+              fontSize: 'var(--font-size-body)',
+              color: 'var(--color-text-primary)',
+              flex: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              textDecoration: task.completed ? 'line-through' : 'none',
+              opacity: task.completed ? 0.45 : 1,
+              transition: `opacity var(--duration-fast) ease-out`,
+            }}
+          >
+            {task.title}
+          </span>
+          {hasNotes && !isExpanded && (
+            <FileText size={12} strokeWidth={1.5} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+          )}
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div
+          style={{
+            paddingTop: '0',
+            paddingBottom: 'var(--space-2)',
+            paddingLeft: '52px',
+            paddingRight: 'var(--space-2)',
           }}
         >
-          {task.title}
-        </span>
-      </div>
+          {hasNotes ? (
+            <div
+              style={{
+                fontSize: 'var(--font-size-small)',
+                color: 'var(--color-text-secondary)',
+                lineHeight: 'var(--line-height-normal)',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}
+            >
+              {task.notes}
+            </div>
+          ) : (
+            <div
+              style={{
+                fontSize: 'var(--font-size-small)',
+                color: 'var(--color-text-muted)',
+                fontStyle: 'italic',
+              }}
+            >
+              No notes
+            </div>
+          )}
+        </div>
+      )}
 
       {isEditing && onSaveEdit && onCancelEdit && (
         <TaskEditForm task={task} onSave={onSaveEdit} onCancel={onCancelEdit} />
@@ -130,6 +186,8 @@ function PlainTaskRow({
   onCancelEdit,
   onConfirmDelete,
   onCancelDelete,
+  isExpanded,
+  onClickRow,
 }: TaskRowProps) {
   const [isHovered, setIsHovered] = useState(false)
 
@@ -141,6 +199,8 @@ function PlainTaskRow({
       />
     )
   }
+
+  const hasNotes = task.notes && task.notes.trim()
 
   return (
     <div>
@@ -182,22 +242,72 @@ function PlainTaskRow({
           <TaskCheckbox checked={task.completed} />
         </div>
 
-        <span
+        <div
           style={{
-            fontSize: 'var(--font-size-body)',
-            color: 'var(--color-text-primary)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-1)',
             flex: 1,
             overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            textDecoration: task.completed ? 'line-through' : 'none',
-            opacity: task.completed ? 0.45 : 1,
-            transition: `opacity var(--duration-fast) ease-out`,
+            cursor: 'pointer',
+          }}
+          onClick={onClickRow}
+        >
+          <span
+            style={{
+              fontSize: 'var(--font-size-body)',
+              color: 'var(--color-text-primary)',
+              flex: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              textDecoration: task.completed ? 'line-through' : 'none',
+              opacity: task.completed ? 0.45 : 1,
+              transition: `opacity var(--duration-fast) ease-out`,
+            }}
+          >
+            {task.title}
+          </span>
+          {hasNotes && !isExpanded && (
+            <FileText size={12} strokeWidth={1.5} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
+          )}
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div
+          style={{
+            paddingTop: '0',
+            paddingBottom: 'var(--space-2)',
+            paddingLeft: '52px',
+            paddingRight: 'var(--space-2)',
           }}
         >
-          {task.title}
-        </span>
-      </div>
+          {hasNotes ? (
+            <div
+              style={{
+                fontSize: 'var(--font-size-small)',
+                color: 'var(--color-text-secondary)',
+                lineHeight: 'var(--line-height-normal)',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}
+            >
+              {task.notes}
+            </div>
+          ) : (
+            <div
+              style={{
+                fontSize: 'var(--font-size-small)',
+                color: 'var(--color-text-muted)',
+                fontStyle: 'italic',
+              }}
+            >
+              No notes
+            </div>
+          )}
+        </div>
+      )}
 
       {isEditing && onSaveEdit && onCancelEdit && (
         <TaskEditForm task={task} onSave={onSaveEdit} onCancel={onCancelEdit} />
@@ -206,9 +316,9 @@ function PlainTaskRow({
   )
 }
 
-export function TaskRow({ isDraggable = true, ...props }: TaskRowProps) {
+export function TaskRow({ isDraggable = true, isExpanded, onClickRow, ...props }: TaskRowProps) {
   if (isDraggable) {
-    return <SortableTaskRow {...props} isDraggable={true} />
+    return <SortableTaskRow {...props} isDraggable={true} isExpanded={isExpanded} onClickRow={onClickRow} />
   }
-  return <PlainTaskRow {...props} isDraggable={false} />
+  return <PlainTaskRow {...props} isDraggable={false} isExpanded={isExpanded} onClickRow={onClickRow} />
 }

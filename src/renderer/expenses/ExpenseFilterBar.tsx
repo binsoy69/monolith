@@ -1,10 +1,22 @@
+import { useState } from 'react'
 import type { Category } from '../../shared/domain-types'
+import { CalendarPopup } from '../shared/CalendarPopup'
 
 interface ExpenseFilterBarProps {
   filters: { startDate?: string; endDate?: string; categoryId?: string }
   categories: Category[]
   onFiltersChange: (filters: { startDate?: string; endDate?: string; categoryId?: string }) => void
   onClear: () => void
+}
+
+const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+function formatDisplayDate(dateStr: string): string {
+  const parts = dateStr.split('-')
+  const month = SHORT_MONTHS[Number(parts[1]) - 1]
+  const day = Number(parts[2])
+  const year = Number(parts[0])
+  return `${month} ${day}, ${year}`
 }
 
 export function ExpenseFilterBar({
@@ -15,6 +27,8 @@ export function ExpenseFilterBar({
 }: ExpenseFilterBarProps) {
   const hasFilters =
     Boolean(filters.startDate) || Boolean(filters.endDate) || Boolean(filters.categoryId)
+
+  const [openPicker, setOpenPicker] = useState<'start' | 'end' | null>(null)
 
   function handleStartDate(val: string) {
     onFiltersChange({ ...filters, startDate: val || undefined })
@@ -37,14 +51,23 @@ export function ExpenseFilterBar({
     color: 'var(--color-text-primary)',
     fontSize: 'var(--font-size-small)',
     outline: 'none',
-    colorScheme: 'dark',
     cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    minWidth: '110px',
+    userSelect: 'none',
   }
 
   const labelStyle: React.CSSProperties = {
     fontSize: 'var(--font-size-small)',
     color: 'var(--color-text-muted)',
     marginRight: '4px',
+  }
+
+  // Get a fallback date for the popup when no date is selected
+  function getTodayStr(): string {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
   }
 
   return (
@@ -59,25 +82,54 @@ export function ExpenseFilterBar({
         flexShrink: 0,
       }}
     >
-      {/* Date range */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+      {/* From date */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', position: 'relative' }}>
         <span style={labelStyle}>From</span>
-        <input
-          type="date"
-          value={filters.startDate ?? ''}
-          onChange={(e) => handleStartDate(e.target.value)}
-          style={inputStyle}
-        />
+        <div
+          style={{
+            ...inputStyle,
+            color: filters.startDate ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
+          }}
+          onClick={() => setOpenPicker(openPicker === 'start' ? null : 'start')}
+        >
+          {filters.startDate ? formatDisplayDate(filters.startDate) : 'Start date'}
+        </div>
+        {openPicker === 'start' && (
+          <CalendarPopup
+            selectedDate={filters.startDate ?? getTodayStr()}
+            onSelect={(date) => {
+              handleStartDate(date)
+              setOpenPicker(null)
+            }}
+            onClose={() => setOpenPicker(null)}
+            showTaskDots={false}
+          />
+        )}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+      {/* To date */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', position: 'relative' }}>
         <span style={labelStyle}>To</span>
-        <input
-          type="date"
-          value={filters.endDate ?? ''}
-          onChange={(e) => handleEndDate(e.target.value)}
-          style={inputStyle}
-        />
+        <div
+          style={{
+            ...inputStyle,
+            color: filters.endDate ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
+          }}
+          onClick={() => setOpenPicker(openPicker === 'end' ? null : 'end')}
+        >
+          {filters.endDate ? formatDisplayDate(filters.endDate) : 'End date'}
+        </div>
+        {openPicker === 'end' && (
+          <CalendarPopup
+            selectedDate={filters.endDate ?? getTodayStr()}
+            onSelect={(date) => {
+              handleEndDate(date)
+              setOpenPicker(null)
+            }}
+            onClose={() => setOpenPicker(null)}
+            showTaskDots={false}
+          />
+        )}
       </div>
 
       {/* Category filter */}
@@ -85,7 +137,16 @@ export function ExpenseFilterBar({
         value={filters.categoryId ?? ''}
         onChange={(e) => handleCategory(e.target.value)}
         style={{
-          ...inputStyle,
+          height: '28px',
+          padding: '0 var(--space-2)',
+          background: 'var(--color-bg-base)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-sm)',
+          color: 'var(--color-text-primary)',
+          fontSize: 'var(--font-size-small)',
+          outline: 'none',
+          colorScheme: 'dark',
+          cursor: 'pointer',
           minWidth: '120px',
         }}
       >

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { ModuleHeader } from '../shell/ModuleHeader'
 import { usePlannerStore } from './planner-store'
 import { DateNav } from './DateNav'
@@ -7,6 +7,7 @@ import { TaskList } from './TaskList'
 import { DailyNotesView } from './DailyNotesView'
 import { ContextMenu } from '../shared/ContextMenu'
 import { useContextMenu } from '../shared/useContextMenu'
+import { CalendarPopup } from '../shared/CalendarPopup'
 
 export function PlannerView() {
   const {
@@ -32,7 +33,6 @@ export function PlannerView() {
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null)
   const [movePickerTaskId, setMovePickerTaskId] = useState<string | null>(null)
   const [movePickerPos, setMovePickerPos] = useState({ x: 0, y: 0 })
-  const moveDateInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     loadTasks(viewDate)
@@ -87,8 +87,6 @@ export function PlannerView() {
         onClick: () => {
           setMovePickerTaskId(taskId)
           setMovePickerPos({ x: e.clientX, y: e.clientY })
-          // Focus the hidden date input after render
-          setTimeout(() => moveDateInputRef.current?.showPicker?.(), 50)
         },
       },
       {
@@ -129,6 +127,7 @@ export function PlannerView() {
             onNext={() => navigateDay(1)}
             tasksDone={tasksDone}
             tasksTotal={tasksTotal}
+            onDateSelect={(date) => usePlannerStore.getState().setViewDate(date)}
           />
         }
         right={
@@ -187,22 +186,14 @@ export function PlannerView() {
         />
       )}
 
-      {/* Move to date — hidden date input that shows a native picker */}
+      {/* Move to date — CalendarPopup positioned at context menu click location */}
       {movePickerTaskId && (
-        <input
-          ref={moveDateInputRef}
-          type="date"
-          defaultValue={viewDate}
-          onChange={(e) => handleMoveToDate(e.target.value)}
-          style={{
-            position: 'fixed',
-            left: movePickerPos.x,
-            top: movePickerPos.y,
-            opacity: 0,
-            pointerEvents: 'auto',
-            zIndex: 3000,
-          }}
-          onBlur={() => setMovePickerTaskId(null)}
+        <CalendarPopup
+          selectedDate={viewDate}
+          onSelect={(date) => { handleMoveToDate(date) }}
+          onClose={() => setMovePickerTaskId(null)}
+          position={movePickerPos}
+          showTaskDots={false}
         />
       )}
     </div>

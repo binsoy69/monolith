@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { CalendarPopup } from '../shared/CalendarPopup'
 
 function getTodayStr(): string {
   const now = new Date()
@@ -22,10 +24,12 @@ interface DateNavProps {
   onNext: () => void
   tasksDone: number
   tasksTotal: number
+  onDateSelect: (date: string) => void
 }
 
-export function DateNav({ viewDate, onPrev, onNext, tasksDone, tasksTotal }: DateNavProps) {
+export function DateNav({ viewDate, onPrev, onNext, tasksDone, tasksTotal, onDateSelect }: DateNavProps) {
   const isToday = viewDate === getTodayStr()
+  const [showCalendar, setShowCalendar] = useState(false)
 
   const buttonStyle = {
     width: '28px',
@@ -41,8 +45,10 @@ export function DateNav({ viewDate, onPrev, onNext, tasksDone, tasksTotal }: Dat
     flexShrink: 0,
   }
 
+  const dateLabel = isToday ? `Today, ${formatDate(viewDate)}` : formatDate(viewDate)
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', position: 'relative' }}>
       <button
         style={buttonStyle}
         onClick={onPrev}
@@ -54,15 +60,19 @@ export function DateNav({ viewDate, onPrev, onNext, tasksDone, tasksTotal }: Dat
       </button>
 
       <span
+        onClick={() => setShowCalendar((v) => !v)}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'underline' }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = 'none' }}
         style={{
           fontSize: 'var(--font-size-body)',
           fontWeight: 600,
           color: isToday ? 'var(--color-accent)' : 'var(--color-text-primary)',
           lineHeight: 'var(--line-height-tight)',
           whiteSpace: 'nowrap',
+          cursor: 'pointer',
         }}
       >
-        {isToday ? 'Today' : formatDate(viewDate)}
+        {dateLabel}
       </span>
 
       <button
@@ -85,6 +95,18 @@ export function DateNav({ viewDate, onPrev, onNext, tasksDone, tasksTotal }: Dat
       >
         {tasksDone}/{tasksTotal} done
       </span>
+
+      {showCalendar && (
+        <CalendarPopup
+          selectedDate={viewDate}
+          onSelect={(date) => {
+            onDateSelect(date)
+            setShowCalendar(false)
+          }}
+          onClose={() => setShowCalendar(false)}
+          showTaskDots={true}
+        />
+      )}
     </div>
   )
 }

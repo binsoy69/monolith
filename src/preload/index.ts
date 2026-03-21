@@ -28,6 +28,7 @@ const api: API = {
     reorder: (data) => ipcRenderer.invoke('planner:reorder', data),
     getNotes: (date) => ipcRenderer.invoke('planner:getNotes', date),
     saveNotes: (data) => ipcRenderer.invoke('planner:saveNotes', data),
+    getDatesWithTasks: (data) => ipcRenderer.invoke('planner:getDatesWithTasks', data),
   },
   expenses: {
     listExpenses: (filters) => ipcRenderer.invoke('expenses:listExpenses', filters),

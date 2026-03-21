@@ -30,4 +30,8 @@ export function registerPlannerHandlers(): void {
   ipcMain.handle('planner:saveNotes', (_, data: { date: string; content: string }) =>
     repo.saveNotes(data.date, data.content)
   )
+
+  ipcMain.handle('planner:getDatesWithTasks', (_, data: { month: number; year: number }) =>
+    repo.getDatesWithTasks(data.month, data.year)
+  )
 }

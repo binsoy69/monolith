@@ -110,4 +110,14 @@ export class PlannerRepository {
       .prepare('INSERT OR REPLACE INTO daily_notes (date, content, updated_at) VALUES (?, ?, ?)')
       .run(date, content, new Date().toISOString())
   }
+
+  getDatesWithTasks(month: number, year: number): string[] {
+    const paddedMonth = String(month).padStart(2, '0')
+    const rows = this.db
+      .prepare(
+        `SELECT DISTINCT date FROM tasks WHERE date LIKE ?`
+      )
+      .all(`${year}-${paddedMonth}-%`) as { date: string }[]
+    return rows.map((r) => r.date)
+  }
 }

@@ -122,7 +122,7 @@ New components introduced in this phase:
 **Tasks card internals:**
 - Up to 5 incomplete tasks listed: title only, body size, primary color
 - "N remaining" count shown as muted body text below list
-- Overdue badge: if overdue count > 0, show pill `"N overdue"` — background `var(--color-warning)` at 15% opacity, text `var(--color-warning)`, font-size small, font-weight 600, padding `2px 6px`, border-radius `var(--radius-sm)`
+- Overdue badge: if overdue count > 0, show pill `"N overdue"` — background `var(--color-warning)` at 15% opacity, text `var(--color-warning)`, font-size small, font-weight 600, padding `var(--space-1) var(--space-2)` (4px 8px), border-radius `var(--radius-sm)`
 - Empty state: "No tasks for today" in body/muted
 
 **Spending card internals:**

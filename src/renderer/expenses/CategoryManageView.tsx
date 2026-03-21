@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Trash2 } from 'lucide-react'
 import type { Category } from '../../shared/domain-types'
+import { InlineCategoryForm } from './InlineCategoryForm'
 
 const PRESET_COLORS = [
   '#f97316', '#3b82f6', '#ef4444', '#a855f7',
@@ -12,6 +13,7 @@ interface CategoryManageViewProps {
   categories: Category[]
   onUpdate: (id: string, data: { name?: string; color?: string }) => void
   onDelete: (id: string) => Promise<boolean>
+  onCreate?: (data: { name: string; color: string }) => void
 }
 
 interface EditingState {
@@ -20,9 +22,10 @@ interface EditingState {
   value: string
 }
 
-export function CategoryManageView({ categories, onUpdate, onDelete }: CategoryManageViewProps) {
+export function CategoryManageView({ categories, onUpdate, onDelete, onCreate }: CategoryManageViewProps) {
   const [editing, setEditing] = useState<EditingState | null>(null)
   const [nameInput, setNameInput] = useState('')
+  const [showAddForm, setShowAddForm] = useState(false)
 
   function startEditName(cat: Category) {
     setEditing({ id: cat.id, field: 'name', value: cat.name })
@@ -207,6 +210,33 @@ export function CategoryManageView({ categories, onUpdate, onDelete }: CategoryM
           </div>
         ))}
       </div>
+
+      {/* Add category form or button */}
+      {showAddForm ? (
+        <InlineCategoryForm
+          onSave={(data) => {
+            onCreate?.(data)
+            setShowAddForm(false)
+          }}
+          onCancel={() => setShowAddForm(false)}
+        />
+      ) : onCreate ? (
+        <button
+          onClick={() => setShowAddForm(true)}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 'var(--font-size-body)',
+            color: 'var(--color-accent)',
+            padding: 0,
+            marginTop: 'var(--space-2)',
+            textAlign: 'left',
+          }}
+        >
+          + New Category
+        </button>
+      ) : null}
     </div>
   )
 }

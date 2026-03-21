@@ -179,7 +179,7 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
                 border: 'none',
                 cursor: 'pointer',
                 fontSize: 'var(--font-size-small)',
-                color: showCategoryManage ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                color: showCategoryManage ? 'var(--color-accent)' : 'var(--color-text-secondary)',
                 padding: 0,
               }}
               onMouseEnter={(e) => {
@@ -190,7 +190,7 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
               onMouseLeave={(e) => {
                 ;(e.currentTarget as HTMLElement).style.color = showCategoryManage
                   ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)'
+                  : 'var(--color-text-secondary)'
               }}
             >
               {showCategoryManage ? 'Hide categories' : 'Manage categories'}
@@ -201,6 +201,7 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
                 categories={categories}
                 onUpdate={(id, data) => updateCategory(id, data)}
                 onDelete={deleteCategory}
+                onCreate={createCategory}
               />
             )}
           </div>

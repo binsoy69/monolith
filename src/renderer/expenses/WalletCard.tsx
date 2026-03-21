@@ -57,21 +57,24 @@ export function WalletCard({ wallet, onEdit, onAdjust }: WalletCardProps) {
           style={{
             background: 'none',
             border: 'none',
-            padding: 0,
+            padding: '4px',
             cursor: 'pointer',
-            color: 'var(--color-text-muted)',
+            color: 'var(--color-text-secondary)',
             display: 'flex',
             alignItems: 'center',
+            borderRadius: 'var(--radius-sm)',
             transition: 'color var(--duration-fast) ease-out',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = 'var(--color-text-secondary)'
+            e.currentTarget.style.color = 'var(--color-text-primary)'
+            e.currentTarget.style.backgroundColor = 'var(--color-bg-subtle)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'var(--color-text-muted)'
+            e.currentTarget.style.color = 'var(--color-text-secondary)'
+            e.currentTarget.style.backgroundColor = 'transparent'
           }}
         >
-          <Pencil size={14} strokeWidth={1.5} />
+          <Pencil size={16} strokeWidth={1.5} />
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onAdjust() }}
@@ -79,21 +82,24 @@ export function WalletCard({ wallet, onEdit, onAdjust }: WalletCardProps) {
           style={{
             background: 'none',
             border: 'none',
-            padding: 0,
+            padding: '4px',
             cursor: 'pointer',
-            color: 'var(--color-text-muted)',
+            color: 'var(--color-text-secondary)',
             display: 'flex',
             alignItems: 'center',
+            borderRadius: 'var(--radius-sm)',
             transition: 'color var(--duration-fast) ease-out',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = 'var(--color-text-secondary)'
+            e.currentTarget.style.color = 'var(--color-text-primary)'
+            e.currentTarget.style.backgroundColor = 'var(--color-bg-subtle)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'var(--color-text-muted)'
+            e.currentTarget.style.color = 'var(--color-text-secondary)'
+            e.currentTarget.style.backgroundColor = 'transparent'
           }}
         >
-          <ArrowUpDown size={14} strokeWidth={1.5} />
+          <ArrowUpDown size={16} strokeWidth={1.5} />
         </button>
       </div>
     </div>

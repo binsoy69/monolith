@@ -10,7 +10,7 @@
   /* Text hierarchy */
   --color-text-primary: #e8e8f0;
   --color-text-secondary: #9494a8;
-  --color-text-muted: #5a5a72;
+  --color-text-muted: #7a7a92;
   --color-text-disabled: #3a3a52;
 
   /* Accent — electric indigo blue */
@@ -26,7 +26,7 @@
   --color-destructive: #ef4444;
 
   /* Typography — 4 sizes only, 2 weights only (400, 600) */
-  --font-size-small: 11px;
+  --font-size-small: 12px;
   --font-size-body: 13px;
   --font-size-heading: 15px;
   --font-size-display: 18px;

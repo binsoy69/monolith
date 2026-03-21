@@ -134,7 +134,7 @@ export function HabitForm({
             color: 'white',
             border: 'none',
             borderRadius: 'var(--radius-sm)',
-            fontSize: 'var(--font-size-small)',
+            fontSize: 'var(--font-size-body)',
             fontFamily: 'inherit',
             cursor: 'pointer',
             padding: 'var(--space-1) var(--space-2)',

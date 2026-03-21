@@ -13,7 +13,7 @@ export function HabitProgressBar({ completed, total }: HabitProgressBarProps) {
         paddingBottom: 'var(--space-2)',
         borderBottom: '1px solid var(--color-border)',
         fontSize: 'var(--font-size-small)',
-        color: 'var(--color-text-muted)',
+        color: 'var(--color-text-secondary)',
       }}
     >
       <span style={{ color: 'var(--color-accent)' }}>{completed}</span>

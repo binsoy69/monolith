@@ -2,6 +2,22 @@ import { useState } from 'react'
 import { HabitCheckbox } from './HabitCheckbox'
 import type { HabitWithToday } from './habits-store'
 
+/** Convert a 7-char bitmask to a human-readable day list (e.g., "Mon, Wed, Fri") */
+function formatDaysOfWeek(mask: string): string {
+  // Bitmask: index 0=Sun, 1=Mon, ..., 6=Sat
+  // Display order: Mon-Sun
+  const labels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const displayOrder = [1, 2, 3, 4, 5, 6, 0] // Mon first visually
+
+  const days = displayOrder
+    .filter((i) => mask[i] === '1')
+    .map((i) => labels[i])
+
+  if (days.length === 7) return 'Every day'
+  if (days.length === 0) return 'No days'
+  return days.join(', ')
+}
+
 interface HabitCardProps {
   habit: HabitWithToday
   onToggle: () => void
@@ -71,20 +87,40 @@ export function HabitCard({ habit, onToggle, onContextMenu, isScheduledToday }: 
         <div style={{ width: '20px', height: '20px', flexShrink: 0 }} />
       )}
 
-      {/* Habit name */}
-      <span
+      {/* Habit name + schedule days */}
+      <div
         style={{
           flex: 1,
-          fontSize: 'var(--font-size-body)',
-          fontWeight: 400,
-          color: 'var(--color-text-primary)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '2px',
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
         }}
       >
-        {habit.name}
-      </span>
+        <span
+          style={{
+            fontSize: 'var(--font-size-body)',
+            fontWeight: 400,
+            color: 'var(--color-text-primary)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {habit.name}
+        </span>
+        <span
+          style={{
+            fontSize: 'var(--font-size-small)',
+            color: 'var(--color-text-secondary)',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {formatDaysOfWeek(habit.daysOfWeek)}
+        </span>
+      </div>
 
       {/* Streak display — hidden when both are 0 */}
       {hasStreaks && (

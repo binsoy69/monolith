@@ -139,7 +139,7 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
         style={{
           background: 'none',
           border: 'none',
-          fontSize: 'var(--font-size-small)',
+          fontSize: 'var(--font-size-body)',
           color: 'var(--color-text-secondary)',
           cursor: 'pointer',
           padding: 'var(--space-1) var(--space-2)',
@@ -153,7 +153,7 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
         style={{
           background: 'none',
           border: 'none',
-          fontSize: 'var(--font-size-small)',
+          fontSize: 'var(--font-size-body)',
           color: 'var(--color-accent)',
           cursor: 'pointer',
           padding: 'var(--space-1) var(--space-2)',

@@ -105,8 +105,8 @@ export function ArchivedHabitsView() {
           </span>
           <span
             style={{
-              fontSize: 'var(--font-size-small)',
-              color: 'var(--color-text-muted)',
+              fontSize: 'var(--font-size-body)',
+              color: 'var(--color-text-secondary)',
             }}
           >
             {formatDaysOfWeek(habit.daysOfWeek)}

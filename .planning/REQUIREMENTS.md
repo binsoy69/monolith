@@ -46,8 +46,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Shell & UI
 
-- [ ] **SHELL-01**: Dashboard shows today's habits, tasks, and spending at a glance
-- [ ] **SHELL-02**: Sidebar navigation between dashboard and modules
+- [x] **SHELL-01**: Dashboard shows today's habits, tasks, and spending at a glance
+- [x] **SHELL-02**: Sidebar navigation between dashboard and modules
 - [x] **SHELL-03**: Dark, dense, information-rich UI (Raycast/Warp aesthetic)
 - [x] **SHELL-04**: Sub-100ms transitions, no loading spinners
 - [x] **SHELL-05**: Design feels handcrafted — not generic, not AI-generated
@@ -142,8 +142,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXP-07 | Phase 2 | Complete |
 | EXP-08 | Phase 2 | Complete |
 | EXP-09 | Phase 2 | Complete |
-| SHELL-01 | Phase 3 | Pending |
-| SHELL-02 | Phase 3 | Pending |
+| SHELL-01 | Phase 3 | Complete |
+| SHELL-02 | Phase 3 | Complete |
 | KBD-01 | Phase 3 | Pending |
 | KBD-02 | Phase 3 | Pending |
 | KBD-03 | Phase 3 | Pending |

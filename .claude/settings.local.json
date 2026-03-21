@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"D:/projects/Portfolio Projects/monolith\" && node \"C:/Users/binsl/.claude/get-shit-done/bin/gsd-tools.cjs\" frontmatter validate \".planning/phases/02-module-core/02-08-PLAN.md\" --schema plan)",
+      "Bash(cd \"D:/projects/Portfolio Projects/monolith\" && node \"C:/Users/binsl/.claude/get-shit-done/bin/gsd-tools.cjs\" verify plan-structure \".planning/phases/02-module-core/02-08-PLAN.md\")"
+    ]
+  }
+}

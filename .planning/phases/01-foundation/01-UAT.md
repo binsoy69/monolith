@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 01-foundation
 source: 01-01-SUMMARY.md, 01-02-SUMMARY.md, 01-03-SUMMARY.md, 01-04-SUMMARY.md
 started: 2026-03-21T07:00:00Z
@@ -70,7 +70,13 @@ blocked: 0
   reason: "User reported: the design for the drop-downs are too generic make it more beautiful and has design"
   severity: cosmetic
   test: 7
-  root_cause: ""
-  artifacts: []
-  missing: []
+  root_cause: "SettingsView select/input use minimal inline styles with browser default controls — no hover states, no transitions, native dropdown arrow and time picker widget unstyled for dark theme"
+  artifacts:
+    - path: "src/renderer/settings/SettingsView.tsx"
+      issue: "Form controls use browser defaults with only basic color/border overrides, no hover/active/transition states"
+  missing:
+    - "Custom styled select with dark-themed dropdown arrow (appearance: none + custom SVG)"
+    - "Hover state with background transition on form controls"
+    - "Smooth transitions using --duration-fast/--duration-normal tokens"
+    - "Consistent elevation/visual hierarchy for interactive controls"
   debug_session: ""

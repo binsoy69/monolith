@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import type { ContextMenuItem } from './ContextMenu'
 
-interface ContextMenuState {
+type ContextMenuState = {
   position: { x: number; y: number }
   items: ContextMenuItem[]
 } | null

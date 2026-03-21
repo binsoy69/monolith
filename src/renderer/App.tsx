@@ -10,6 +10,7 @@ import { ToastContainer } from './shared/ToastContainer';
 import { HabitsView } from './habits/HabitsView';
 import { PlannerView } from './planner/PlannerView';
 import { ExpensesView } from './expenses/ExpensesView';
+import { DashboardView } from './dashboard/DashboardView';
 import { usePlannerStore } from './planner/planner-store';
 
 export type ModuleId = 'dashboard' | 'habits' | 'planner' | 'expenses' | 'settings';
@@ -82,26 +83,11 @@ export default function App() {
               </main>
             </ErrorBoundary>
           ) : (
-            <>
-              <ModuleHeader moduleId={activeModule} />
-              <main style={{ flex: 1, overflow: 'auto' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100%',
-                  }}
-                >
-                  <span style={{
-                    color: 'var(--color-text-muted)',
-                    fontSize: 'var(--font-size-body)',
-                  }}>
-                    Dashboard
-                  </span>
-                </div>
+            <ErrorBoundary moduleName="Dashboard">
+              <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <DashboardView onNavigate={setActiveModule} />
               </main>
-            </>
+            </ErrorBoundary>
           )}
         </div>
       </div>

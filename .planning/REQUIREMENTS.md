@@ -54,9 +54,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Keyboard & UX
 
-- [ ] **KBD-01**: Full keyboard navigation across all modules
-- [ ] **KBD-02**: Quick-add shortcuts for tasks, expenses, and habit check-offs
-- [ ] **KBD-03**: Press `?` to view keyboard shortcut reference
+- [x] **KBD-01**: Full keyboard navigation across all modules
+- [x] **KBD-02**: Quick-add shortcuts for tasks, expenses, and habit check-offs
+- [x] **KBD-03**: Press `?` to view keyboard shortcut reference
 - [ ] **KBD-04**: Global search across habits, tasks, expenses, and notes
 
 ### Tags & Cross-Module
@@ -144,9 +144,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EXP-09 | Phase 2 | Complete |
 | SHELL-01 | Phase 3 | Complete |
 | SHELL-02 | Phase 3 | Complete |
-| KBD-01 | Phase 3 | Pending |
-| KBD-02 | Phase 3 | Pending |
-| KBD-03 | Phase 3 | Pending |
+| KBD-01 | Phase 3 | Complete |
+| KBD-02 | Phase 3 | Complete |
+| KBD-03 | Phase 3 | Complete |
 | HAB-04 | Phase 4 | Pending |
 | HAB-06 | Phase 4 | Pending |
 | HAB-07 | Phase 4 | Pending |

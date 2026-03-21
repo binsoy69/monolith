@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 03-dashboard-navigation 03-01-PLAN.md
-last_updated: "2026-03-21T14:26:06.347Z"
+stopped_at: Completed 03-dashboard-navigation 03-02-PLAN.md
+last_updated: "2026-03-21T14:32:27.084Z"
 progress:
   total_phases: 5
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 15
-  completed_plans: 14
+  completed_plans: 15
 ---
 
 # Project State
@@ -56,6 +56,7 @@ Plan: 2 of 2
 | Phase 02-module-core P08 | 2 | 2 tasks | 3 files |
 | Phase 02-module-core P09 | 15 | 2 tasks | 7 files |
 | Phase 03-dashboard-navigation P01 | 6 | 2 tasks | 11 files |
+| Phase 03-dashboard-navigation P02 | 4 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -110,6 +111,8 @@ Recent decisions affecting current work:
 - [Phase 03-dashboard-navigation]: getDashboardData extracted as pure function for direct unit testing — avoids IPC test complexity
 - [Phase 03-dashboard-navigation]: daysOfWeek bitmask filtering done in JS (not SQL) — consistent with existing habits pattern
 - [Phase 03-dashboard-navigation]: SpendingCard formatPeso() divides centavos by 100 — consistent with existing expense amount storage pattern
+- [Phase 03-dashboard-navigation]: CommandPalette uses onKeyDown on container div with stopPropagation — prevents KeyboardRouter from also handling Escape
+- [Phase 03-dashboard-navigation]: Ctrl+K placed outside isEditing guard in KeyboardRouter — command palette must work from inside text inputs
 
 ### Pending Todos
 
@@ -123,6 +126,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T14:26:06.343Z
-Stopped at: Completed 03-dashboard-navigation 03-01-PLAN.md
+Last session: 2026-03-21T14:32:27.078Z
+Stopped at: Completed 03-dashboard-navigation 03-02-PLAN.md
 Resume file: None

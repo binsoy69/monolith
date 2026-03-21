@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Electron shell, SQLite + migrations, design token system, keyboard router, app settings (completed 2026-03-19)
 - [ ] **Phase 2: Module Core** - Minimum viable data entry loops for all three modules (habits, planner, expenses) (completed 2026-03-20, UAT gap closure in progress)
-- [ ] **Phase 3: Dashboard + Navigation** - Unified dashboard with real data, full keyboard navigation, sidebar complete
+- [x] **Phase 3: Dashboard + Navigation** - Unified dashboard with real data, full keyboard navigation, sidebar complete (completed 2026-03-21)
 - [ ] **Phase 4: Depth + Differentiators** - Charts, heatmaps, task carry-forward, habit scheduling, spending trends
 - [ ] **Phase 5: Cross-Module + Distribution** - Tags, global search, desktop notifications, packaging, code signing
 
@@ -71,11 +71,11 @@ Plans:
   3. User can trigger quick-add for a task, expense, or habit check-off from anywhere in the app using a keyboard shortcut without navigating away from the current view
   4. Pressing `?` from anywhere in the app displays a keyboard shortcut reference overlay
   5. Sidebar navigation is fully functional and keyboard-accessible — active module is visually indicated
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 - [x] 03-01-PLAN.md — Dashboard IPC handler + DashboardView UI with three summary cards (habits, tasks, spending)
-- [ ] 03-02-PLAN.md — Command palette (Ctrl+K), PlannerView newItemTrigger wiring, shortcut overlay update
+- [x] 03-02-PLAN.md — Command palette (Ctrl+K), PlannerView newItemTrigger wiring, shortcut overlay update
 
 ### Phase 4: Depth + Differentiators
 **Goal**: The app gains the features that make it genuinely preferred over three separate apps — visual history, behavioral patterns, automatic intelligence (carry-forward), and analytical depth.
@@ -119,6 +119,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-19 |
 | 2. Module Core | 9/9 | Complete   | 2026-03-21 |
-| 3. Dashboard + Navigation | 1/2 | In Progress|  |
+| 3. Dashboard + Navigation | 2/2 | Complete   | 2026-03-21 |
 | 4. Depth + Differentiators | 0/3 | Not started | - |
 | 5. Cross-Module + Distribution | 0/4 | Not started | - |

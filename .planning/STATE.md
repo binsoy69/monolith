@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 02-module-core-02-08-PLAN.md
-last_updated: "2026-03-21T09:12:32.881Z"
+stopped_at: Completed 02-module-core-02-09-PLAN.md
+last_updated: "2026-03-21T09:12:43.263Z"
 progress:
   total_phases: 5
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 13
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 # Project State
@@ -52,6 +52,7 @@ Plan: 3 of 9
 | Phase 02-module-core P02 | 5 | 2 tasks | 8 files |
 | Phase 02-module-core P04 | 15 | 2 tasks | 10 files |
 | Phase 02-module-core P06 | 342 | 2 tasks | 10 files |
+| Phase 02-module-core P07 | 12 | 2 tasks | 10 files |
 | Phase 02-module-core P08 | 2 | 2 tasks | 3 files |
 | Phase 02-module-core P09 | 15 | 2 tasks | 7 files |
 
@@ -97,8 +98,14 @@ Recent decisions affecting current work:
 - [Phase 02-module-core]: ExpenseContextMenu implemented inline in ExpensesView — no separate file needed, avoids empty stub
 - [Phase 02-module-core]: Date formatting in ExpenseRow uses pure JS array lookup — avoids date-fns ESM bug in vitest
 - [Phase 02-module-core]: CategoryManageView embedded in ExpensesView via toggle — no new route or modal layer needed
+- [Phase 02-module-core, Plan 07]: --font-size-small raised to 12px globally — minimum legible size for small text across all modules
+- [Phase 02-module-core, Plan 07]: --color-text-muted raised to #7a7a92 — more contrast on dark bg without breaking hierarchy vs secondary
+- [Phase 02-module-core, Plan 07]: HabitCard shows formatDaysOfWeek subtitle inline — reuses same function logic as ArchivedHabitsView
+- [Phase 02-module-core, Plan 07]: CategoryManageView gets optional onCreate prop — backwards compatible, button only renders when prop present
 - [Phase 02-module-core]: expandedTaskId state lives in PlannerView — single source of truth enforces one-at-a-time expand
 - [Phase 02-module-core]: Task notes expansion: title-area click div separate from checkbox div — no event conflict, no stopPropagation needed
+- [Phase 02-module-core]: CalendarPopup dual-mode positioning: position:fixed at click coords when prop provided, position:absolute below trigger when absent
+- [Phase 02-module-core]: getDatesWithTasks uses parameterized LIKE query for month filtering — avoids SQL injection
 
 ### Pending Todos
 
@@ -112,6 +119,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-21T09:12:22.003Z
-Stopped at: Completed 02-module-core-02-08-PLAN.md
+Last session: 2026-03-21T09:12:43.259Z
+Stopped at: Completed 02-module-core-02-09-PLAN.md
 Resume file: None

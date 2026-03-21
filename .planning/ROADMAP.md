@@ -71,12 +71,11 @@ Plans:
   3. User can trigger quick-add for a task, expense, or habit check-off from anywhere in the app using a keyboard shortcut without navigating away from the current view
   4. Pressing `?` from anywhere in the app displays a keyboard shortcut reference overlay
   5. Sidebar navigation is fully functional and keyboard-accessible — active module is visually indicated
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 03-01: Dashboard IPC handler aggregating today's data from all three module repositories in SQL
-- [ ] 03-02: Dashboard UI — habits summary, tasks summary, spending summary with real data
-- [ ] 03-03: Full keyboard navigation — global router handles module switching, quick-add shortcuts, shortcut reference modal
+- [ ] 03-01-PLAN.md — Dashboard IPC handler + DashboardView UI with three summary cards (habits, tasks, spending)
+- [ ] 03-02-PLAN.md — Command palette (Ctrl+K), PlannerView newItemTrigger wiring, shortcut overlay update
 
 ### Phase 4: Depth + Differentiators
 **Goal**: The app gains the features that make it genuinely preferred over three separate apps — visual history, behavioral patterns, automatic intelligence (carry-forward), and analytical depth.
@@ -120,6 +119,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-19 |
 | 2. Module Core | 9/9 | Complete   | 2026-03-21 |
-| 3. Dashboard + Navigation | 0/3 | Not started | - |
+| 3. Dashboard + Navigation | 0/2 | Not started | - |
 | 4. Depth + Differentiators | 0/3 | Not started | - |
 | 5. Cross-Module + Distribution | 0/4 | Not started | - |

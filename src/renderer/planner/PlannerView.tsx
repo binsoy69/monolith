@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ModuleHeader } from '../shell/ModuleHeader'
 import { usePlannerStore } from './planner-store'
 import { DateNav } from './DateNav'
@@ -9,7 +9,13 @@ import { ContextMenu } from '../shared/ContextMenu'
 import { useContextMenu } from '../shared/useContextMenu'
 import { CalendarPopup } from '../shared/CalendarPopup'
 
-export function PlannerView() {
+interface PlannerViewProps {
+  newItemTrigger?: number
+}
+
+export function PlannerView({ newItemTrigger = 0 }: PlannerViewProps) {
+  const quickAddRef = useRef<HTMLInputElement>(null)
+
   const {
     tasks,
     isLoaded,
@@ -46,6 +52,13 @@ export function PlannerView() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewDate, activeTab])
+
+  // Focus quick-add input when newItemTrigger changes (from command palette or N shortcut)
+  useEffect(() => {
+    if (newItemTrigger > 0) {
+      quickAddRef.current?.focus()
+    }
+  }, [newItemTrigger])
 
   const tasksDone = tasks.filter((t) => t.completed).length
   const tasksTotal = tasks.length
@@ -153,7 +166,7 @@ export function PlannerView() {
       >
         {activeTab === 'tasks' ? (
           <>
-            <QuickAddInput date={viewDate} onAdd={createTask} />
+            <QuickAddInput date={viewDate} onAdd={createTask} inputRef={quickAddRef} />
             {isLoaded && (
               <TaskList
                 tasks={tasks}

@@ -11,10 +11,19 @@ const SHORTCUTS = {
     { keys: ['Alt', '2'], label: 'Habits' },
     { keys: ['Alt', '3'], label: 'Planner' },
     { keys: ['Alt', '4'], label: 'Expenses' },
-  ],
-  Global: [
-    { keys: ['?'], label: 'This overlay' },
     { keys: ['Esc'], label: 'Close / Go to Dashboard' },
+  ],
+  'Module Actions': [
+    { keys: ['N'], label: 'New item in active module' },
+    { keys: ['←'], label: 'Previous day (Planner)' },
+    { keys: ['→'], label: 'Next day (Planner)' },
+    { keys: ['T'], label: 'Jump to today (Planner)' },
+  ],
+  'Quick-Add': [
+    { keys: ['Ctrl', 'K'], label: 'Command palette' },
+    { keys: ['?'], label: 'This overlay' },
+    { keys: ['↑', '↓'], label: 'Navigate palette items' },
+    { keys: ['Enter'], label: 'Confirm selected action' },
   ],
 };
 

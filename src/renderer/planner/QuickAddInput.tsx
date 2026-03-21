@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react'
+import type { RefObject } from 'react'
 import { Calendar } from 'lucide-react'
 
 interface QuickAddInputProps {
   date: string
   onAdd: (title: string, date: string) => void
+  inputRef?: RefObject<HTMLInputElement | null>
 }
 
-export function QuickAddInput({ date, onAdd }: QuickAddInputProps) {
+export function QuickAddInput({ date, onAdd, inputRef }: QuickAddInputProps) {
   const [value, setValue] = useState('')
   const [isFocused, setIsFocused] = useState(false)
   const [selectedDate, setSelectedDate] = useState(date)
@@ -46,6 +48,7 @@ export function QuickAddInput({ date, onAdd }: QuickAddInputProps) {
         }}
       >
         <input
+          ref={inputRef}
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}

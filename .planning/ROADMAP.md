@@ -48,7 +48,7 @@ Plans:
   3. User can log an expense with amount, date, category, optional notes, and a wallet selection; the wallet balance auto-deducts immediately; user can create custom categories, create and manually adjust wallets, and view an expense list filtered by date or category
   4. All write operations (habit check-off, task creation, expense logging) feel instantaneous — the UI updates before the IPC round-trip completes (optimistic updates)
   5. Each module is isolated — an error in the expense module does not crash the habit module or planner
-**Plans:** 9 plans (6 complete, 3 gap closure)
+**Plans:** 8/9 plans executed
 
 Plans:
 - [x] 02-01-PLAN.md — Shared infrastructure (IPC types, toast, context menu, error boundary) + habit backend + today view UI
@@ -58,8 +58,8 @@ Plans:
 - [x] 02-05-PLAN.md — Expense backend + wallet management UI with balance adjustment
 - [x] 02-06-PLAN.md — Expense log modal, category management, expense list with filtering
 - [ ] 02-07-PLAN.md — [GAP] Design token fixes, text visibility, wallet form position, icon sizing, category creation
-- [ ] 02-08-PLAN.md — [GAP] Task click-to-expand notes in planner
-- [ ] 02-09-PLAN.md — [GAP] CalendarPopup component for planner date nav, move-to-date, expense filters
+- [x] 02-08-PLAN.md — [GAP] Task click-to-expand notes in planner
+- [x] 02-09-PLAN.md — [GAP] CalendarPopup component for planner date nav, move-to-date, expense filters
 
 ### Phase 3: Dashboard + Navigation
 **Goal**: The unified dashboard aggregates real data from all three modules into a single at-a-glance today view, and full keyboard navigation is operational across the entire app.
@@ -119,7 +119,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 4/4 | Complete   | 2026-03-19 |
-| 2. Module Core | 6/9 | Gap closure | - |
+| 2. Module Core | 8/9 | In Progress|  |
 | 3. Dashboard + Navigation | 0/3 | Not started | - |
 | 4. Depth + Differentiators | 0/3 | Not started | - |
 | 5. Cross-Module + Distribution | 0/4 | Not started | - |

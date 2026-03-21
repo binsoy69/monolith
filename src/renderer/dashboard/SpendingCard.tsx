@@ -70,7 +70,7 @@ export function SpendingCard({ data, onClick }: SpendingCardProps) {
             color: 'var(--color-text-muted)',
           }}
         >
-          \u20B10 spent today
+          {formatPeso(0)} spent today
         </p>
       ) : (
         <>

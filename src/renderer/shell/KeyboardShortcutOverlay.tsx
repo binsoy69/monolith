@@ -69,6 +69,8 @@ export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOve
           border: '1px solid var(--color-border)',
           borderRadius: 'var(--radius-lg)',
           padding: 'var(--space-6)',
+          maxHeight: '80vh',
+          overflowY: 'auto' as const,
         }}
       >
         {/* Title */}

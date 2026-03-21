@@ -22,6 +22,8 @@ interface TaskListProps {
   onConfirmDelete: (id: string) => void
   onCancelDelete: () => void
   viewDate: string
+  expandedTaskId: string | null
+  onClickTask: (taskId: string) => void
 }
 
 export function TaskList({
@@ -36,6 +38,8 @@ export function TaskList({
   onConfirmDelete,
   onCancelDelete,
   viewDate,
+  expandedTaskId,
+  onClickTask,
 }: TaskListProps) {
   const incompleteTasks = tasks
     .filter((t) => !t.completed)
@@ -97,6 +101,8 @@ export function TaskList({
               onConfirmDelete={onConfirmDelete}
               onCancelDelete={onCancelDelete}
               isDraggable={true}
+              isExpanded={expandedTaskId === task.id}
+              onClickRow={() => onClickTask(task.id)}
             />
           ))}
         </SortableContext>
@@ -115,6 +121,8 @@ export function TaskList({
           onConfirmDelete={onConfirmDelete}
           onCancelDelete={onCancelDelete}
           isDraggable={false}
+          isExpanded={expandedTaskId === task.id}
+          onClickRow={() => onClickTask(task.id)}
         />
       ))}
     </div>

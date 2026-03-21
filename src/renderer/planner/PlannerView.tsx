@@ -29,6 +29,7 @@ export function PlannerView() {
 
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null)
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null)
+  const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null)
   const [movePickerTaskId, setMovePickerTaskId] = useState<string | null>(null)
   const [movePickerPos, setMovePickerPos] = useState({ x: 0, y: 0 })
   const moveDateInputRef = useRef<HTMLInputElement>(null)
@@ -67,12 +68,17 @@ export function PlannerView() {
     transition: `color var(--duration-fast) ease-out, border-color var(--duration-fast) ease-out`,
   } as React.CSSProperties)
 
+  function handleClickTask(taskId: string) {
+    setExpandedTaskId((prev) => (prev === taskId ? null : taskId))
+  }
+
   function handleTaskContextMenu(e: React.MouseEvent, taskId: string) {
     showContextMenu(e, [
       {
         label: 'Edit',
         onClick: () => {
           setDeletingTaskId(null)
+          setExpandedTaskId(null)
           setEditingTaskId(taskId)
         },
       },
@@ -162,6 +168,8 @@ export function PlannerView() {
                 onConfirmDelete={handleConfirmDelete}
                 onCancelDelete={() => setDeletingTaskId(null)}
                 viewDate={viewDate}
+                expandedTaskId={expandedTaskId}
+                onClickTask={handleClickTask}
               />
             )}
           </>

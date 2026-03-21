@@ -16,9 +16,13 @@ Opening one app in the morning gives you a complete picture of your day — habi
 - [x] Dark, dense UI — information-rich, dev-tool aesthetic (Raycast/Warp style) — Validated in Phase 01: Foundation
 - [x] Instant performance — no loading spinners, snappy transitions, fast data entry — Validated in Phase 01: Foundation
 
-### Active
+### Validated in Phase 03: Dashboard & Navigation
 
-- [ ] Dashboard showing today's habits, tasks, and spending at a glance
+- [x] Dashboard showing today's habits, tasks, and spending at a glance — Validated in Phase 03
+- [x] Ctrl+K command palette for cross-module quick-add — Validated in Phase 03
+- [x] Comprehensive keyboard shortcut overlay — Validated in Phase 03
+
+### Active
 - [ ] Monthly expense summaries with category breakdowns and charts
 - [ ] Tags/labels across all modules (habits, tasks, expenses)
 - [ ] Desktop notifications for unchecked habits
@@ -70,4 +74,4 @@ Opening one app in the morning gives you a complete picture of your day — habi
 | Keyboard-first design | Speed priority, reduces friction for daily use | Validated — Phase 01 |
 
 ---
-*Last updated: 2026-03-21 — Phase 02 (Module Core) complete: Full CRUD for Habits, Planner, Expenses with IPC-to-SQLite data flow, calendar popup, task notes expansion, cosmetic polish*
+*Last updated: 2026-03-21 — Phase 03 (Dashboard & Navigation) complete: Dashboard landing with real data aggregation, Ctrl+K command palette, keyboard shortcut overlay with 3 grouped sections*

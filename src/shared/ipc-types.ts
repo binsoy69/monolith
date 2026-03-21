@@ -60,10 +60,32 @@ export interface ExpensesAPI {
   deleteWallet: (id: string) => Promise<boolean>
 }
 
+export interface DashboardData {
+  habits: {
+    total: number
+    completed: number
+    streakHighlights: Array<{ name: string; currentStreak: number }>
+  }
+  tasks: {
+    todayIncomplete: Array<{ id: string; title: string }>
+    totalIncomplete: number
+    overdueCount: number
+  }
+  spending: {
+    todayTotal: number
+    topCategories: Array<{ name: string; color: string; amount: number }>
+  }
+}
+
+export interface DashboardAPI {
+  getToday: (date: string) => Promise<DashboardData>
+}
+
 export interface API {
   settings: SettingsAPI
   window: WindowAPI
   habits: HabitsAPI
   planner: PlannerAPI
   expenses: ExpensesAPI
+  dashboard: DashboardAPI
 }

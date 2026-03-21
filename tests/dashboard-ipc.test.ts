@@ -69,9 +69,9 @@ describe('getDashboardData', () => {
 
     // Insert 2 habits scheduled on Saturdays (index 6)
     db.prepare('INSERT INTO habits (id, name, days_of_week, archived, created_at, position) VALUES (?, ?, ?, 0, ?, 0)')
-      .run('h1', 'Morning Run', '0000001', '2026-01-01', 0)
+      .run('h1', 'Morning Run', '0000001', '2026-01-01')
     db.prepare('INSERT INTO habits (id, name, days_of_week, archived, created_at, position) VALUES (?, ?, ?, 0, ?, 0)')
-      .run('h2', 'Read Book', '0000001', '2026-01-01', 1)
+      .run('h2', 'Read Book', '0000001', '2026-01-01')
 
     // Complete h1 today
     db.prepare('INSERT INTO habit_completions (habit_id, date, value) VALUES (?, ?, 1)')
@@ -184,16 +184,16 @@ describe('getDashboardData', () => {
 
     // Only on Saturdays (index 6)
     db.prepare('INSERT INTO habits (id, name, days_of_week, archived, created_at, position) VALUES (?, ?, ?, 0, ?, 0)')
-      .run('h1', 'Sat Habit', '0000001', '2026-01-01', 0)
+      .run('h1', 'Sat Habit', '0000001', '2026-01-01')
     // Only on Sundays (index 0)
     db.prepare('INSERT INTO habits (id, name, days_of_week, archived, created_at, position) VALUES (?, ?, ?, 0, ?, 0)')
-      .run('h2', 'Sun Habit', '1000000', '2026-01-01', 1)
+      .run('h2', 'Sun Habit', '1000000', '2026-01-01')
     // Every day
     db.prepare('INSERT INTO habits (id, name, days_of_week, archived, created_at, position) VALUES (?, ?, ?, 0, ?, 0)')
-      .run('h3', 'Daily Habit', '1111111', '2026-01-01', 2)
+      .run('h3', 'Daily Habit', '1111111', '2026-01-01')
     // Archived - should never count
     db.prepare('INSERT INTO habits (id, name, days_of_week, archived, created_at, position) VALUES (?, ?, ?, 1, ?, 0)')
-      .run('h4', 'Archived', '1111111', '2026-01-01', 3)
+      .run('h4', 'Archived', '1111111', '2026-01-01')
 
     const result = getDashboardData(db, saturday)
 

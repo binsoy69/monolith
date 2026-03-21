@@ -44,6 +44,9 @@ const api: API = {
     updateWallet: (data) => ipcRenderer.invoke('expenses:updateWallet', data),
     adjustWalletBalance: (data) => ipcRenderer.invoke('expenses:adjustWalletBalance', data),
     deleteWallet: (id) => ipcRenderer.invoke('expenses:deleteWallet', id),
+  },
+  dashboard: {
+    getToday: (date) => ipcRenderer.invoke('dashboard:getToday', date),
   }
 }
 

@@ -19,15 +19,18 @@ Opening one app in the morning gives you a complete picture of your day — habi
 ### Active
 
 - [ ] Dashboard showing today's habits, tasks, and spending at a glance
-- [ ] Habit tracker with daily checkboxes, streak counts, and completion charts
-- [ ] Daily planner with task lists and checkoff
-- [ ] Expense tracker with amount, category, date logging
 - [ ] Monthly expense summaries with category breakdowns and charts
-- [ ] Wallets with balances (auto-deduct on expense, manual adjustments)
-- [ ] Daily notes — freeform text area per day
 - [ ] Tags/labels across all modules (habits, tasks, expenses)
 - [ ] Desktop notifications for unchecked habits
 - [ ] Polished visual design — not generic, not AI-looking
+
+### Validated in Phase 02: Module Core
+
+- [x] Habit tracker with daily checkboxes, streak counts, and completion charts
+- [x] Daily planner with task lists and checkoff
+- [x] Expense tracker with amount, category, date logging
+- [x] Wallets with balances (auto-deduct on expense, manual adjustments)
+- [x] Daily notes — freeform text area per day
 
 ### Out of Scope
 
@@ -67,4 +70,4 @@ Opening one app in the morning gives you a complete picture of your day — habi
 | Keyboard-first design | Speed priority, reduces friction for daily use | Validated — Phase 01 |
 
 ---
-*Last updated: 2026-03-20 — Phase 01 (Foundation) complete: Electron shell, SQLite DB, design tokens, settings persistence, keyboard-first UX*
+*Last updated: 2026-03-21 — Phase 02 (Module Core) complete: Full CRUD for Habits, Planner, Expenses with IPC-to-SQLite data flow, calendar popup, task notes expansion, cosmetic polish*

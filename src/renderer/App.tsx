@@ -5,6 +5,8 @@ import { ModuleHeader } from './shell/ModuleHeader';
 import { SettingsView } from './settings/SettingsView';
 import { KeyboardRouter } from './shell/KeyboardRouter';
 import { KeyboardShortcutOverlay } from './shell/KeyboardShortcutOverlay';
+import { CommandPalette } from './shell/CommandPalette';
+import type { PaletteAction } from './shell/CommandPalette';
 import { ErrorBoundary } from './shared/ErrorBoundary';
 import { ToastContainer } from './shared/ToastContainer';
 import { HabitsView } from './habits/HabitsView';
@@ -18,6 +20,7 @@ export type ModuleId = 'dashboard' | 'habits' | 'planner' | 'expenses' | 'settin
 export default function App() {
   const [activeModule, setActiveModule] = useState<ModuleId>('dashboard');
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   // Increment to signal HabitsView (and future modules) to open new item form
   const [newItemTrigger, setNewItemTrigger] = useState(0);
 
@@ -25,6 +28,7 @@ export default function App() {
   const plannerGoToToday = usePlannerStore((s) => s.goToToday);
 
   const handleEscape = useCallback(() => {
+    if (showCommandPalette) { setShowCommandPalette(false); return; }
     if (showShortcuts) {
       setShowShortcuts(false);
       return;
@@ -32,14 +36,32 @@ export default function App() {
     if (activeModule !== 'dashboard') {
       setActiveModule('dashboard');
     }
-  }, [showShortcuts, activeModule]);
+  }, [showCommandPalette, showShortcuts, activeModule]);
 
   const handleNewItem = useCallback(() => {
     // Trigger add action for the currently active module:
     // - habits: opens inline create form
-    // - planner: will focus quick-add input (wired in plan 02-04)
-    // - expenses: will open expense modal (wired in plan 02-05)
+    // - planner: focuses quick-add input
+    // - expenses: opens expense modal
     setNewItemTrigger((n) => n + 1);
+  }, []);
+
+  const handlePaletteAction = useCallback((action: PaletteAction) => {
+    setShowCommandPalette(false);
+    switch (action) {
+      case 'add-task':
+        setActiveModule('planner');
+        setNewItemTrigger((n) => n + 1);
+        break;
+      case 'log-expense':
+        setActiveModule('expenses');
+        setNewItemTrigger((n) => n + 1);
+        break;
+      case 'check-habit':
+        setActiveModule('habits');
+        setNewItemTrigger((n) => n + 1);
+        break;
+    }
   }, []);
 
   return (
@@ -52,6 +74,7 @@ export default function App() {
         onNewItem={handleNewItem}
         onNavigateDay={plannerNavigateDay}
         onGoToToday={plannerGoToToday}
+        onCommandPalette={() => setShowCommandPalette(true)}
       />
       <WindowChrome />
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
@@ -73,7 +96,7 @@ export default function App() {
           ) : activeModule === 'planner' ? (
             <ErrorBoundary moduleName="Planner">
               <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <PlannerView />
+                <PlannerView newItemTrigger={newItemTrigger} />
               </main>
             </ErrorBoundary>
           ) : activeModule === 'expenses' ? (
@@ -94,6 +117,11 @@ export default function App() {
       <KeyboardShortcutOverlay
         isOpen={showShortcuts}
         onClose={() => setShowShortcuts(false)}
+      />
+      <CommandPalette
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        onAction={handlePaletteAction}
       />
       <ToastContainer />
     </div>

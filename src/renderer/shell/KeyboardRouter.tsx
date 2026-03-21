@@ -9,6 +9,7 @@ interface KeyboardRouterProps {
   onNewItem: () => void;
   onNavigateDay?: (direction: -1 | 1) => void;
   onGoToToday?: () => void;
+  onCommandPalette: () => void;
 }
 
 export function KeyboardRouter({
@@ -19,6 +20,7 @@ export function KeyboardRouter({
   onNewItem,
   onNavigateDay,
   onGoToToday,
+  onCommandPalette,
 }: KeyboardRouterProps) {
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Input guard — check if user is typing in an editable field
@@ -36,6 +38,13 @@ export function KeyboardRouter({
         case '3': e.preventDefault(); onNavigate('planner'); return;
         case '4': e.preventDefault(); onNavigate('expenses'); return;
       }
+    }
+
+    // Ctrl+K — command palette (always active, even in inputs)
+    if (e.ctrlKey && !e.altKey && !e.metaKey && e.key === 'k') {
+      e.preventDefault();
+      onCommandPalette();
+      return;
     }
 
     // Escape — always works, even in inputs
@@ -80,7 +89,7 @@ export function KeyboardRouter({
         return;
       }
     }
-  }, [onNavigate, onShowShortcuts, onEscape, onNewItem, activeModule, onNavigateDay, onGoToToday]);
+  }, [onNavigate, onShowShortcuts, onEscape, onNewItem, activeModule, onNavigateDay, onGoToToday, onCommandPalette]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);

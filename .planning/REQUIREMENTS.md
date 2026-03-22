@@ -12,11 +12,11 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **HAB-01**: User can create, edit, and archive habits
 - [x] **HAB-02**: User can check off habits daily with a single click/keystroke
 - [x] **HAB-03**: User can see current streak and best streak per habit
-- [ ] **HAB-04**: User can view completion history (last 7/30 days)
+- [x] **HAB-04**: User can view completion history (last 7/30 days)
 - [x] **HAB-05**: User can schedule habits for specific days of the week
-- [ ] **HAB-06**: User can reorder habits manually
-- [ ] **HAB-07**: User can view a GitHub-style completion heatmap per habit
-- [ ] **HAB-08**: User can track count-based habits with numerical targets (e.g. "8 glasses of water")
+- [x] **HAB-06**: User can reorder habits manually
+- [x] **HAB-07**: User can view a GitHub-style completion heatmap per habit
+- [x] **HAB-08**: User can track count-based habits with numerical targets (e.g. "8 glasses of water")
 - [ ] **HAB-09**: User receives desktop notifications for unchecked habits
 
 ### Planner
@@ -147,10 +147,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | KBD-01 | Phase 3 | Complete |
 | KBD-02 | Phase 3 | Complete |
 | KBD-03 | Phase 3 | Complete |
-| HAB-04 | Phase 4 | Pending |
-| HAB-06 | Phase 4 | Pending |
-| HAB-07 | Phase 4 | Pending |
-| HAB-08 | Phase 4 | Pending |
+| HAB-04 | Phase 4 | Complete |
+| HAB-06 | Phase 4 | Complete |
+| HAB-07 | Phase 4 | Complete |
+| HAB-08 | Phase 4 | Complete |
 | PLAN-06 | Phase 4 | Pending |
 | PLAN-07 | Phase 4 | Pending |
 | PLAN-08 | Phase 4 | Pending |

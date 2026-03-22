@@ -73,5 +73,11 @@ export const migrations: Migration[] = [
       ALTER TABLE habits ADD COLUMN kind TEXT NOT NULL DEFAULT 'boolean';
       ALTER TABLE habits ADD COLUMN target_count INTEGER;
     `
+  },
+  {
+    version: 3,
+    sql: `
+      ALTER TABLE tasks ADD COLUMN carried_from_date TEXT;
+    `
   }
 ]

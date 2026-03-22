@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { Task } from '../../shared/domain-types'
+import type { Task, TaskPriority } from '../../shared/domain-types'
 import { addToast } from '../shared/toast-store'
 
 function getTodayStr(): string {
@@ -29,7 +29,7 @@ interface PlannerStore {
   loadTasks: (date: string) => Promise<void>
   createTask: (title: string, date: string) => Promise<void>
   toggleComplete: (id: string) => Promise<void>
-  updateTask: (id: string, data: { title?: string; notes?: string; date?: string; completed?: boolean }) => Promise<void>
+  updateTask: (id: string, data: { title?: string; notes?: string; date?: string; completed?: boolean; priority?: TaskPriority }) => Promise<void>
   deleteTask: (id: string) => Promise<void>
   reorderTasks: (ids: string[]) => Promise<void>
   saveNotes: (date: string, content: string) => Promise<void>
@@ -64,6 +64,8 @@ export const usePlannerStore = create<PlannerStore>((set, get) => ({
       completed: false,
       position: get().tasks.filter((t) => !t.completed).length,
       createdAt: now,
+      priority: 0,
+      carriedFromDate: null,
     }
 
     set((state) => ({ tasks: [...state.tasks, optimisticTask] }))
@@ -106,7 +108,7 @@ export const usePlannerStore = create<PlannerStore>((set, get) => ({
     }
   },
 
-  updateTask: async (id: string, data: { title?: string; notes?: string; date?: string; completed?: boolean }) => {
+  updateTask: async (id: string, data: { title?: string; notes?: string; date?: string; completed?: boolean; priority?: TaskPriority }) => {
     const { tasks } = get()
     const task = tasks.find((t) => t.id === id)
     if (!task) return

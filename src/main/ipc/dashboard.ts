@@ -2,7 +2,8 @@ import { ipcMain } from 'electron'
 import Database from 'better-sqlite3'
 import { getDb } from '../db/connection'
 import { HabitRepository } from '../repositories/HabitRepository'
-import { calculateStreaks } from '../utils/streaks'
+import { PlannerRepository } from '../repositories/PlannerRepository'
+import { calculateStreaks, getTodayStr } from '../utils/streaks'
 import type { DashboardData } from '../../shared/ipc-types'
 
 /**
@@ -44,16 +45,13 @@ export function getDashboardData(db: Database.Database, date: string): Dashboard
     .slice(0, 2)
 
   // --- Tasks ---
-  // Today's incomplete tasks (up to first 5 for the list)
-  const todayTasks = (
-    db
-      .prepare(
-        'SELECT id, title FROM tasks WHERE date = ? AND completed = 0 ORDER BY position ASC, created_at ASC'
-      )
-      .all(date) as Array<{ id: string; title: string }>
-  )
+  const plannerRepo = new PlannerRepository(db)
+  if (date === getTodayStr()) {
+    plannerRepo.carryForwardToDate(date)
+  }
 
-  const todayIncomplete = todayTasks.slice(0, 5).map((t) => ({ id: t.id, title: t.title }))
+  const todayTasks = plannerRepo.listForDate(date).filter((task) => !task.completed)
+  const todayIncomplete = todayTasks.slice(0, 5).map((task) => ({ id: task.id, title: task.title }))
   const totalIncomplete = todayTasks.length
 
   const taskColumns = db.prepare('PRAGMA table_info(tasks)').all() as Array<{ name: string }>
@@ -62,7 +60,7 @@ export function getDashboardData(db: Database.Database, date: string): Dashboard
     ? 'COALESCE(carried_from_date, date) < ?'
     : 'date < ?'
   const overdueResult = db
-    .prepare(`SELECT COUNT(*) as n FROM tasks WHERE ${overdueWhere} AND completed = 0`)
+    .prepare(`SELECT COUNT(*) as n FROM tasks WHERE completed = 0 AND ${overdueWhere}`)
     .get(date) as { n: number }
   const overdueCount = overdueResult.n
 

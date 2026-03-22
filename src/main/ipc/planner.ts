@@ -1,11 +1,18 @@
 import { ipcMain } from 'electron'
 import { getDb } from '../db/connection'
 import { PlannerRepository } from '../repositories/PlannerRepository'
+import { getTodayStr } from '../utils/streaks'
+import type { TaskPriority } from '../../shared/domain-types'
 
 export function registerPlannerHandlers(): void {
   const repo = new PlannerRepository(getDb())
 
-  ipcMain.handle('planner:listForDate', (_, date: string) => repo.listForDate(date))
+  ipcMain.handle('planner:listForDate', (_, date: string) => {
+    if (date === getTodayStr()) {
+      repo.carryForwardToDate(date)
+    }
+    return repo.listForDate(date)
+  })
 
   ipcMain.handle('planner:create', (_, data: { title: string; notes?: string; date: string }) =>
     repo.create(data)
@@ -13,7 +20,7 @@ export function registerPlannerHandlers(): void {
 
   ipcMain.handle(
     'planner:update',
-    (_, data: { id: string; title?: string; notes?: string; date?: string; completed?: boolean }) => {
+    (_, data: { id: string; title?: string; notes?: string; date?: string; completed?: boolean; priority?: TaskPriority }) => {
       const { id, ...rest } = data
       repo.update(id, rest)
     }

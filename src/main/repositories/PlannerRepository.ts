@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3'
 import { randomUUID } from 'crypto'
-import type { Task } from '../../shared/domain-types'
+import type { Task, TaskPriority } from '../../shared/domain-types'
 
 interface TaskRow {
   id: string
@@ -9,7 +9,16 @@ interface TaskRow {
   date: string
   completed: number
   position: number
+  priority: number
+  carriedFromDate: string | null
   created_at: string
+}
+
+function mapPriority(priority: number): TaskPriority {
+  if (priority === 1 || priority === 2 || priority === 3) {
+    return priority
+  }
+  return 0
 }
 
 function mapTask(row: TaskRow): Task {
@@ -21,16 +30,30 @@ function mapTask(row: TaskRow): Task {
     completed: row.completed === 1,
     position: row.position,
     createdAt: row.created_at,
+    priority: mapPriority(row.priority),
+    carriedFromDate: row.carriedFromDate,
   }
 }
 
 export class PlannerRepository {
-  constructor(private readonly db: Database.Database) {}
+  private readonly hasCarriedFromDate: boolean
+
+  constructor(private readonly db: Database.Database) {
+    const taskColumns = this.db.prepare('PRAGMA table_info(tasks)').all() as Array<{ name: string }>
+    this.hasCarriedFromDate = taskColumns.some((column) => column.name === 'carried_from_date')
+  }
+
+  private getSelectColumns(): string {
+    if (this.hasCarriedFromDate) {
+      return 'id, title, notes, date, completed, position, priority, carried_from_date as carriedFromDate, created_at'
+    }
+    return 'id, title, notes, date, completed, position, priority, NULL as carriedFromDate, created_at'
+  }
 
   listForDate(date: string): Task[] {
     const rows = this.db
       .prepare(
-        'SELECT id, title, notes, date, completed, position, created_at FROM tasks WHERE date = ? ORDER BY completed ASC, position ASC, created_at ASC'
+        `SELECT ${this.getSelectColumns()} FROM tasks WHERE date = ? ORDER BY completed ASC, position ASC, created_at ASC`
       )
       .all(date) as TaskRow[]
     return rows.map(mapTask)
@@ -45,21 +68,29 @@ export class PlannerRepository {
         .get(data.date) as { next: number }
     ).next
 
-    this.db
-      .prepare(
-        'INSERT INTO tasks (id, title, notes, date, completed, position, priority, created_at) VALUES (?, ?, ?, ?, 0, ?, 0, ?)'
-      )
-      .run(id, data.title, data.notes ?? null, data.date, nextPosition, now)
+    if (this.hasCarriedFromDate) {
+      this.db
+        .prepare(
+          'INSERT INTO tasks (id, title, notes, date, completed, carried_from_date, position, priority, created_at) VALUES (?, ?, ?, ?, 0, NULL, ?, 0, ?)'
+        )
+        .run(id, data.title, data.notes ?? null, data.date, nextPosition, now)
+    } else {
+      this.db
+        .prepare(
+          'INSERT INTO tasks (id, title, notes, date, completed, position, priority, created_at) VALUES (?, ?, ?, ?, 0, ?, 0, ?)'
+        )
+        .run(id, data.title, data.notes ?? null, data.date, nextPosition, now)
+    }
 
     const row = this.db
-      .prepare('SELECT id, title, notes, date, completed, position, created_at FROM tasks WHERE id = ?')
+      .prepare(`SELECT ${this.getSelectColumns()} FROM tasks WHERE id = ?`)
       .get(id) as TaskRow
     return mapTask(row)
   }
 
-  update(id: string, data: { title?: string; notes?: string; date?: string; completed?: boolean }): void {
+  update(id: string, data: { title?: string; notes?: string; date?: string; completed?: boolean; priority?: TaskPriority }): void {
     const fields: string[] = []
-    const values: (string | number)[] = []
+    const values: Array<string | number | null> = []
 
     if (data.title !== undefined) {
       fields.push('title = ?')
@@ -72,10 +103,17 @@ export class PlannerRepository {
     if (data.date !== undefined) {
       fields.push('date = ?')
       values.push(data.date)
+      if (this.hasCarriedFromDate) {
+        fields.push('carried_from_date = NULL')
+      }
     }
     if (data.completed !== undefined) {
       fields.push('completed = ?')
       values.push(data.completed ? 1 : 0)
+    }
+    if (data.priority !== undefined) {
+      fields.push('priority = ?')
+      values.push(data.priority)
     }
 
     if (fields.length === 0) return
@@ -96,6 +134,42 @@ export class PlannerRepository {
       ids.forEach((id, index) => stmt.run(index, id, date))
     })
     tx(ids)
+  }
+
+  carryForwardToDate(targetDate: string): { movedCount: number } {
+    if (!this.hasCarriedFromDate) {
+      return { movedCount: 0 }
+    }
+
+    const overdueTasks = this.db
+      .prepare(
+        `SELECT id, COALESCE(carried_from_date, date) AS originalDate
+         FROM tasks
+         WHERE completed = 0 AND date < ?
+         ORDER BY COALESCE(carried_from_date, date) ASC, position ASC, created_at ASC`
+      )
+      .all(targetDate) as Array<{ id: string; originalDate: string }>
+
+    if (overdueTasks.length === 0) {
+      return { movedCount: 0 }
+    }
+
+    const shiftTodayTasks = this.db.prepare(
+      'UPDATE tasks SET position = position + ? WHERE date = ? AND completed = 0'
+    )
+    const moveTask = this.db.prepare(
+      'UPDATE tasks SET date = ?, position = ?, carried_from_date = ? WHERE id = ?'
+    )
+
+    const tx = this.db.transaction((tasks: Array<{ id: string; originalDate: string }>) => {
+      shiftTodayTasks.run(tasks.length, targetDate)
+      tasks.forEach((task, index) => {
+        moveTask.run(targetDate, index, task.originalDate, task.id)
+      })
+    })
+
+    tx(overdueTasks)
+    return { movedCount: overdueTasks.length }
   }
 
   getNotes(date: string): string {

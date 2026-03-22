@@ -1,4 +1,5 @@
 export type HabitKind = 'boolean' | 'count'
+export type TaskPriority = 0 | 1 | 2 | 3
 
 export interface Habit {
   id: string
@@ -24,6 +25,8 @@ export interface Task {
   completed: boolean
   position: number
   createdAt: string
+  priority: TaskPriority
+  carriedFromDate: string | null
 }
 
 export interface Category {

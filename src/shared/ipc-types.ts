@@ -3,6 +3,7 @@ import type {
   HabitHistoryPoint as DomainHabitHistoryPoint,
   HabitKind,
   Task,
+  TaskPriority,
   Category,
   Wallet,
   Expense,
@@ -51,7 +52,7 @@ export interface HabitsAPI {
 export interface PlannerAPI {
   listForDate: (date: string) => Promise<Task[]>
   create: (data: { title: string; notes?: string; date: string }) => Promise<Task>
-  update: (data: { id: string; title?: string; notes?: string; date?: string; completed?: boolean }) => Promise<void>
+  update: (data: { id: string; title?: string; notes?: string; date?: string; completed?: boolean; priority?: TaskPriority }) => Promise<void>
   delete: (id: string) => Promise<void>
   reorder: (data: { ids: string[]; date: string }) => Promise<void>
   getNotes: (date: string) => Promise<string>

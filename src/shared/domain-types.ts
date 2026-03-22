@@ -1,9 +1,19 @@
+export type HabitKind = 'boolean' | 'count'
+
 export interface Habit {
   id: string
   name: string
   daysOfWeek: string // '1111111' = every day, '1000010' = Mon+Sat
   archived: boolean
   createdAt: string
+  kind: HabitKind
+  targetCount: number | null
+}
+
+export interface HabitHistoryPoint {
+  date: string
+  value: number
+  completed: boolean
 }
 
 export interface Task {

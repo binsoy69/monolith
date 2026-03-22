@@ -1,4 +1,12 @@
-import type { Habit, Task, Category, Wallet, Expense } from './domain-types'
+import type {
+  Habit,
+  HabitHistoryPoint as DomainHabitHistoryPoint,
+  HabitKind,
+  Task,
+  Category,
+  Wallet,
+  Expense,
+} from './domain-types'
 
 export interface AppSettings {
   dateFormat: 'DD/MM/YYYY' | 'MM/DD/YYYY'
@@ -21,16 +29,23 @@ export interface HabitWithToday extends Habit {
   completedToday: boolean
   currentStreak: number
   bestStreak: number
+  todayValue: number
 }
+
+export interface HabitHistoryPoint extends DomainHabitHistoryPoint {}
 
 export interface HabitsAPI {
   getToday: (date: string) => Promise<HabitWithToday[]>
   listArchived: () => Promise<Habit[]>
-  create: (data: { name: string; daysOfWeek: string }) => Promise<Habit>
-  update: (data: { id: string; name?: string; daysOfWeek?: string }) => Promise<void>
+  create: (data: { name: string; daysOfWeek: string; kind?: HabitKind; targetCount?: number | null }) => Promise<Habit>
+  update: (data: { id: string; name?: string; daysOfWeek?: string; kind?: HabitKind; targetCount?: number | null }) => Promise<void>
   archive: (id: string) => Promise<void>
   complete: (data: { habitId: string; date: string }) => Promise<{ currentStreak: number; bestStreak: number }>
   uncomplete: (data: { habitId: string; date: string }) => Promise<{ currentStreak: number; bestStreak: number }>
+  getHistory: (data: { habitId: string; endDate: string; days: number }) => Promise<HabitHistoryPoint[]>
+  reorder: (data: { ids: string[] }) => Promise<void>
+  incrementCount: (data: { habitId: string; date: string }) => Promise<{ todayValue: number; completedToday: boolean; currentStreak: number; bestStreak: number }>
+  resetCount: (data: { habitId: string; date: string }) => Promise<{ todayValue: number; completedToday: boolean; currentStreak: number; bestStreak: number }>
 }
 
 export interface PlannerAPI {

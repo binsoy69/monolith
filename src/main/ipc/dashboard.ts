@@ -19,9 +19,17 @@ export function getDashboardData(db: Database.Database, date: string): Dashboard
   const dayIndex = new Date(date + 'T12:00:00').getDay() // 0=Sun, 1=Mon, ..., 6=Sat
   const scheduledHabits = activeHabits.filter((h) => h.daysOfWeek[dayIndex] === '1')
 
-  // Get completions for today
-  const completedIds = new Set(habitRepo.getCompletionsForDate(date))
-  const completed = scheduledHabits.filter((h) => completedIds.has(h.id)).length
+  // Get completions for today. Count habits only complete when they hit target.
+  const completionValuesByHabitId = new Map(
+    habitRepo.getCompletionValuesForDate(date).map((row) => [row.habitId, row.value])
+  )
+  const completed = scheduledHabits.filter((habit) => {
+    const todayValue = completionValuesByHabitId.get(habit.id) ?? 0
+    if (habit.kind === 'count') {
+      return todayValue >= (habit.targetCount ?? 1)
+    }
+    return todayValue > 0
+  }).length
 
   // Build streak highlights: top 2 by currentStreak (non-zero only)
   const habitsWithStreaks = scheduledHabits.map((habit) => {
@@ -48,9 +56,13 @@ export function getDashboardData(db: Database.Database, date: string): Dashboard
   const todayIncomplete = todayTasks.slice(0, 5).map((t) => ({ id: t.id, title: t.title }))
   const totalIncomplete = todayTasks.length
 
-  // Overdue: tasks with date < today and completed = 0
+  const taskColumns = db.prepare('PRAGMA table_info(tasks)').all() as Array<{ name: string }>
+  const hasCarriedFromDate = taskColumns.some((column) => column.name === 'carried_from_date')
+  const overdueWhere = hasCarriedFromDate
+    ? 'COALESCE(carried_from_date, date) < ?'
+    : 'date < ?'
   const overdueResult = db
-    .prepare('SELECT COUNT(*) as n FROM tasks WHERE date < ? AND completed = 0')
+    .prepare(`SELECT COUNT(*) as n FROM tasks WHERE ${overdueWhere} AND completed = 0`)
     .get(date) as { n: number }
   const overdueCount = overdueResult.n
 

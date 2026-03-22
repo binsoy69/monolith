@@ -19,6 +19,10 @@ const api: API = {
     archive: (id) => ipcRenderer.invoke('habits:archive', id),
     complete: (data) => ipcRenderer.invoke('habits:complete', data),
     uncomplete: (data) => ipcRenderer.invoke('habits:uncomplete', data),
+    getHistory: (data) => ipcRenderer.invoke('habits:getHistory', data),
+    reorder: (data) => ipcRenderer.invoke('habits:reorder', data),
+    incrementCount: (data) => ipcRenderer.invoke('habits:incrementCount', data),
+    resetCount: (data) => ipcRenderer.invoke('habits:resetCount', data),
   },
   planner: {
     listForDate: (date) => ipcRenderer.invoke('planner:listForDate', date),

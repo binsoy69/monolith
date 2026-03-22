@@ -66,5 +66,12 @@ export const migrations: Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date);
       CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category_id);
     `
+  },
+  {
+    version: 2,
+    sql: `
+      ALTER TABLE habits ADD COLUMN kind TEXT NOT NULL DEFAULT 'boolean';
+      ALTER TABLE habits ADD COLUMN target_count INTEGER;
+    `
   }
 ]

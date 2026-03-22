@@ -74,6 +74,29 @@ export interface ExpensesAPI {
   updateWallet: (data: { id: string; name?: string }) => Promise<void>
   adjustWalletBalance: (data: { id: string; mode: 'set' | 'delta'; amount: number }) => Promise<void>
   deleteWallet: (id: string) => Promise<boolean>
+  getAnalytics: (data: { month: string; trendMonths: 3 | 6 | 12 }) => Promise<ExpenseAnalytics>
+}
+
+export interface ExpenseCategoryBreakdownItem {
+  categoryId: string
+  name: string
+  color: string | null
+  amount: number
+  percentage: number
+}
+
+export interface ExpenseTrendPoint {
+  month: string
+  label: string
+  total: number
+}
+
+export interface ExpenseAnalytics {
+  month: string
+  monthLabel: string
+  monthTotal: number
+  categoryBreakdown: ExpenseCategoryBreakdownItem[]
+  trend: ExpenseTrendPoint[]
 }
 
 export interface DashboardData {

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { Wallet, Category, Expense } from '../../shared/domain-types'
+import type { ExpenseAnalytics } from '../../shared/ipc-types'
 import { addToast } from '../shared/toast-store'
 
 interface ExpensesStore {
@@ -9,11 +10,15 @@ interface ExpensesStore {
   walletsLoaded: boolean
   categoriesLoaded: boolean
   expensesLoaded: boolean
+  analytics: ExpenseAnalytics | null
+  analyticsLoaded: boolean
+  trendMonths: 3 | 6 | 12
   filters: { startDate?: string; endDate?: string; categoryId?: string }
 
   loadWallets: () => Promise<void>
   loadCategories: () => Promise<void>
   loadExpenses: () => Promise<void>
+  loadAnalytics: (month: string, trendMonths: 3 | 6 | 12) => Promise<void>
 
   createWallet: (data: { name: string; balance: number }) => Promise<void>
   updateWallet: (id: string, data: { name?: string }) => Promise<void>
@@ -30,6 +35,7 @@ interface ExpensesStore {
 
   setFilters: (filters: Partial<ExpensesStore['filters']>) => void
   clearFilters: () => void
+  setTrendMonths: (trendMonths: 3 | 6 | 12) => void
 }
 
 export const useExpensesStore = create<ExpensesStore>((set, get) => ({
@@ -39,6 +45,9 @@ export const useExpensesStore = create<ExpensesStore>((set, get) => ({
   walletsLoaded: false,
   categoriesLoaded: false,
   expensesLoaded: false,
+  analytics: null,
+  analyticsLoaded: false,
+  trendMonths: 6,
   filters: {},
 
   loadWallets: async () => {
@@ -68,6 +77,15 @@ export const useExpensesStore = create<ExpensesStore>((set, get) => ({
       set({ expenses, expensesLoaded: true })
     } catch {
       addToast({ type: 'error', message: 'Failed to load expenses.' })
+    }
+  },
+
+  loadAnalytics: async (month, trendMonths) => {
+    try {
+      const analytics = await window.api.expenses.getAnalytics({ month, trendMonths })
+      set({ analytics, analyticsLoaded: true })
+    } catch {
+      addToast({ type: 'error', message: 'Failed to load expense analytics.' })
     }
   },
 
@@ -245,6 +263,10 @@ export const useExpensesStore = create<ExpensesStore>((set, get) => ({
 
   clearFilters: () => {
     set({ filters: {} })
+  },
+
+  setTrendMonths: (trendMonths) => {
+    set({ trendMonths })
   },
 }))
 

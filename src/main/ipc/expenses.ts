@@ -19,6 +19,7 @@ export function registerExpensesHandlers(): void {
     expenseRepo.update(id, rest)
   })
   ipcMain.handle('expenses:deleteExpense', (_, id) => expenseRepo.delete(id))
+  ipcMain.handle('expenses:getAnalytics', (_, data) => expenseRepo.getAnalytics(data))
 
   // Category handlers
   ipcMain.handle('expenses:listCategories', () => expenseRepo.listCategories())

@@ -103,6 +103,30 @@ export function PlannerView({ newItemTrigger = 0 }: PlannerViewProps) {
         },
       },
       {
+        label: 'Set P1 priority',
+        onClick: () => {
+          void updateTask(taskId, { priority: 1 })
+        },
+      },
+      {
+        label: 'Set P2 priority',
+        onClick: () => {
+          void updateTask(taskId, { priority: 2 })
+        },
+      },
+      {
+        label: 'Set P3 priority',
+        onClick: () => {
+          void updateTask(taskId, { priority: 3 })
+        },
+      },
+      {
+        label: 'Clear priority',
+        onClick: () => {
+          void updateTask(taskId, { priority: 0 })
+        },
+      },
+      {
         label: 'Delete',
         onClick: () => {
           setEditingTaskId(null)

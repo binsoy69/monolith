@@ -4,6 +4,7 @@ import { WalletPanel } from './WalletPanel'
 import { BalanceAdjustModal } from './BalanceAdjustModal'
 import { ExpenseLogModal } from './ExpenseLogModal'
 import { ExpenseList } from './ExpenseList'
+import { ExpenseAnalyticsSection } from './ExpenseAnalyticsSection'
 import { CategoryManageView } from './CategoryManageView'
 import { useExpensesStore } from './expenses-store'
 import { useContextMenu } from '../shared/useContextMenu'
@@ -14,16 +15,24 @@ interface ExpensesViewProps {
   newItemTrigger?: number
 }
 
+function getCurrentMonthKey(): string {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
+
 export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
   const {
     wallets,
     categories,
     expenses,
+    analytics,
     filters,
+    trendMonths,
     walletsLoaded,
     loadWallets,
     loadCategories,
     loadExpenses,
+    loadAnalytics,
     createWallet,
     adjustWalletBalance,
     createExpense,
@@ -34,13 +43,22 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
     deleteCategory,
     setFilters,
     clearFilters,
+    setTrendMonths,
   } = useExpensesStore()
 
   const [adjustingWallet, setAdjustingWallet] = useState<Wallet | null>(null)
   const [showLogModal, setShowLogModal] = useState(false)
+  const [showAnalytics, setShowAnalytics] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
   const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null)
   const [showCategoryManage, setShowCategoryManage] = useState(false)
+  const [currentMonthKey] = useState(() => getCurrentMonthKey())
+  const [isChartAnimationActive] = useState(
+    () =>
+      typeof window === 'undefined' || typeof window.matchMedia !== 'function'
+        ? true
+        : !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu()
 
   useEffect(() => {
@@ -48,6 +66,10 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
     loadCategories()
     loadExpenses()
   }, [])
+
+  useEffect(() => {
+    loadAnalytics(currentMonthKey, trendMonths)
+  }, [currentMonthKey, trendMonths])
 
   // Reload expenses when filters change
   useEffect(() => {
@@ -84,6 +106,7 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
     // Reload wallets to reflect balance changes
     loadWallets()
     loadExpenses()
+    loadAnalytics(currentMonthKey, trendMonths)
   }
 
   function handleExpenseContextMenu(e: React.MouseEvent, expense: Expense) {
@@ -105,11 +128,12 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
     ])
   }
 
-  function handleConfirmDelete() {
+  async function handleConfirmDelete() {
     if (!deletingExpenseId) return
-    deleteExpense(deletingExpenseId)
+    await deleteExpense(deletingExpenseId)
     setDeletingExpenseId(null)
     loadWallets()
+    loadAnalytics(currentMonthKey, trendMonths)
   }
 
   const canLog = wallets.length > 0
@@ -152,6 +176,16 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
         />
         {/* Right panel — expense list + category management */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          <div style={{ padding: 'var(--space-4) var(--space-4) 0', flexShrink: 0 }}>
+            <ExpenseAnalyticsSection
+              analytics={analytics}
+              isOpen={showAnalytics}
+              trendMonths={trendMonths}
+              onToggle={() => setShowAnalytics((value) => !value)}
+              onSelectTrendMonths={setTrendMonths}
+              isAnimationActive={isChartAnimationActive}
+            />
+          </div>
           <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             <ExpenseList
               expenses={expenses}

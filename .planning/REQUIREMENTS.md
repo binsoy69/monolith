@@ -36,13 +36,13 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **EXP-01**: User can log an expense with amount, date, and category
 - [x] **EXP-02**: User can create custom expense categories
 - [x] **EXP-03**: User can view expense history with filtering by date/category
-- [ ] **EXP-04**: User can see monthly spending totals
-- [ ] **EXP-05**: User can see spending breakdown by category (chart)
+- [x] **EXP-04**: User can see monthly spending totals
+- [x] **EXP-05**: User can see spending breakdown by category (chart)
 - [x] **EXP-06**: User can create wallets with balances
 - [x] **EXP-07**: Logging an expense auto-deducts from the selected wallet
 - [x] **EXP-08**: User can manually adjust wallet balances
 - [x] **EXP-09**: User can add optional notes to expenses
-- [ ] **EXP-10**: User can view spending trends over 6-12 months (line chart)
+- [x] **EXP-10**: User can view spending trends over 6-12 months (line chart)
 
 ### Shell & UI
 
@@ -154,9 +154,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLAN-06 | Phase 4 | Complete |
 | PLAN-07 | Phase 4 | Complete |
 | PLAN-08 | Phase 4 | Complete |
-| EXP-04 | Phase 4 | Pending |
-| EXP-05 | Phase 4 | Pending |
-| EXP-10 | Phase 4 | Pending |
+| EXP-04 | Phase 4 | Complete |
+| EXP-05 | Phase 4 | Complete |
+| EXP-10 | Phase 4 | Complete |
 | TAG-01 | Phase 5 | Pending |
 | TAG-02 | Phase 5 | Pending |
 | KBD-04 | Phase 5 | Pending |
@@ -169,4 +169,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-03-19*
-*Last updated: 2026-03-19 after roadmap creation (traceability populated)*
+*Last updated: 2026-03-23 after phase 4 completion*

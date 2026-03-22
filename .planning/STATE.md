@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-22T22:36:27.931Z"
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-22T22:57:30.167Z"
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 18
-  completed_plans: 16
+  completed_plans: 17
 ---
 
 # Project State
@@ -24,7 +24,7 @@ See: .planning/PROJECT.md (updated 2026-03-19)
 ## Current Position
 
 Phase: 04 (depth-differentiators) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Plan: 2 of 3
 | Phase 03-dashboard-navigation P01 | 6 | 2 tasks | 11 files |
 | Phase 03-dashboard-navigation P02 | 4 | 2 tasks | 6 files |
 | Phase 04 P01 | 19 min | 2 tasks | 14 files |
+| Phase 04 P02 | 13 min | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,9 @@ Recent decisions affecting current work:
 - [Phase 04]: Habit row body owns expand/collapse while the leading control owns boolean toggle or count increment — Resolves the interaction conflict between inspection and progress updates
 - [Phase 04]: Only scheduled incomplete habits are sortable — Keeps manual ordering meaningful and matches the planner drag pattern
 - [Phase 04]: Dashboard overdue counting now uses COALESCE(carried_from_date, date) — Makes dashboard aggregation forward-compatible with planner carry-forward
+- [Phase 04]: Carry-forward executes inside planner and dashboard today-query paths — Keeps both surfaces consistent on app open
+- [Phase 04]: Original due dates live in carried_from_date and clear only on manual reschedule — Preserves overdue context without conflating deliberate date moves
+- [Phase 04]: Priority stays as flat Set P1/P2/P3/Clear context-menu actions — Matches the existing shared ContextMenu component
 
 ### Pending Todos
 
@@ -131,6 +135,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T22:36:27.926Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-03-22T22:57:30.163Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None

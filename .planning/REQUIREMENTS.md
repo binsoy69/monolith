@@ -26,9 +26,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PLAN-03**: User can assign tasks to specific dates
 - [x] **PLAN-04**: User can navigate between days (past and future)
 - [x] **PLAN-05**: User can reorder tasks within a day
-- [ ] **PLAN-06**: User can set priority levels (P1/P2/P3) on tasks
-- [ ] **PLAN-07**: Unfinished tasks automatically carry forward to today
-- [ ] **PLAN-08**: Overdue tasks display a visual indicator
+- [x] **PLAN-06**: User can set priority levels (P1/P2/P3) on tasks
+- [x] **PLAN-07**: Unfinished tasks automatically carry forward to today
+- [x] **PLAN-08**: Overdue tasks display a visual indicator
 - [x] **PLAN-09**: User can write freeform daily notes per day
 
 ### Expenses
@@ -151,9 +151,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | HAB-06 | Phase 4 | Complete |
 | HAB-07 | Phase 4 | Complete |
 | HAB-08 | Phase 4 | Complete |
-| PLAN-06 | Phase 4 | Pending |
-| PLAN-07 | Phase 4 | Pending |
-| PLAN-08 | Phase 4 | Pending |
+| PLAN-06 | Phase 4 | Complete |
+| PLAN-07 | Phase 4 | Complete |
+| PLAN-08 | Phase 4 | Complete |
 | EXP-04 | Phase 4 | Pending |
 | EXP-05 | Phase 4 | Pending |
 | EXP-10 | Phase 4 | Pending |

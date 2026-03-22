@@ -86,11 +86,11 @@ Plans:
   2. Unfinished tasks from previous days automatically appear at the top of today's task list; overdue tasks display a visible indicator; user can set P1/P2/P3 priority on any task
   3. User can view monthly spending totals, a spending-by-category breakdown chart, and a 6-12 month spending trend line chart
   4. All charts render with the same dark, dense aesthetic as the rest of the app — no default chart library styling visible
-**Plans**: 1/3 plans executed
+**Plans**: 2/3 plans executed
 
 Plans:
 - [x] 04-01: Habit depth — completion history view (7/30 days), GitHub-style heatmap (Recharts SVG), manual reorder, count-based habits
-- [ ] 04-02: Planner depth — task priority levels, carry-forward logic, overdue visual indicators
+- [x] 04-02: Planner depth — task priority levels, carry-forward logic, overdue visual indicators
 - [ ] 04-03: Expense depth — monthly totals, category breakdown chart, 6-12 month trend line chart
 
 ### Phase 5: Cross-Module + Distribution
@@ -120,5 +120,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Foundation | 4/4 | Complete   | 2026-03-19 |
 | 2. Module Core | 9/9 | Complete   | 2026-03-21 |
 | 3. Dashboard + Navigation | 2/2 | Complete   | 2026-03-21 |
-| 4. Depth + Differentiators | 1/3 | In Progress | - |
+| 4. Depth + Differentiators | 2/3 | In Progress | - |
 | 5. Cross-Module + Distribution | 0/4 | Not started | - |

@@ -12,6 +12,8 @@ function createTestDb(): Database.Database {
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       days_of_week TEXT NOT NULL DEFAULT '1111111',
+      kind TEXT NOT NULL DEFAULT 'boolean',
+      target_count INTEGER NOT NULL DEFAULT 1,
       archived INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL,
       position INTEGER NOT NULL DEFAULT 0
@@ -29,6 +31,7 @@ function createTestDb(): Database.Database {
       notes TEXT,
       date TEXT NOT NULL,
       completed INTEGER NOT NULL DEFAULT 0,
+      carried_from_date TEXT,
       position INTEGER NOT NULL DEFAULT 0,
       priority INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL
@@ -68,10 +71,10 @@ describe('getDashboardData', () => {
     const date = '2026-03-21' // Saturday = day index 6
 
     // Insert 2 habits scheduled on Saturdays (index 6)
-    db.prepare('INSERT INTO habits (id, name, days_of_week, archived, created_at, position) VALUES (?, ?, ?, 0, ?, 0)')
-      .run('h1', 'Morning Run', '0000001', '2026-01-01')
-    db.prepare('INSERT INTO habits (id, name, days_of_week, archived, created_at, position) VALUES (?, ?, ?, 0, ?, 0)')
-      .run('h2', 'Read Book', '0000001', '2026-01-01')
+    db.prepare('INSERT INTO habits (id, name, days_of_week, kind, target_count, archived, created_at, position) VALUES (?, ?, ?, ?, ?, 0, ?, 0)')
+      .run('h1', 'Morning Run', '0000001', 'boolean', 1, '2026-01-01')
+    db.prepare('INSERT INTO habits (id, name, days_of_week, kind, target_count, archived, created_at, position) VALUES (?, ?, ?, ?, ?, 0, ?, 0)')
+      .run('h2', 'Read Book', '0000001', 'boolean', 1, '2026-01-01')
 
     // Complete h1 today
     db.prepare('INSERT INTO habit_completions (habit_id, date, value) VALUES (?, ?, 1)')
@@ -200,5 +203,41 @@ describe('getDashboardData', () => {
     // Only h1 (Sat) and h3 (Daily) should be counted = 2 total
     expect(result.habits.total).toBe(2)
     expect(result.habits.completed).toBe(0)
+  })
+
+  it('Test 6: count habit at partial value does not increment dashboard completed count', () => {
+    const date = '2026-03-21'
+
+    // boolean habit (completed)
+    db.prepare('INSERT INTO habits (id, name, days_of_week, kind, target_count, archived, created_at, position) VALUES (?, ?, ?, ?, ?, 0, ?, 0)')
+      .run('h1', 'Boolean Habit', '1111111', 'boolean', 1, '2026-01-01')
+    db.prepare('INSERT INTO habit_completions (habit_id, date, value) VALUES (?, ?, ?)')
+      .run('h1', date, 1)
+
+    // count habit (partially completed, target = 8, value = 7)
+    db.prepare('INSERT INTO habits (id, name, days_of_week, kind, target_count, archived, created_at, position) VALUES (?, ?, ?, ?, ?, 0, ?, 0)')
+      .run('h2', 'Count Habit', '1111111', 'count', 8, '2026-01-01')
+    db.prepare('INSERT INTO habit_completions (habit_id, date, value) VALUES (?, ?, ?)')
+      .run('h2', date, 7)
+
+    const result = getDashboardData(db, date)
+
+    expect(result.habits.total).toBe(2)
+    // Only the boolean habit is completely done
+    expect(result.habits.completed).toBe(1)
+  })
+
+  it('Test 7: carried task still contributes to overdueCount after its date becomes today', () => {
+    const today = '2026-03-21'
+    const originalDate = '2026-03-19'
+
+    // Task that was originally from the 19th and carried over to today
+    db.prepare('INSERT INTO tasks (id, title, notes, date, completed, carried_from_date, position, priority, created_at) VALUES (?, ?, NULL, ?, 0, ?, 0, 0, ?)')
+      .run('t1', 'Carried Task', today, originalDate, '2026-03-19T08:00:00Z')
+
+    const result = getDashboardData(db, today)
+    
+    // Even though the task's current date IS today, because it was carried from the past, it should be counted as overdue
+    expect(result.tasks.overdueCount).toBe(1)
   })
 })

@@ -1,18 +1,26 @@
 import { useEffect, useState } from 'react'
+import {
+  DndContext,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import type { DragEndEvent } from '@dnd-kit/core'
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useHabitsStore } from './habits-store'
 import type { HabitWithToday } from './habits-store'
 import { HabitCard } from './HabitCard'
+import { HabitHeatmap } from './HabitHeatmap'
 import { HabitProgressBar } from './HabitProgressBar'
 import { HabitForm } from './HabitForm'
 import { ModuleHeader } from '../shell/ModuleHeader'
+import type { ContextMenuItem } from '../shared/ContextMenu'
 import { useContextMenu } from '../shared/useContextMenu'
 import { ContextMenu } from '../shared/ContextMenu'
 import { ArchiveConfirmation } from './ArchiveConfirmation'
 import { ArchivedHabitsView } from './ArchivedHabitsView'
 
-/**
- * Get today's date as YYYY-MM-DD string in local timezone.
- */
 function getTodayDateStr(): string {
   const now = new Date()
   const year = now.getFullYear()
@@ -21,8 +29,11 @@ function getTodayDateStr(): string {
   return `${year}-${month}-${day}`
 }
 
+function countCompletedDays(points: Array<{ completed: boolean }>, days: number): number {
+  return points.slice(-days).filter((point) => point.completed).length
+}
+
 interface HabitsViewProps {
-  /** Increments when "N" keyboard shortcut fires to open create form */
   newItemTrigger?: number
 }
 
@@ -34,31 +45,40 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
   const createHabit = useHabitsStore((state) => state.createHabit)
   const updateHabit = useHabitsStore((state) => state.updateHabit)
   const archiveHabit = useHabitsStore((state) => state.archiveHabit)
+  const historyByHabitId = useHabitsStore((state) => state.historyByHabitId)
+  const loadingHistoryIds = useHabitsStore((state) => state.loadingHistoryIds)
+  const loadHistory = useHabitsStore((state) => state.loadHistory)
+  const reorderHabits = useHabitsStore((state) => state.reorderHabits)
+  const incrementCount = useHabitsStore((state) => state.incrementCount)
+  const resetCount = useHabitsStore((state) => state.resetCount)
   const showArchived = useHabitsStore((state) => state.showArchived)
   const setShowArchived = useHabitsStore((state) => state.setShowArchived)
 
-  // Form state
   const [showForm, setShowForm] = useState(false)
   const [editingHabit, setEditingHabit] = useState<HabitWithToday | null>(null)
-  // Archive confirmation state
+  const [expandedHabitId, setExpandedHabitId] = useState<string | null>(null)
   const [archivingHabit, setArchivingHabit] = useState<HabitWithToday | null>(null)
 
-  // Context menu hook
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu()
 
   const todayStr = getTodayDateStr()
-  const todayDayIndex = new Date().getDay() // 0=Sun, 1=Mon, ...6=Sat
+  const todayDayIndex = new Date(`${todayStr}T12:00:00`).getDay()
+  const historyWindowDays = 90
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    })
+  )
 
   useEffect(() => {
-    load(todayStr)
+    void load(todayStr)
   }, [load, todayStr])
 
-  // Open create form when N key fires from App-level trigger
   useEffect(() => {
     if (newItemTrigger && newItemTrigger > 0) {
       openCreateForm()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newItemTrigger])
 
   const openCreateForm = () => {
@@ -76,7 +96,12 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
     setEditingHabit(null)
   }
 
-  const handleFormSubmit = async (data: { name: string; daysOfWeek: string }) => {
+  const handleFormSubmit = async (data: {
+    name: string
+    daysOfWeek: string
+    kind: HabitWithToday['kind']
+    targetCount: number | null
+  }) => {
     if (editingHabit) {
       await updateHabit(editingHabit.id, data)
     } else {
@@ -85,18 +110,28 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
     closeForm()
   }
 
-  const handleContextMenu = (e: React.MouseEvent, habit: HabitWithToday) => {
-    showContextMenu(e, [
+  const handleContextMenu = (event: React.MouseEvent, habit: HabitWithToday) => {
+    const items: ContextMenuItem[] = [
       {
         label: 'Edit',
         onClick: () => openEditForm(habit),
       },
-      {
-        label: 'Archive',
-        onClick: () => setArchivingHabit(habit),
-        destructive: true,
-      },
-    ])
+    ]
+
+    if (habit.kind === 'count' && habit.todayValue > 0) {
+      items.push({
+        label: "Reset today's count",
+        onClick: () => resetCount(habit.id, todayStr),
+      })
+    }
+
+    items.push({
+      label: 'Archive',
+      onClick: () => setArchivingHabit(habit),
+      destructive: true,
+    })
+
+    showContextMenu(event, items)
   }
 
   const handleArchiveConfirm = async () => {
@@ -110,28 +145,47 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
     setArchivingHabit(null)
   }
 
-  // Determine if each habit is scheduled today
-  const habitsWithScheduled = habits.map((habit) => ({
+  const handleToggleExpand = (habit: HabitWithToday) => {
+    const nextExpandedId = expandedHabitId === habit.id ? null : habit.id
+    setExpandedHabitId(nextExpandedId)
+
+    if (nextExpandedId === habit.id && !historyByHabitId[habit.id]) {
+      void loadHistory(habit.id, todayStr, historyWindowDays)
+    }
+  }
+
+  const habitsWithScheduled = habits.map((habit, index) => ({
     ...habit,
     isScheduledToday: habit.daysOfWeek[todayDayIndex] === '1',
+    orderIndex: index,
   }))
 
-  // Sort: unchecked+scheduled first, then unchecked+unscheduled (dimmed), then checked (dimmed, sunk to bottom)
-  const sorted = [...habitsWithScheduled].sort((a, b) => {
-    if (a.completedToday !== b.completedToday) {
-      return a.completedToday ? 1 : -1
-    }
-    if (!a.completedToday && a.isScheduledToday !== b.isScheduledToday) {
-      return a.isScheduledToday ? -1 : 1
-    }
-    return 0
-  })
+  const scheduledIncomplete = habitsWithScheduled
+    .filter((habit) => habit.isScheduledToday && !habit.completedToday)
+    .sort((a, b) => a.orderIndex - b.orderIndex)
+  const unscheduled = habitsWithScheduled
+    .filter((habit) => !habit.isScheduledToday)
+    .sort((a, b) => a.orderIndex - b.orderIndex)
+  const completedHabits = habitsWithScheduled
+    .filter((habit) => habit.isScheduledToday && habit.completedToday)
+    .sort((a, b) => a.orderIndex - b.orderIndex)
 
-  const scheduledHabits = habitsWithScheduled.filter((h) => h.isScheduledToday)
-  const completedCount = scheduledHabits.filter((h) => h.completedToday).length
+  const scheduledHabits = habitsWithScheduled.filter((habit) => habit.isScheduledToday)
+  const completedCount = scheduledHabits.filter((habit) => habit.completedToday).length
   const totalScheduled = scheduledHabits.length
 
-  // Header right slot: toggle archived + new habit button
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = scheduledIncomplete.findIndex((habit) => habit.id === active.id)
+    const newIndex = scheduledIncomplete.findIndex((habit) => habit.id === over.id)
+    if (oldIndex < 0 || newIndex < 0) return
+
+    const reordered = arrayMove(scheduledIncomplete, oldIndex, newIndex)
+    void reorderHabits(reordered.map((habit) => habit.id))
+  }
+
   const headerRight = (
     <>
       <button
@@ -185,7 +239,6 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
     )
   }
 
-  // Archived habits view
   if (showArchived) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -256,6 +309,124 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
     )
   }
 
+  const renderHabitCard = (
+    habit: (typeof habitsWithScheduled)[number],
+    isDraggable: boolean
+  ) => {
+    if (archivingHabit?.id === habit.id) {
+      return (
+        <ArchiveConfirmation
+          key={habit.id}
+          habitName={habit.name}
+          onConfirm={handleArchiveConfirm}
+          onCancel={handleArchiveCancel}
+        />
+      )
+    }
+
+    const historyPoints = historyByHabitId[habit.id] ?? []
+    const historyLoading = loadingHistoryIds.includes(habit.id)
+    const details = historyLoading ? (
+      <div
+        style={{
+          paddingTop: 'var(--space-4)',
+          fontSize: 'var(--font-size-small)',
+          color: 'var(--color-text-muted)',
+        }}
+      >
+        Loading history...
+      </div>
+    ) : (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-4)',
+          paddingTop: 'var(--space-4)',
+        }}
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+            gap: 'var(--space-2)',
+          }}
+        >
+          <div
+            style={{
+              padding: 'var(--space-2)',
+              backgroundColor: 'var(--color-bg-base)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-sm)',
+            }}
+          >
+            <div
+              style={{
+                fontSize: 'var(--font-size-small)',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
+              Last 7 days
+            </div>
+            <div
+              style={{
+                fontSize: 'var(--font-size-heading)',
+                color: 'var(--color-text-primary)',
+                fontWeight: 600,
+              }}
+            >
+              {countCompletedDays(historyPoints, 7)}
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: 'var(--space-2)',
+              backgroundColor: 'var(--color-bg-base)',
+              border: '1px solid var(--color-border)',
+              borderRadius: 'var(--radius-sm)',
+            }}
+          >
+            <div
+              style={{
+                fontSize: 'var(--font-size-small)',
+                color: 'var(--color-text-secondary)',
+              }}
+            >
+              Last 30 days
+            </div>
+            <div
+              style={{
+                fontSize: 'var(--font-size-heading)',
+                color: 'var(--color-text-primary)',
+                fontWeight: 600,
+              }}
+            >
+              {countCompletedDays(historyPoints, 30)}
+            </div>
+          </div>
+        </div>
+
+        <HabitHeatmap points={historyPoints} />
+      </div>
+    )
+
+    return (
+      <HabitCard
+        key={habit.id}
+        habit={habit}
+        onToggle={() => toggleComplete(habit.id, todayStr)}
+        onIncrementCount={() => incrementCount(habit.id, todayStr)}
+        onToggleExpand={() => handleToggleExpand(habit)}
+        onContextMenu={(event) => handleContextMenu(event, habit)}
+        isScheduledToday={habit.isScheduledToday}
+        isExpanded={expandedHabitId === habit.id}
+        isDraggable={isDraggable}
+        details={details}
+      />
+    )
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <ModuleHeader moduleId="habits" right={headerRight} />
@@ -272,55 +443,42 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
           gap: 'var(--space-2)',
         }}
       >
-        {/* Inline form at top — shown for create and edit */}
         {showForm && (
           <HabitForm
             mode={editingHabit ? 'edit' : 'create'}
             initialName={editingHabit?.name ?? ''}
             initialDaysOfWeek={editingHabit?.daysOfWeek ?? '1111111'}
+            initialKind={editingHabit?.kind ?? 'boolean'}
+            initialTargetCount={editingHabit?.targetCount ?? null}
             onSubmit={handleFormSubmit}
             onCancel={closeForm}
           />
         )}
 
-        {/* Habit list — dims when form is open */}
-        {/* When form is open, dim the card list to opacity 0.6 per UI-SPEC */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             gap: 'var(--space-2)',
-            opacity: showForm ? 0.6 : 1, // opacity: 0.6 when form is active
+            opacity: showForm ? 0.6 : 1,
             transition: `opacity var(--duration-normal) ease-out`,
             pointerEvents: showForm ? 'none' : 'auto',
           }}
         >
-          {sorted.map((habit) => {
-            // Show archive confirmation in place of the card
-            if (archivingHabit?.id === habit.id) {
-              return (
-                <ArchiveConfirmation
-                  key={habit.id}
-                  habitName={habit.name}
-                  onConfirm={handleArchiveConfirm}
-                  onCancel={handleArchiveCancel}
-                />
-              )
-            }
-            return (
-              <HabitCard
-                key={habit.id}
-                habit={habit}
-                onToggle={() => toggleComplete(habit.id, todayStr)}
-                onContextMenu={(e) => handleContextMenu(e, habit)}
-                isScheduledToday={habit.isScheduledToday}
-              />
-            )
-          })}
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={scheduledIncomplete.map((habit) => habit.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {scheduledIncomplete.map((habit) => renderHabitCard(habit, true))}
+            </SortableContext>
+          </DndContext>
+
+          {unscheduled.map((habit) => renderHabitCard(habit, false))}
+          {completedHabits.map((habit) => renderHabitCard(habit, false))}
         </div>
       </div>
 
-      {/* Context menu rendered via portal */}
       {contextMenu && (
         <ContextMenu
           items={contextMenu.items}

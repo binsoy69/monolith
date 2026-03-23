@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Electron shell, SQLite + migrations, design token system, keyboard router, app settings (completed 2026-03-19)
 - [ ] **Phase 2: Module Core** - Minimum viable data entry loops for all three modules (habits, planner, expenses) (completed 2026-03-20, UAT gap closure in progress)
 - [x] **Phase 3: Dashboard + Navigation** - Unified dashboard with real data, full keyboard navigation, sidebar complete (completed 2026-03-21)
-- [x] **Phase 4: Depth + Differentiators** - Charts, heatmaps, task carry-forward, habit scheduling, spending trends (completed 2026-03-23)
+- [ ] **Phase 4: Depth + Differentiators** - Charts, heatmaps, task carry-forward, habit scheduling, spending trends (completed 2026-03-23, UAT gap closure in progress)
 - [ ] **Phase 5: Cross-Module + Distribution** - Tags, global search, desktop notifications, packaging, code signing
 
 ## Phase Details
@@ -86,12 +86,15 @@ Plans:
   2. Unfinished tasks from previous days automatically appear at the top of today's task list; overdue tasks display a visible indicator; user can set P1/P2/P3 priority on any task
   3. User can view monthly spending totals, a spending-by-category breakdown chart, and a 6-12 month spending trend line chart
   4. All charts render with the same dark, dense aesthetic as the rest of the app — no default chart library styling visible
-**Plans**: 3/3 plans complete
+**Plans**: 3/6 plans complete
 
 Plans:
-- [x] 04-01: Habit depth — completion history view (7/30 days), GitHub-style heatmap (Recharts SVG), manual reorder, count-based habits
-- [x] 04-02: Planner depth — task priority levels, carry-forward logic, overdue visual indicators
-- [x] 04-03: Expense depth — monthly totals, category breakdown chart, 6-12 month trend line chart
+- [x] 04-01: Habit depth - completion history view (7/30 days), GitHub-style heatmap (Recharts SVG), manual reorder, count-based habits
+- [x] 04-02: Planner depth - task priority levels, carry-forward logic, overdue visual indicators
+- [x] 04-03: Expense depth - monthly totals, category breakdown chart, 6-12 month trend line chart
+- [ ] 04-04-PLAN.md - [GAP] Habit manual count entry + heatmap month-label layout
+- [ ] 04-05-PLAN.md - [GAP] Priority-aware planner ordering
+- [ ] 04-06-PLAN.md - [GAP] Expense analytics collapsed-state affordance
 
 ### Phase 5: Cross-Module + Distribution
 **Goal**: Tags connect the three modules into a coherent system, global search makes accumulated data discoverable, desktop notifications close the habit loop, and the app ships as a signed distributable binary.
@@ -120,5 +123,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 1. Foundation | 4/4 | Complete   | 2026-03-19 |
 | 2. Module Core | 9/9 | Complete   | 2026-03-21 |
 | 3. Dashboard + Navigation | 2/2 | Complete   | 2026-03-21 |
-| 4. Depth + Differentiators | 3/3 | Complete   | 2026-03-23 |
+| 4. Depth + Differentiators | 3/6 | UAT gap closure | 2026-03-23 |
 | 5. Cross-Module + Distribution | 0/4 | Not started | - |

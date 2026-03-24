@@ -1,9 +1,9 @@
 ---
-status: complete
+status: diagnosed
 phase: 04-depth-differentiators
 source: [04-01-SUMMARY.md, 04-02-SUMMARY.md, 04-03-SUMMARY.md, 04-04-SUMMARY.md, 04-05-SUMMARY.md, 04-06-SUMMARY.md, 04-07-SUMMARY.md]
 started: 2026-03-24T10:30:00+08:00
-updated: 2026-03-24T11:45:00+08:00
+updated: 2026-03-24T11:52:00+08:00
 ---
 
 ## Current Test
@@ -89,25 +89,48 @@ skipped: 0
   reason: "User reported: better-sqlite3 native module was compiled for NODE_MODULE_VERSION 115 while the current Electron/Node runtime requires NODE_MODULE_VERSION 140, causing startup to fail before the app can boot."
   severity: blocker
   test: 1
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "The dev launch path inherited a Node-oriented environment: `ELECTRON_RUN_AS_NODE=1` forced Electron to run as plain Node, and `better-sqlite3` had been built for Node ABI 115 instead of Electron 39 ABI 140."
+  artifacts:
+    - path: "package.json"
+      issue: "dev/start scripts passed the inherited environment directly into electron-vite"
+    - path: "scripts/electron-vite-wrapper.cjs"
+      issue: "needed to scrub ELECTRON_RUN_AS_NODE before spawning electron-vite"
+    - path: "src/main/index.ts"
+      issue: "startup used a utility import path that assumed electron.app was available even in the poisoned runtime"
+  missing:
+    - "Launch Electron entrypoints with ELECTRON_RUN_AS_NODE cleared"
+    - "Rebuild better-sqlite3 against Electron 39 headers / ABI 140"
+    - "Use app.isPackaged directly in main-process startup"
+  debug_session: ".planning/debug/electron-cold-start-runtime.md"
 - truth: "Expand a count-based habit. A direct numeric editor is visible in the expanded details. Enter a large value such as 1000 and apply it. The exact value is preserved, values below target stay incomplete, and values at or above target mark the habit complete."
   status: failed
   reason: "User reported: I should be able to edit the actual count because for example if the count is too large like drinking 1000 mL of water"
   severity: major
   test: 3
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Count habits only supported increment and reset flows after creation; there was no UI control, store action, or IPC bridge method for setting an arbitrary numeric progress value."
+  artifacts:
+    - path: "src/renderer/habits/HabitCard.tsx"
+      issue: "collapsed count habits exposed only increment-oriented controls"
+    - path: "src/renderer/habits/habits-store.ts"
+      issue: "store implemented incrementCount/resetCount but no direct setCount mutation"
+    - path: "src/shared/ipc-types.ts"
+      issue: "typed bridge exposed incrementCount/resetCount only"
+  missing:
+    - "Add a typed setCount mutation end to end"
+    - "Render a direct value editor in the expanded count-habit details"
+    - "Preserve large raw measured values above the target"
+  debug_session: ".planning/debug/habit-count-manual-input.md"
 - truth: "With a habit card expanded, the 90-day heatmap shows readable month labels around tight boundaries such as Dec/Jan. Labels do not overlap or collapse into the same slot, and heatmap cells still expose accessible date/value text."
   status: failed
   reason: "User reported: dec/jan month labels are overlapping with each other"
   severity: cosmetic
   test: 7
-  root_cause: ""
-  artifacts: []
-  missing: []
-  debug_session: ""
+  root_cause: "Month labels were derived from day-level month transitions but rendered on week-column coordinates, with no dedupe or collision rule when adjacent transitions landed in the same or neighboring columns."
+  artifacts:
+    - path: "src/renderer/habits/HabitHeatmap.tsx"
+      issue: "label generation used raw month transitions without week-column collision handling"
+  missing:
+    - "Build month labels from the rendered weekly grid"
+    - "Deduplicate or resolve same-column and adjacent-column boundary collisions"
+    - "Keep accessible heatmap cell labels unchanged"
+  debug_session: ".planning/debug/habit-heatmap-month-labels.md"

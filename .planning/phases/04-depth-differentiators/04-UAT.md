@@ -1,9 +1,10 @@
 ---
-status: diagnosed
+status: complete
 phase: 04-depth-differentiators
 source: [04-01-SUMMARY.md, 04-02-SUMMARY.md, 04-03-SUMMARY.md, 04-04-SUMMARY.md, 04-05-SUMMARY.md, 04-06-SUMMARY.md, 04-07-SUMMARY.md]
 started: 2026-03-24T10:30:00+08:00
-updated: 2026-03-24T11:52:00+08:00
+updated: 2026-03-28T12:00:00+08:00
+reverified: 2026-03-28T12:00:00+08:00
 ---
 
 ## Current Test
@@ -14,9 +15,7 @@ updated: 2026-03-24T11:52:00+08:00
 
 ### 1. Cold Start Smoke Test
 expected: Kill any running Electron/dev process. Start the app from scratch. It boots without errors, migrations complete silently, and the main window loads with live dashboard data visible.
-result: issue
-reported: "(node:20592) UnhandledPromiseRejectionWarning: Error: The module '\\\\?\\D:\\projects\\Portfolio Projects\\monolith\\node_modules\\better-sqlite3\\build\\Release\\better_sqlite3.node' was compiled against a different Node.js version using NODE_MODULE_VERSION 115. This version of Node.js requires NODE_MODULE_VERSION 140. Please try re-compiling or re-installing the module."
-severity: blocker
+result: pass (re-verified 2026-03-28)
 
 ### 2. Create a Count-Based Habit
 expected: Open the habit form. A Boolean/Count toggle is visible. Select "Count", enter a target number, and submit. The new habit appears with a count progress control instead of a checkbox.
@@ -24,9 +23,7 @@ result: pass
 
 ### 3. Manual Count Entry for a Large Value
 expected: Expand a count-based habit. A direct numeric editor is visible in the expanded details. Enter a large value such as 1000 and apply it. The exact value is preserved, values below target stay incomplete, and values at or above target mark the habit complete.
-result: issue
-reported: "I should be able to edit the actual count because for example if the count is too large like drinking 1000 mL of water"
-severity: major
+result: pass (re-verified 2026-03-28, UI/UX noted for future improvement)
 
 ### 4. Quick Increment on a Count Habit
 expected: On a count-based habit, use the inline fraction pill/increment control from the collapsed row. The count increases immediately by 1 without needing to expand the card.
@@ -42,9 +39,7 @@ result: pass
 
 ### 7. Heatmap Month Labels
 expected: With a habit card expanded, the 90-day heatmap shows readable month labels around tight boundaries such as Dec/Jan. Labels do not overlap or collapse into the same slot, and heatmap cells still expose accessible date/value text.
-result: issue
-reported: "dec/jan month labels are overlapping with each other"
-severity: cosmetic
+result: pass (re-verified 2026-03-28)
 
 ### 8. Automatic Task Carry-Forward
 expected: If there are incomplete tasks from a previous day, opening today's planner shows them carried forward automatically at the top of the incomplete list with a visible carried-state indicator.
@@ -77,8 +72,8 @@ result: pass
 ## Summary
 
 total: 14
-passed: 11
-issues: 3
+passed: 14
+issues: 0
 pending: 0
 skipped: 0
 

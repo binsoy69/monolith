@@ -44,6 +44,12 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **EXP-09**: User can add optional notes to expenses
 - [x] **EXP-10**: User can view spending trends over 6-12 months (line chart)
 
+### Wallet Enhancements
+
+- [ ] **WALL-01**: User can edit wallet name and balance via inline form (fix broken edit button)
+- [ ] **WALL-02**: Balance adjustments accept an optional description (nudge pattern with visible field)
+- [ ] **WALL-03**: All wallet balance changes are logged in a transaction history viewable per wallet
+
 ### Shell & UI
 
 - [x] **SHELL-01**: Dashboard shows today's habits, tasks, and spending at a glance
@@ -161,12 +167,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TAG-02 | Phase 5 | Pending |
 | KBD-04 | Phase 5 | Pending |
 | HAB-09 | Phase 5 | Pending |
+| WALL-01 | Phase 6 | Pending |
+| WALL-02 | Phase 6 | Pending |
+| WALL-03 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 40 total
-- Mapped to phases: 40
+- v1 requirements: 43 total
+- Mapped to phases: 43
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-19*
-*Last updated: 2026-03-23 after phase 4 completion*
+*Last updated: 2026-03-28 after phase 6 planning*

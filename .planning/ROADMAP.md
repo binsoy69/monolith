@@ -127,13 +127,14 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 3. Dashboard + Navigation | 2/2 | Complete   | 2026-03-21 |
 | 4. Depth + Differentiators | 7/7 | Complete   | 2026-03-28 |
 | 5. Cross-Module + Distribution | 0/4 | Not started | - |
-| 6. Wallet Edit Fix & Transaction Logging | 0/0 | Not started | - |
+| 6. Wallet Edit Fix & Transaction Logging | 0/2 | Not started | - |
 
 ### Phase 6: Wallet Edit Fix & Transaction Logging
 **Goal:** Fix the wallet edit button in the expense module, require descriptions on wallet balance adjustments, and log all wallet balance changes in a transaction history.
 **Depends on:** Phase 2
-**Requirements:** TBD
-**Plans:** 0 plans
+**Requirements:** WALL-01, WALL-02, WALL-03
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 6 to break down)
+- [ ] 06-01-PLAN.md — Backend: types, migration (wallet_transactions table), repository transaction logging, IPC + preload + store wiring
+- [ ] 06-02-PLAN.md — UI: inline wallet edit form, description field in balance adjust modal, wallet transaction history modal

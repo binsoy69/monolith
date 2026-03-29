@@ -56,6 +56,7 @@ interface TaskListProps {
   viewDate: string
   expandedTaskId: string | null
   onClickTask: (taskId: string) => void
+  highlightTaskId?: string
 }
 
 export function TaskList({
@@ -72,6 +73,7 @@ export function TaskList({
   viewDate,
   expandedTaskId,
   onClickTask,
+  highlightTaskId,
 }: TaskListProps) {
   const incompleteTasks = tasks
     .filter((t) => !t.completed)
@@ -143,6 +145,7 @@ export function TaskList({
               isDraggable={true}
               isExpanded={expandedTaskId === task.id}
               onClickRow={() => onClickTask(task.id)}
+              isHighlighted={highlightTaskId === task.id}
             />
           ))}
         </SortableContext>
@@ -163,6 +166,7 @@ export function TaskList({
           isDraggable={false}
           isExpanded={expandedTaskId === task.id}
           onClickRow={() => onClickTask(task.id)}
+          isHighlighted={highlightTaskId === task.id}
         />
       ))}
     </div>

@@ -1,4 +1,5 @@
 import { StickyNote } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import type { Expense, Category } from '../../shared/domain-types'
 import { formatPeso } from '../../shared/format'
 
@@ -14,11 +15,34 @@ interface ExpenseRowProps {
   category: Category | undefined
   walletName: string
   onContextMenu: (e: React.MouseEvent) => void
+  isHighlighted?: boolean
 }
 
-export function ExpenseRow({ expense, category, walletName, onContextMenu }: ExpenseRowProps) {
+export function ExpenseRow({
+  expense,
+  category,
+  walletName,
+  onContextMenu,
+  isHighlighted = false,
+}: ExpenseRowProps) {
+  const rowRef = useRef<HTMLDivElement | null>(null)
+  const [isHovered, setIsHovered] = useState(false)
+  const [isFlashActive, setIsFlashActive] = useState(false)
+
+  useEffect(() => {
+    if (!isHighlighted) {
+      return
+    }
+
+    rowRef.current?.scrollIntoView?.({ block: 'center' })
+    setIsFlashActive(true)
+    const timer = window.setTimeout(() => setIsFlashActive(false), 1500)
+    return () => window.clearTimeout(timer)
+  }, [isHighlighted])
+
   return (
     <div
+      ref={rowRef}
       onContextMenu={onContextMenu}
       style={{
         height: '36px',
@@ -27,15 +51,16 @@ export function ExpenseRow({ expense, category, walletName, onContextMenu }: Exp
         gap: 'var(--space-4)',
         padding: '0 var(--space-2)',
         cursor: 'default',
+        backgroundColor: isFlashActive
+          ? 'var(--color-accent-subtle)'
+          : isHovered
+            ? 'var(--color-bg-subtle)'
+            : 'transparent',
         transition: `background-color var(--duration-fast) ease-out`,
         flexShrink: 0,
       }}
-      onMouseEnter={(e) => {
-        ;(e.currentTarget as HTMLElement).style.backgroundColor = 'var(--color-bg-subtle)'
-      }}
-      onMouseLeave={(e) => {
-        ;(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
-      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Date */}
       <span

@@ -134,6 +134,21 @@ export interface TagsAPI {
   getItemsByTag: (tagId: string) => Promise<TaggedItemSummary[]>
 }
 
+export type SearchResultType = 'habit' | 'task' | 'expense' | 'daily_note'
+
+export interface SearchResult {
+  type: SearchResultType
+  id: string
+  title: string
+  subtitle: string
+  snippet: string | null
+  date: string | null
+}
+
+export interface SearchAPI {
+  query: (data: { query: string; limit?: number }) => Promise<SearchResult[]>
+}
+
 export interface API {
   settings: SettingsAPI
   window: WindowAPI
@@ -142,4 +157,5 @@ export interface API {
   expenses: ExpensesAPI
   dashboard: DashboardAPI
   tags: TagsAPI
+  search: SearchAPI
 }

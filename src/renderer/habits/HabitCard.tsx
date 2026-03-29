@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GripVertical } from 'lucide-react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -26,6 +26,7 @@ interface HabitCardProps {
   isScheduledToday: boolean
   isExpanded: boolean
   isDraggable?: boolean
+  isHighlighted?: boolean
   details?: React.ReactNode
 }
 
@@ -45,13 +46,16 @@ function HabitCardLayout({
   isScheduledToday,
   isExpanded,
   isDraggable = false,
+  isHighlighted = false,
   details,
   handleAttributes,
   handleListeners,
   setNodeRef,
   dragStyle,
 }: HabitCardLayoutProps) {
+  const cardRef = useRef<HTMLDivElement | null>(null)
   const [isHovered, setIsHovered] = useState(false)
+  const [isFlashActive, setIsFlashActive] = useState(false)
   const hasStreaks = habit.currentStreak > 0 || habit.bestStreak > 0
   const targetCount = habit.targetCount ?? 1
 
@@ -93,13 +97,29 @@ function HabitCardLayout({
     }
   }
 
+  useEffect(() => {
+    if (!isHighlighted) {
+      return
+    }
+
+    cardRef.current?.scrollIntoView?.({ block: 'center' })
+    setIsFlashActive(true)
+    const timer = window.setTimeout(() => setIsFlashActive(false), 1500)
+    return () => window.clearTimeout(timer)
+  }, [isHighlighted])
+
   return (
     <div
-      ref={setNodeRef}
+      ref={(element) => {
+        cardRef.current = element
+        setNodeRef?.(element)
+      }}
       style={{
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'var(--color-bg-elevated)',
+        backgroundColor: isFlashActive
+          ? 'var(--color-accent-subtle)'
+          : 'var(--color-bg-elevated)',
         border: '1px solid var(--color-border)',
         borderRadius: 'var(--radius-md)',
         opacity: cardOpacity,
@@ -119,7 +139,11 @@ function HabitCardLayout({
           alignItems: 'center',
           gap: 'var(--space-2)',
           padding: '12px var(--space-4)',
-          backgroundColor: isHovered ? 'var(--color-bg-subtle)' : 'var(--color-bg-elevated)',
+          backgroundColor: isFlashActive
+            ? 'var(--color-accent-subtle)'
+            : isHovered
+              ? 'var(--color-bg-subtle)'
+              : 'var(--color-bg-elevated)',
           transition: `background-color var(--duration-fast) ease-out`,
         }}
       >

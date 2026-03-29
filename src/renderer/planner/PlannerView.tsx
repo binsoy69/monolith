@@ -15,10 +15,12 @@ import { useTagsStore } from "../tags/tags-store";
 
 interface PlannerViewProps {
   newItemTrigger?: number;
+  highlightTaskId?: string;
 }
 
 export function PlannerView({
   newItemTrigger = 0,
+  highlightTaskId,
 }: PlannerViewProps): React.JSX.Element {
   const quickAddRef = useRef<HTMLInputElement>(null);
 
@@ -295,6 +297,7 @@ export function PlannerView({
                 viewDate={viewDate}
                 expandedTaskId={expandedTaskId}
                 onClickTask={handleClickTask}
+                highlightTaskId={highlightTaskId}
               />
             )}
           </>

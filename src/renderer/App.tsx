@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Sidebar } from "./shell/Sidebar";
 import { WindowChrome } from "./shell/WindowChrome";
 import { ModuleHeader } from "./shell/ModuleHeader";
@@ -15,22 +15,76 @@ import { ExpensesView } from "./expenses/ExpensesView";
 import { DashboardView } from "./dashboard/DashboardView";
 import { TagsView } from "./tags/TagsView";
 import { usePlannerStore } from "./planner/planner-store";
+import { useExpensesStore } from "./expenses/expenses-store";
 import type { ShellModuleId } from "../shared/domain-types";
+import type { SearchResult } from "../shared/ipc-types";
 
 export type ModuleId = ShellModuleId;
+
+export function handleSearchSelect(
+  result: SearchResult,
+  setActiveModule: (module: ModuleId) => void,
+  setHighlightHabitId: (id: string | undefined) => void,
+  setHighlightTaskId: (id: string | undefined) => void,
+  setHighlightExpenseId: (id: string | undefined) => void,
+): void {
+  setHighlightHabitId(undefined);
+  setHighlightTaskId(undefined);
+  setHighlightExpenseId(undefined);
+
+  switch (result.type) {
+    case "habit":
+      setActiveModule("habits");
+      setHighlightHabitId(result.id);
+      break;
+    case "task":
+      setActiveModule("planner");
+      usePlannerStore.getState().setActiveTab("tasks");
+      usePlannerStore.getState().setViewDate(result.date!);
+      setHighlightTaskId(result.id);
+      break;
+    case "daily_note":
+      setActiveModule("planner");
+      usePlannerStore.getState().setActiveTab("notes");
+      usePlannerStore.getState().setViewDate(result.date!);
+      break;
+    case "expense":
+      setActiveModule("expenses");
+      useExpensesStore.getState().setFilters({
+        startDate: result.date!,
+        endDate: result.date!,
+        categoryId: undefined,
+      });
+      setHighlightExpenseId(result.id);
+      break;
+  }
+}
 
 export default function App(): React.JSX.Element {
   const [activeModule, setActiveModule] = useState<ModuleId>("dashboard");
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [newItemTrigger, setNewItemTrigger] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [highlightHabitId, setHighlightHabitId] = useState<string>();
+  const [highlightTaskId, setHighlightTaskId] = useState<string>();
+  const [highlightExpenseId, setHighlightExpenseId] = useState<string>();
 
   const plannerNavigateDay = usePlannerStore((s) => s.navigateDay);
   const plannerGoToToday = usePlannerStore((s) => s.goToToday);
 
+  const closeCommandPalette = useCallback(() => {
+    setShowCommandPalette(false);
+    setSearchQuery("");
+    setSearchResults([]);
+    setIsSearching(false);
+  }, []);
+
   const handleEscape = useCallback(() => {
     if (showCommandPalette) {
-      setShowCommandPalette(false);
+      closeCommandPalette();
       return;
     }
     if (showShortcuts) {
@@ -40,14 +94,14 @@ export default function App(): React.JSX.Element {
     if (activeModule !== "dashboard") {
       setActiveModule("dashboard");
     }
-  }, [showCommandPalette, showShortcuts, activeModule]);
+  }, [showCommandPalette, showShortcuts, activeModule, closeCommandPalette]);
 
   const handleNewItem = useCallback(() => {
     setNewItemTrigger((n) => n + 1);
   }, []);
 
   const handlePaletteAction = useCallback((action: PaletteAction) => {
-    setShowCommandPalette(false);
+    closeCommandPalette();
     switch (action) {
       case "add-task":
         setActiveModule("planner");
@@ -62,7 +116,84 @@ export default function App(): React.JSX.Element {
         setNewItemTrigger((n) => n + 1);
         break;
     }
+  }, [closeCommandPalette]);
+
+  const onSearchQueryChange = useCallback((query: string) => {
+    setSearchQuery(query);
   }, []);
+
+  const onSelectSearchResult = useCallback(
+    (result: SearchResult) => {
+      handleSearchSelect(
+        result,
+        setActiveModule,
+        setHighlightHabitId,
+        setHighlightTaskId,
+        setHighlightExpenseId,
+      );
+      closeCommandPalette();
+    },
+    [closeCommandPalette],
+  );
+
+  useEffect(() => {
+    if (!showCommandPalette || searchQuery.trim().length === 0) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      setIsSearching(true);
+      void window.api.search
+        .query({ query: searchQuery, limit: 8 })
+        .then((results) => {
+          if (!cancelled) {
+            setSearchResults(results);
+          }
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setSearchResults([]);
+          }
+        })
+        .finally(() => {
+          if (!cancelled) {
+            setIsSearching(false);
+          }
+        });
+    }, 120);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [searchQuery, showCommandPalette]);
+
+  useEffect(() => {
+    if (!highlightHabitId) {
+      return;
+    }
+    const timer = window.setTimeout(() => setHighlightHabitId(undefined), 1500);
+    return () => window.clearTimeout(timer);
+  }, [highlightHabitId]);
+
+  useEffect(() => {
+    if (!highlightTaskId) {
+      return;
+    }
+    const timer = window.setTimeout(() => setHighlightTaskId(undefined), 1500);
+    return () => window.clearTimeout(timer);
+  }, [highlightTaskId]);
+
+  useEffect(() => {
+    if (!highlightExpenseId) {
+      return;
+    }
+    const timer = window.setTimeout(() => setHighlightExpenseId(undefined), 1500);
+    return () => window.clearTimeout(timer);
+  }, [highlightExpenseId]);
 
   return (
     <div className="app-shell">
@@ -105,7 +236,10 @@ export default function App(): React.JSX.Element {
                       flexDirection: "column",
                     }}
                   >
-                    <HabitsView newItemTrigger={newItemTrigger} />
+                    <HabitsView
+                      newItemTrigger={newItemTrigger}
+                      highlightHabitId={highlightHabitId}
+                    />
                   </main>
                 </ErrorBoundary>
               ) : activeModule === "planner" ? (
@@ -119,7 +253,10 @@ export default function App(): React.JSX.Element {
                       flexDirection: "column",
                     }}
                   >
-                    <PlannerView newItemTrigger={newItemTrigger} />
+                    <PlannerView
+                      newItemTrigger={newItemTrigger}
+                      highlightTaskId={highlightTaskId}
+                    />
                   </main>
                 </ErrorBoundary>
               ) : activeModule === "expenses" ? (
@@ -133,7 +270,10 @@ export default function App(): React.JSX.Element {
                       flexDirection: "column",
                     }}
                   >
-                    <ExpensesView newItemTrigger={newItemTrigger} />
+                    <ExpensesView
+                      newItemTrigger={newItemTrigger}
+                      highlightExpenseId={highlightExpenseId}
+                    />
                   </main>
                 </ErrorBoundary>
               ) : activeModule === "tags" ? (
@@ -179,8 +319,12 @@ export default function App(): React.JSX.Element {
       {showCommandPalette ? (
         <CommandPalette
           isOpen={showCommandPalette}
-          onClose={() => setShowCommandPalette(false)}
+          onClose={closeCommandPalette}
           onAction={handlePaletteAction}
+          results={searchResults}
+          isSearching={isSearching}
+          onSearchQueryChange={onSearchQueryChange}
+          onSelectResult={onSelectSearchResult}
         />
       ) : null}
       <ToastContainer />

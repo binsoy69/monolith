@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { GripVertical, FileText } from 'lucide-react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -20,6 +20,7 @@ interface TaskRowProps {
   isDraggable?: boolean
   isExpanded?: boolean
   onClickRow?: () => void
+  isHighlighted?: boolean
 }
 
 const srOnlyStyle: React.CSSProperties = {
@@ -95,6 +96,7 @@ function RowBody({
   isHovered,
   isExpanded,
   isDragging = false,
+  isFlashActive = false,
   onToggleComplete,
   onContextMenu,
   onClickRow,
@@ -104,6 +106,7 @@ function RowBody({
   isHovered: boolean
   isExpanded?: boolean
   isDragging?: boolean
+  isFlashActive?: boolean
   onToggleComplete: (id: string) => void
   onContextMenu?: (e: React.MouseEvent) => void
   onClickRow?: () => void
@@ -131,7 +134,11 @@ function RowBody({
           gap: 'var(--space-2)',
           paddingLeft: 'var(--space-2)',
           paddingRight: 'var(--space-2)',
-          backgroundColor: isHovered ? 'var(--color-bg-subtle)' : 'transparent',
+          backgroundColor: isFlashActive
+            ? 'var(--color-accent-subtle)'
+            : isHovered
+              ? 'var(--color-bg-subtle)'
+              : 'transparent',
           cursor: 'default',
           transition: `background-color var(--duration-fast) ease-out`,
           userSelect: 'none',
@@ -257,6 +264,27 @@ function RowBody({
   )
 }
 
+function useRowHighlight(isHighlighted = false): {
+  rowRef: React.MutableRefObject<HTMLDivElement | null>
+  isFlashActive: boolean
+} {
+  const rowRef = useRef<HTMLDivElement | null>(null)
+  const [isFlashActive, setIsFlashActive] = useState(false)
+
+  useEffect(() => {
+    if (!isHighlighted) {
+      return
+    }
+
+    rowRef.current?.scrollIntoView?.({ block: 'center' })
+    setIsFlashActive(true)
+    const timer = window.setTimeout(() => setIsFlashActive(false), 1500)
+    return () => window.clearTimeout(timer)
+  }, [isHighlighted])
+
+  return { rowRef, isFlashActive }
+}
+
 function SortableTaskRow({
   task,
   onToggleComplete,
@@ -269,8 +297,10 @@ function SortableTaskRow({
   onCancelDelete,
   isExpanded,
   onClickRow,
+  isHighlighted = false,
 }: TaskRowProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const { rowRef, isFlashActive } = useRowHighlight(isHighlighted)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
   })
@@ -298,7 +328,10 @@ function SortableTaskRow({
 
   return (
     <div
-      ref={setNodeRef}
+      ref={(element) => {
+        rowRef.current = element
+        setNodeRef(element)
+      }}
       style={style}
       {...attributes}
       onMouseEnter={() => setIsHovered(true)}
@@ -309,6 +342,7 @@ function SortableTaskRow({
         isHovered={isHovered}
         isExpanded={isExpanded}
         isDragging={isDragging}
+        isFlashActive={isFlashActive}
         onToggleComplete={onToggleComplete}
         onContextMenu={onContextMenu}
         onClickRow={onClickRow}
@@ -334,8 +368,10 @@ function PlainTaskRow({
   onCancelDelete,
   isExpanded,
   onClickRow,
+  isHighlighted = false,
 }: TaskRowProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const { rowRef, isFlashActive } = useRowHighlight(isHighlighted)
 
   if (isDeleting) {
     return (
@@ -347,11 +383,16 @@ function PlainTaskRow({
   }
 
   return (
-    <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+    <div
+      ref={rowRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <RowBody
         task={task}
         isHovered={isHovered}
         isExpanded={isExpanded}
+        isFlashActive={isFlashActive}
         onToggleComplete={onToggleComplete}
         onContextMenu={onContextMenu}
         onClickRow={onClickRow}

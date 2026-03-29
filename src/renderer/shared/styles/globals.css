@@ -875,6 +875,20 @@ section {
   gap: 8px;
 }
 
+.command-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.command-section__label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 4px;
+}
+
 .command-row {
   width: 100%;
   text-align: left;
@@ -909,6 +923,19 @@ section {
 
 .command-row__caption {
   font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+}
+
+.command-row__meta,
+.command-row__snippet {
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+}
+
+.command-empty {
+  padding: var(--space-5);
+  text-align: center;
+  font-size: var(--font-size-body);
   color: var(--color-text-muted);
 }
 

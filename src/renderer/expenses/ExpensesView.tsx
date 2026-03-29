@@ -18,6 +18,7 @@ import { useTagsStore } from "../tags/tags-store";
 
 interface ExpensesViewProps {
   newItemTrigger?: number;
+  highlightExpenseId?: string;
 }
 
 function getCurrentMonthKey(): string {
@@ -27,6 +28,7 @@ function getCurrentMonthKey(): string {
 
 export function ExpensesView({
   newItemTrigger,
+  highlightExpenseId,
 }: ExpensesViewProps): React.JSX.Element {
   const {
     wallets,
@@ -308,6 +310,7 @@ export function ExpensesView({
               onFiltersChange={(f) => setFilters(f)}
               onClearFilters={clearFilters}
               onContextMenu={handleExpenseContextMenu}
+              highlightExpenseId={highlightExpenseId}
             />
           </div>
 

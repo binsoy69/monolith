@@ -38,9 +38,10 @@ function countCompletedDays(points: Array<{ completed: boolean }>, days: number)
 
 interface HabitsViewProps {
   newItemTrigger?: number
+  highlightHabitId?: string
 }
 
-export function HabitsView({ newItemTrigger }: HabitsViewProps) {
+export function HabitsView({ newItemTrigger, highlightHabitId }: HabitsViewProps) {
   const habits = useHabitsStore((state) => state.habits)
   const isLoaded = useHabitsStore((state) => state.isLoaded)
   const load = useHabitsStore((state) => state.load)
@@ -467,6 +468,7 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
         isScheduledToday={habit.isScheduledToday}
         isExpanded={expandedHabitId === habit.id}
         isDraggable={isDraggable}
+        isHighlighted={highlightHabitId === habit.id}
         details={details}
       />
     )

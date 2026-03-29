@@ -14,6 +14,7 @@ interface ExpenseListProps {
   }) => void;
   onClearFilters: () => void;
   onContextMenu: (e: React.MouseEvent, expense: Expense) => void;
+  highlightExpenseId?: string;
 }
 
 export function ExpenseList({
@@ -24,6 +25,7 @@ export function ExpenseList({
   onFiltersChange,
   onClearFilters,
   onContextMenu,
+  highlightExpenseId,
 }: ExpenseListProps): React.JSX.Element {
   const categoriesById = new Map(
     categories.map((category) => [category.id, category]),
@@ -91,6 +93,7 @@ export function ExpenseList({
                   : ""
               }
               onContextMenu={(e) => onContextMenu(e, expense)}
+              isHighlighted={highlightExpenseId === expense.id}
             />
           ))
         )}

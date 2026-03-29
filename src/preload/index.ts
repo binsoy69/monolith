@@ -61,6 +61,9 @@ const api: API = {
     listForItem: (data) => ipcRenderer.invoke('tags:listForItem', data),
     setAssignment: (data) => ipcRenderer.invoke('tags:setAssignment', data),
     getItemsByTag: (tagId) => ipcRenderer.invoke('tags:getItemsByTag', tagId),
+  },
+  search: {
+    query: (data) => ipcRenderer.invoke('search:query', data),
   }
 }
 

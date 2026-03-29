@@ -82,6 +82,9 @@ function createApiMock(): typeof window.api {
       setAssignment: vi.fn(),
       getItemsByTag: vi.fn(),
     },
+    search: {
+      query: vi.fn().mockResolvedValue([]),
+    },
   };
 }
 

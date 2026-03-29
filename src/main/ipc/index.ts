@@ -4,6 +4,7 @@ import { registerPlannerHandlers } from './planner';
 import { registerExpensesHandlers } from './expenses';
 import { registerDashboardHandlers } from './dashboard';
 import { registerTagsHandlers } from './tags';
+import { registerSearchHandlers } from './search';
 
 export function registerAllHandlers(): void {
   registerSettingsHandlers();
@@ -12,4 +13,5 @@ export function registerAllHandlers(): void {
   registerExpensesHandlers();
   registerDashboardHandlers();
   registerTagsHandlers();
+  registerSearchHandlers();
 }

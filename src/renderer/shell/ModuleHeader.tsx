@@ -1,5 +1,5 @@
-import React from 'react'
-import type { ModuleId } from '../App';
+import React from "react";
+import type { ModuleId } from "../App";
 
 interface ModuleHeaderProps {
   moduleId: ModuleId;
@@ -8,46 +8,28 @@ interface ModuleHeaderProps {
 }
 
 const MODULE_NAMES: Record<ModuleId, string> = {
-  dashboard: 'Dashboard',
-  habits: 'Habits',
-  planner: 'Planner',
-  expenses: 'Expenses',
-  settings: 'Settings',
+  dashboard: "Dashboard",
+  habits: "Habits",
+  planner: "Planner",
+  expenses: "Expenses",
+  settings: "Settings",
 };
 
-export function ModuleHeader({ moduleId, left, right }: ModuleHeaderProps) {
+export function ModuleHeader({
+  moduleId,
+  left,
+  right,
+}: ModuleHeaderProps): React.JSX.Element {
   return (
-    <div
-      style={{
-        height: '40px',
-        backgroundColor: 'var(--color-bg-base)',
-        borderBottom: '1px solid var(--color-border)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingLeft: 'var(--space-4)',
-        paddingRight: 'var(--space-4)',
-        flexShrink: 0,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-        <span
-          style={{
-            fontSize: 'var(--font-size-heading)',
-            fontWeight: 600,
-            color: 'var(--color-text-primary)',
-            lineHeight: 'var(--line-height-tight)',
-          }}
-        >
-          {MODULE_NAMES[moduleId]}
-        </span>
-        {left}
-      </div>
-      {right && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-          {right}
+    <div className="module-header">
+      <div className="module-header__title">
+        <span className="module-header__eyebrow">workspace</span>
+        <div className="module-header__row">
+          <span className="module-header__name">{MODULE_NAMES[moduleId]}</span>
+          {left}
         </div>
-      )}
+      </div>
+      {right && <div className="module-header__actions">{right}</div>}
     </div>
   );
 }

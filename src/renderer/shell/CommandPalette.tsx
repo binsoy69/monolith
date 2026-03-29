@@ -1,171 +1,148 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from "react";
 
-export type PaletteAction = 'add-task' | 'log-expense' | 'check-habit'
+export type PaletteAction = "add-task" | "log-expense" | "check-habit";
 
 interface CommandPaletteProps {
-  isOpen: boolean
-  onClose: () => void
-  onAction: (action: PaletteAction) => void
+  isOpen: boolean;
+  onClose: () => void;
+  onAction: (action: PaletteAction) => void;
 }
 
 const ACTIONS: Array<{ id: PaletteAction; label: string }> = [
-  { id: 'add-task', label: 'Add task' },
-  { id: 'log-expense', label: 'Log expense' },
-  { id: 'check-habit', label: 'Check habit' },
-]
+  { id: "add-task", label: "Add task" },
+  { id: "log-expense", label: "Log expense" },
+  { id: "check-habit", label: "Check habit" },
+];
 
-export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProps) {
-  const [query, setQuery] = useState('')
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [inputFocused, setInputFocused] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const overlayRef = useRef<HTMLDivElement>(null)
+export function CommandPalette({
+  isOpen,
+  onClose,
+  onAction,
+}: CommandPaletteProps): React.JSX.Element | null {
+  const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [inputFocused, setInputFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   const filtered = ACTIONS.filter((a) =>
-    a.label.toLowerCase().includes(query.toLowerCase())
-  )
+    a.label.toLowerCase().includes(query.toLowerCase()),
+  );
 
-  // Reset query and focus input on open
   useEffect(() => {
     if (isOpen) {
-      setQuery('')
-      setActiveIndex(0)
-      setTimeout(() => inputRef.current?.focus(), 10)
+      setTimeout(() => inputRef.current?.focus(), 10);
     }
-  }, [isOpen])
+  }, [isOpen]);
 
-  // Reset activeIndex when query changes
   useEffect(() => {
-    setActiveIndex(0)
-  }, [query])
-
-  // Click-outside close (same setTimeout(0) pattern as KeyboardShortcutOverlay)
-  useEffect(() => {
-    if (!isOpen) return
-    function handleClick(e: MouseEvent) {
-      if (overlayRef.current && !overlayRef.current.contains(e.target as Node)) {
-        onClose()
+    if (!isOpen) return;
+    function handleClick(e: MouseEvent): void {
+      if (
+        overlayRef.current &&
+        !overlayRef.current.contains(e.target as Node)
+      ) {
+        onClose();
       }
     }
     const timer = setTimeout(() => {
-      document.addEventListener('mousedown', handleClick)
-    }, 0)
+      document.addEventListener("mousedown", handleClick);
+    }, 0);
     return () => {
-      clearTimeout(timer)
-      document.removeEventListener('mousedown', handleClick)
-    }
-  }, [isOpen, onClose])
+      clearTimeout(timer);
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, [isOpen, onClose]);
 
-  function handleKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Escape') {
-      e.preventDefault()
-      e.stopPropagation() // Prevent KeyboardRouter from also handling
-      onClose()
-      return
+  function handleKeyDown(e: React.KeyboardEvent): void {
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      onClose();
+      return;
     }
-    if (e.key === 'ArrowDown') {
-      e.preventDefault()
-      setActiveIndex((i) => Math.min(i + 1, filtered.length - 1))
-      return
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.min(i + 1, filtered.length - 1));
+      return;
     }
-    if (e.key === 'ArrowUp') {
-      e.preventDefault()
-      setActiveIndex((i) => Math.max(i - 1, 0))
-      return
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.max(i - 1, 0));
+      return;
     }
-    if (e.key === 'Enter' && filtered.length > 0) {
-      e.preventDefault()
-      onAction(filtered[activeIndex].id)
-      return
+    if (e.key === "Enter" && filtered.length > 0) {
+      e.preventDefault();
+      onAction(filtered[activeIndex].id);
     }
   }
 
-  if (!isOpen) return null
+  if (!isOpen) return null;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'flex-start',
-        paddingTop: '20vh',
-        zIndex: 100,
-        animation: 'fadeIn var(--duration-normal) ease-out',
-      }}
-    >
-      <div
-        ref={overlayRef}
-        onKeyDown={handleKeyDown}
-        style={{
-          width: 560,
-          backgroundColor: 'var(--color-bg-overlay)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-lg)',
-          padding: 'var(--space-4)',
-        }}
-      >
-        {/* Search input */}
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setInputFocused(true)}
-          onBlur={() => setInputFocused(false)}
-          placeholder="What do you want to do?"
-          style={{
-            width: '100%',
-            background: 'var(--color-bg-subtle)',
-            border: `1px solid ${inputFocused ? 'var(--color-border-focused)' : 'var(--color-border)'}`,
-            borderRadius: 'var(--radius-md)',
-            padding: 'var(--space-2) var(--space-4)',
-            fontSize: 'var(--font-size-body)',
-            color: 'var(--color-text-primary)',
-            outline: 'none',
-            fontFamily: 'inherit',
-            boxSizing: 'border-box',
-            transition: 'border-color var(--duration-fast) ease-out',
-          }}
-        />
+    <div className="dialog-backdrop">
+      <div className="dialog-shell" ref={overlayRef} onKeyDown={handleKeyDown}>
+        <div className="dialog-header">
+          <h2 className="dialog-title">Command palette</h2>
+          <p className="dialog-description">
+            Jump to a fast action without leaving the current surface.
+          </p>
+        </div>
 
-        {/* Items container */}
-        <div style={{ marginTop: 'var(--space-2)' }}>
-          {filtered.length > 0 ? (
-            filtered.map((item, index) => (
+        <div className="command-body">
+          <input
+            className="command-input"
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setActiveIndex(0);
+            }}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            placeholder="What do you want to do?"
+            style={{
+              borderColor: inputFocused
+                ? "var(--color-border-focused)"
+                : "var(--color-border)",
+            }}
+          />
+
+          <div className="command-list">
+            {filtered.length > 0 ? (
+              filtered.map((item, index) => (
+                <button
+                  key={item.id}
+                  className="command-row"
+                  data-active={index === activeIndex}
+                  onClick={() => onAction(item.id)}
+                  onMouseEnter={() => setActiveIndex(index)}
+                >
+                  <span className="command-row__label">
+                    <span className="command-row__title">{item.label}</span>
+                    <span className="command-row__caption">
+                      Instant module action
+                    </span>
+                  </span>
+                  <span className="shortcut-key">Enter</span>
+                </button>
+              ))
+            ) : (
               <div
-                key={item.id}
-                onClick={() => onAction(item.id)}
-                onMouseEnter={() => setActiveIndex(index)}
                 style={{
-                  padding: 'var(--space-2) var(--space-4)',
-                  borderRadius: 'var(--radius-md)',
-                  fontSize: 'var(--font-size-heading)',
-                  color: 'var(--color-text-primary)',
-                  cursor: 'pointer',
-                  backgroundColor: index === activeIndex ? 'var(--color-accent-subtle)' : 'transparent',
-                  transition: 'background-color var(--duration-fast) ease-out',
+                  padding: "var(--space-5)",
+                  textAlign: "center",
+                  fontSize: "var(--font-size-body)",
+                  color: "var(--color-text-muted)",
                 }}
               >
-                {item.label}
+                No matching actions
               </div>
-            ))
-          ) : (
-            <div
-              style={{
-                padding: 'var(--space-4)',
-                textAlign: 'center',
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-muted)',
-              }}
-            >
-              No matching actions
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 interface KeyboardShortcutOverlayProps {
   isOpen: boolean;
@@ -7,144 +7,87 @@ interface KeyboardShortcutOverlayProps {
 
 const SHORTCUTS = {
   Navigation: [
-    { keys: ['Alt', '1'], label: 'Dashboard' },
-    { keys: ['Alt', '2'], label: 'Habits' },
-    { keys: ['Alt', '3'], label: 'Planner' },
-    { keys: ['Alt', '4'], label: 'Expenses' },
-    { keys: ['Esc'], label: 'Close / Go to Dashboard' },
+    { keys: ["Alt", "1"], label: "Dashboard" },
+    { keys: ["Alt", "2"], label: "Habits" },
+    { keys: ["Alt", "3"], label: "Planner" },
+    { keys: ["Alt", "4"], label: "Expenses" },
+    { keys: ["Esc"], label: "Close or return to dashboard" },
   ],
-  'Module Actions': [
-    { keys: ['N'], label: 'New item in active module' },
-    { keys: ['←'], label: 'Previous day (Planner)' },
-    { keys: ['→'], label: 'Next day (Planner)' },
-    { keys: ['T'], label: 'Jump to today (Planner)' },
+  "Module actions": [
+    { keys: ["N"], label: "Create a new item in the active module" },
+    { keys: ["Left"], label: "Previous day in planner" },
+    { keys: ["Right"], label: "Next day in planner" },
+    { keys: ["T"], label: "Jump to today in planner" },
   ],
-  'Quick-Add': [
-    { keys: ['Ctrl', 'K'], label: 'Command palette' },
-    { keys: ['?'], label: 'This overlay' },
-    { keys: ['↑', '↓'], label: 'Navigate palette items' },
-    { keys: ['Enter'], label: 'Confirm selected action' },
+  "Quick add": [
+    { keys: ["Ctrl", "K"], label: "Open command palette" },
+    { keys: ["?"], label: "Open this overlay" },
+    { keys: ["Up", "Down"], label: "Move through palette items" },
+    { keys: ["Enter"], label: "Confirm the selected action" },
   ],
 };
 
-export function KeyboardShortcutOverlay({ isOpen, onClose }: KeyboardShortcutOverlayProps) {
+export function KeyboardShortcutOverlay({
+  isOpen,
+  onClose,
+}: KeyboardShortcutOverlayProps): React.JSX.Element | null {
   const overlayRef = useRef<HTMLDivElement>(null);
 
-  // Close on click outside the modal
   useEffect(() => {
     if (!isOpen) return;
-    function handleClick(e: MouseEvent) {
-      if (overlayRef.current && !overlayRef.current.contains(e.target as Node)) {
+    function handleClick(e: MouseEvent): void {
+      if (
+        overlayRef.current &&
+        !overlayRef.current.contains(e.target as Node)
+      ) {
         onClose();
       }
     }
-    // Use setTimeout to avoid closing immediately from the ? keypress
     const timer = setTimeout(() => {
-      document.addEventListener('mousedown', handleClick);
+      document.addEventListener("mousedown", handleClick);
     }, 0);
     return () => {
       clearTimeout(timer);
-      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener("mousedown", handleClick);
     };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 100,
-      animation: 'fadeIn var(--duration-normal) ease-out',
-    }}>
-      <div
-        ref={overlayRef}
-        style={{
-          width: 480,
-          backgroundColor: 'var(--color-bg-overlay)',
-          border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-lg)',
-          padding: 'var(--space-6)',
-          maxHeight: '80vh',
-          overflowY: 'auto' as const,
-        }}
-      >
-        {/* Title */}
-        <h2 style={{
-          fontSize: 'var(--font-size-display)',
-          fontWeight: 600,
-          color: 'var(--color-text-primary)',
-          margin: 0,
-          marginBottom: 'var(--space-6)',
-        }}>
-          Keyboard Shortcuts
-        </h2>
+    <div className="dialog-backdrop">
+      <div ref={overlayRef} className="dialog-shell">
+        <div className="dialog-header">
+          <h2 className="dialog-title">Keyboard shortcuts</h2>
+          <p className="dialog-description">
+            The app is faster when you stay on the keyboard. These are the core
+            controls.
+          </p>
+        </div>
 
-        {/* Shortcut sections */}
-        {Object.entries(SHORTCUTS).map(([section, shortcuts], sectionIndex) => (
-          <div key={section} style={{
-            marginTop: sectionIndex > 0 ? 'var(--space-6)' : 0,
-            paddingTop: sectionIndex > 0 ? 'var(--space-6)' : 0,
-            borderTop: sectionIndex > 0 ? '1px solid var(--color-border)' : 'none',
-          }}>
-            {/* Section heading */}
-            <h3 style={{
-              fontSize: 'var(--font-size-body)',
-              fontWeight: 600,
-              color: 'var(--color-text-secondary)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              margin: 0,
-              marginBottom: 'var(--space-4)',
-            }}>
-              {section}
-            </h3>
-
-            {/* Shortcut rows */}
-            {shortcuts.map((shortcut) => (
-              <div
-                key={shortcut.label}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  paddingTop: 'var(--space-2)',
-                  paddingBottom: 'var(--space-2)',
-                }}
-              >
-                <span style={{
-                  color: 'var(--color-text-secondary)',
-                  fontSize: 'var(--font-size-body)',
-                }}>
-                  {shortcut.label}
-                </span>
-                <div style={{ display: 'flex', gap: 'var(--space-1)' }}>
-                  {shortcut.keys.map((key) => (
-                    <kbd
-                      key={key}
-                      style={{
-                        fontSize: 'var(--font-size-small)',
-                        color: 'var(--color-text-primary)',
-                        backgroundColor: 'var(--color-accent-subtle)',
-                        border: '1px solid rgba(99, 102, 241, 0.3)',
-                        borderRadius: 'var(--radius-sm)',
-                        padding: '4px 8px',
-                        fontFamily: 'inherit',
-                        lineHeight: 1,
-                      }}
-                    >
-                      {key}
-                    </kbd>
-                  ))}
-                </div>
+        <div className="shortcut-body">
+          <div className="shortcut-grid">
+            {Object.entries(SHORTCUTS).map(([section, shortcuts]) => (
+              <div key={section} className="shortcut-section">
+                <h3 className="shortcut-section__title">{section}</h3>
+                {shortcuts.map((shortcut) => (
+                  <div key={shortcut.label} className="shortcut-row">
+                    <span style={{ color: "var(--color-text-secondary)" }}>
+                      {shortcut.label}
+                    </span>
+                    <div className="shortcut-keys">
+                      {shortcut.keys.map((key) => (
+                        <kbd key={key} className="shortcut-key">
+                          {key}
+                        </kbd>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

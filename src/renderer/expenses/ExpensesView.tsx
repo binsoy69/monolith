@@ -1,27 +1,30 @@
-import { useEffect, useState } from 'react'
-import { ModuleHeader } from '../shell/ModuleHeader'
-import { WalletPanel } from './WalletPanel'
-import { BalanceAdjustModal } from './BalanceAdjustModal'
-import { ExpenseLogModal } from './ExpenseLogModal'
-import { ExpenseList } from './ExpenseList'
-import { ExpenseAnalyticsSection } from './ExpenseAnalyticsSection'
-import { CategoryManageView } from './CategoryManageView'
-import { WalletHistoryModal } from './WalletHistoryModal'
-import { useExpensesStore } from './expenses-store'
-import { useContextMenu } from '../shared/useContextMenu'
-import { ContextMenu } from '../shared/ContextMenu'
-import type { Wallet, Expense } from '../../shared/domain-types'
+import { useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+import { ModuleHeader } from "../shell/ModuleHeader";
+import { WalletPanel } from "./WalletPanel";
+import { BalanceAdjustModal } from "./BalanceAdjustModal";
+import { ExpenseLogModal } from "./ExpenseLogModal";
+import { ExpenseList } from "./ExpenseList";
+import { ExpenseAnalyticsSection } from "./ExpenseAnalyticsSection";
+import { CategoryManageView } from "./CategoryManageView";
+import { WalletHistoryModal } from "./WalletHistoryModal";
+import { useExpensesStore } from "./expenses-store";
+import { useContextMenu } from "../shared/useContextMenu";
+import { ContextMenu } from "../shared/ContextMenu";
+import type { Wallet, Expense } from "../../shared/domain-types";
 
 interface ExpensesViewProps {
-  newItemTrigger?: number
+  newItemTrigger?: number;
 }
 
 function getCurrentMonthKey(): string {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 }
 
-export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
+export function ExpensesView({
+  newItemTrigger,
+}: ExpensesViewProps): React.JSX.Element {
   const {
     wallets,
     categories,
@@ -30,6 +33,7 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
     filters,
     trendMonths,
     walletsLoaded,
+    categoriesLoaded,
     loadWallets,
     loadCategories,
     loadExpenses,
@@ -46,103 +50,149 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
     setFilters,
     clearFilters,
     setTrendMonths,
-  } = useExpensesStore()
+  } = useExpensesStore(
+    useShallow((state) => ({
+      wallets: state.wallets,
+      categories: state.categories,
+      expenses: state.expenses,
+      analytics: state.analytics,
+      filters: state.filters,
+      trendMonths: state.trendMonths,
+      walletsLoaded: state.walletsLoaded,
+      categoriesLoaded: state.categoriesLoaded,
+      loadWallets: state.loadWallets,
+      loadCategories: state.loadCategories,
+      loadExpenses: state.loadExpenses,
+      loadAnalytics: state.loadAnalytics,
+      createWallet: state.createWallet,
+      updateWallet: state.updateWallet,
+      adjustWalletBalance: state.adjustWalletBalance,
+      createExpense: state.createExpense,
+      updateExpense: state.updateExpense,
+      deleteExpense: state.deleteExpense,
+      createCategory: state.createCategory,
+      updateCategory: state.updateCategory,
+      deleteCategory: state.deleteCategory,
+      setFilters: state.setFilters,
+      clearFilters: state.clearFilters,
+      setTrendMonths: state.setTrendMonths,
+    })),
+  );
 
-  const [adjustingWallet, setAdjustingWallet] = useState<Wallet | null>(null)
-  const [historyWalletId, setHistoryWalletId] = useState<string | null>(null)
-  const [showLogModal, setShowLogModal] = useState(false)
-  const [showAnalytics, setShowAnalytics] = useState(false)
-  const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
-  const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(null)
-  const [showCategoryManage, setShowCategoryManage] = useState(false)
-  const [currentMonthKey] = useState(() => getCurrentMonthKey())
-  const [isChartAnimationActive] = useState(
-    () =>
-      typeof window === 'undefined' || typeof window.matchMedia !== 'function'
-        ? true
-        : !window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  )
-  const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu()
+  const [adjustingWallet, setAdjustingWallet] = useState<Wallet | null>(null);
+  const [historyWalletId, setHistoryWalletId] = useState<string | null>(null);
+  const [showLogModal, setShowLogModal] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [deletingExpenseId, setDeletingExpenseId] = useState<string | null>(
+    null,
+  );
+  const [showCategoryManage, setShowCategoryManage] = useState(false);
+  const [currentMonthKey] = useState(() => getCurrentMonthKey());
+  const [isChartAnimationActive] = useState(() =>
+    typeof window === "undefined" || typeof window.matchMedia !== "function"
+      ? true
+      : !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
+  const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
+  const selectedHistoryWallet = historyWalletId
+    ? (wallets.find((wallet) => wallet.id === historyWalletId) ?? null)
+    : null;
 
   useEffect(() => {
-    if (!walletsLoaded) loadWallets()
-    loadCategories()
-    loadExpenses()
-  }, [])
+    if (!walletsLoaded) {
+      void loadWallets();
+    }
+    if (!categoriesLoaded) {
+      void loadCategories();
+    }
+  }, [categoriesLoaded, loadCategories, loadWallets, walletsLoaded]);
 
   useEffect(() => {
-    loadAnalytics(currentMonthKey, trendMonths)
-  }, [currentMonthKey, trendMonths])
+    void loadAnalytics(currentMonthKey, trendMonths);
+  }, [currentMonthKey, loadAnalytics, trendMonths]);
 
   // Reload expenses when filters change
   useEffect(() => {
-    loadExpenses()
-  }, [filters])
+    void loadExpenses();
+  }, [filters, loadExpenses]);
 
   // "N" key shortcut: open log modal when in expenses module
   useEffect(() => {
     if (newItemTrigger && newItemTrigger > 0 && wallets.length > 0) {
-      setShowLogModal(true)
+      // This is driven by a parent shortcut/event trigger, not derived UI state.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setShowLogModal(true);
     }
-  }, [newItemTrigger])
+  }, [newItemTrigger, wallets.length]);
 
-  function handleAdjustSave(mode: 'set' | 'delta', amount: number, description?: string) {
-    if (!adjustingWallet) return
-    adjustWalletBalance(adjustingWallet.id, mode, amount, description)
-    setAdjustingWallet(null)
+  function handleAdjustSave(
+    mode: "set" | "delta",
+    amount: number,
+    description?: string,
+  ): void {
+    if (!adjustingWallet) return;
+    adjustWalletBalance(adjustingWallet.id, mode, amount, description);
+    setAdjustingWallet(null);
   }
 
   async function handleModalSave(data: {
-    amount: number
-    date: string
-    categoryId: string
-    walletId: string
-    notes?: string
-  }) {
+    amount: number;
+    date: string;
+    categoryId: string;
+    walletId: string;
+    notes?: string;
+  }): Promise<void> {
     if (editingExpense) {
-      await updateExpense(editingExpense.id, data)
+      await updateExpense(editingExpense.id, data);
     } else {
-      await createExpense(data)
+      await createExpense(data);
     }
-    setShowLogModal(false)
-    setEditingExpense(null)
-    // Reload wallets to reflect balance changes
-    loadWallets()
-    loadExpenses()
-    loadAnalytics(currentMonthKey, trendMonths)
+    setShowLogModal(false);
+    setEditingExpense(null);
+    void loadAnalytics(currentMonthKey, trendMonths);
   }
 
-  function handleExpenseContextMenu(e: React.MouseEvent, expense: Expense) {
+  function handleExpenseContextMenu(
+    e: React.MouseEvent,
+    expense: Expense,
+  ): void {
     showContextMenu(e, [
       {
-        label: 'Edit',
+        label: "Edit",
         onClick: () => {
-          setEditingExpense(expense)
-          setShowLogModal(true)
+          setEditingExpense(expense);
+          setShowLogModal(true);
         },
       },
       {
-        label: 'Delete',
+        label: "Delete",
         destructive: true,
         onClick: () => {
-          setDeletingExpenseId(expense.id)
+          setDeletingExpenseId(expense.id);
         },
       },
-    ])
+    ]);
   }
 
-  async function handleConfirmDelete() {
-    if (!deletingExpenseId) return
-    await deleteExpense(deletingExpenseId)
-    setDeletingExpenseId(null)
-    loadWallets()
-    loadAnalytics(currentMonthKey, trendMonths)
+  async function handleConfirmDelete(): Promise<void> {
+    if (!deletingExpenseId) return;
+    await deleteExpense(deletingExpenseId);
+    setDeletingExpenseId(null);
+    void loadAnalytics(currentMonthKey, trendMonths);
   }
 
-  const canLog = wallets.length > 0
+  const canLog = wallets.length > 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        overflow: "hidden",
+      }}
+    >
       <ModuleHeader
         moduleId="expenses"
         right={
@@ -150,17 +200,17 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
             disabled={!canLog}
             onClick={() => {
               if (canLog) {
-                setEditingExpense(null)
-                setShowLogModal(true)
+                setEditingExpense(null);
+                setShowLogModal(true);
               }
             }}
             style={{
-              background: 'none',
-              border: 'none',
+              background: "none",
+              border: "none",
               padding: 0,
-              cursor: canLog ? 'pointer' : 'not-allowed',
-              fontSize: 'var(--font-size-small)',
-              color: canLog ? 'var(--color-accent)' : 'var(--color-text-muted)',
+              cursor: canLog ? "pointer" : "not-allowed",
+              fontSize: "var(--font-size-small)",
+              color: canLog ? "var(--color-accent)" : "var(--color-text-muted)",
               opacity: canLog ? 1 : 0.5,
             }}
           >
@@ -168,20 +218,29 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
           </button>
         }
       />
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
         <WalletPanel
           wallets={wallets}
           onCreateWallet={createWallet}
-          onUpdateWallet={async (id, data) => {
-            await updateWallet(id, data)
-            loadWallets()
-          }}
+          onUpdateWallet={updateWallet}
           onAdjustBalance={(wallet) => setAdjustingWallet(wallet)}
           onViewHistory={(walletId) => setHistoryWalletId(walletId)}
         />
         {/* Right panel — expense list + category management */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <div style={{ padding: 'var(--space-4) var(--space-4) 0', flexShrink: 0 }}>
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              padding: "var(--space-4) var(--space-4) 0",
+              flexShrink: 0,
+            }}
+          >
             <ExpenseAnalyticsSection
               analytics={analytics}
               isOpen={showAnalytics}
@@ -191,7 +250,14 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
               isAnimationActive={isChartAnimationActive}
             />
           </div>
-          <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div
+            style={{
+              flex: 1,
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
             <ExpenseList
               expenses={expenses}
               categories={categories}
@@ -206,33 +272,39 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
           {/* Manage categories toggle */}
           <div
             style={{
-              padding: 'var(--space-2) var(--space-4)',
-              borderTop: showCategoryManage ? 'none' : '1px solid var(--color-border)',
+              padding: "var(--space-2) var(--space-4)",
+              borderTop: showCategoryManage
+                ? "none"
+                : "1px solid var(--color-border)",
               flexShrink: 0,
             }}
           >
             <button
               onClick={() => setShowCategoryManage((v) => !v)}
               style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: 'var(--font-size-small)',
-                color: showCategoryManage ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontSize: "var(--font-size-small)",
+                color: showCategoryManage
+                  ? "var(--color-accent)"
+                  : "var(--color-text-secondary)",
                 padding: 0,
               }}
               onMouseEnter={(e) => {
-                ;(e.currentTarget as HTMLElement).style.color = showCategoryManage
-                  ? 'var(--color-accent-hover)'
-                  : 'var(--color-text-secondary)'
+                (e.currentTarget as HTMLElement).style.color =
+                  showCategoryManage
+                    ? "var(--color-accent-hover)"
+                    : "var(--color-text-secondary)";
               }}
               onMouseLeave={(e) => {
-                ;(e.currentTarget as HTMLElement).style.color = showCategoryManage
-                  ? 'var(--color-accent)'
-                  : 'var(--color-text-secondary)'
+                (e.currentTarget as HTMLElement).style.color =
+                  showCategoryManage
+                    ? "var(--color-accent)"
+                    : "var(--color-text-secondary)";
               }}
             >
-              {showCategoryManage ? 'Hide categories' : 'Manage categories'}
+              {showCategoryManage ? "Hide categories" : "Manage categories"}
             </button>
 
             {showCategoryManage && (
@@ -251,12 +323,12 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
       {deletingExpenseId && (
         <div
           style={{
-            position: 'fixed',
+            position: "fixed",
             inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.4)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            backgroundColor: "rgba(0,0,0,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
             zIndex: 1400,
           }}
           onClick={() => setDeletingExpenseId(null)}
@@ -264,34 +336,40 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              backgroundColor: 'var(--color-bg-overlay)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              padding: 'var(--space-4)',
-              maxWidth: '320px',
-              width: '100%',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+              backgroundColor: "var(--color-bg-overlay)",
+              border: "1px solid var(--color-border)",
+              borderRadius: "var(--radius-md)",
+              padding: "var(--space-4)",
+              maxWidth: "320px",
+              width: "100%",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
             }}
           >
             <p
               style={{
-                margin: '0 0 var(--space-4) 0',
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-primary)',
+                margin: "0 0 var(--space-4) 0",
+                fontSize: "var(--font-size-body)",
+                color: "var(--color-text-primary)",
               }}
             >
               Delete this expense? This will reverse the wallet deduction.
             </p>
-            <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end' }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "var(--space-2)",
+                justifyContent: "flex-end",
+              }}
+            >
               <button
                 onClick={() => setDeletingExpenseId(null)}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--color-text-secondary)',
-                  fontSize: 'var(--font-size-body)',
-                  padding: 'var(--space-1) var(--space-2)',
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "var(--color-text-secondary)",
+                  fontSize: "var(--font-size-body)",
+                  padding: "var(--space-1) var(--space-2)",
                 }}
               >
                 Keep Expense
@@ -299,13 +377,13 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
               <button
                 onClick={handleConfirmDelete}
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: 'var(--color-destructive)',
-                  fontSize: 'var(--font-size-body)',
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "var(--color-destructive)",
+                  fontSize: "var(--font-size-body)",
                   fontWeight: 600,
-                  padding: 'var(--space-1) var(--space-2)',
+                  padding: "var(--space-1) var(--space-2)",
                 }}
               >
                 Delete
@@ -323,23 +401,24 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
         />
       )}
 
-      {historyWalletId && (
+      {selectedHistoryWallet && (
         <WalletHistoryModal
-          wallet={wallets.find(w => w.id === historyWalletId)!}
+          key={selectedHistoryWallet.id}
+          wallet={selectedHistoryWallet}
           onClose={() => setHistoryWalletId(null)}
         />
       )}
 
       {showLogModal && (
         <ExpenseLogModal
-          mode={editingExpense ? 'edit' : 'create'}
+          mode={editingExpense ? "edit" : "create"}
           expense={editingExpense ?? undefined}
           categories={categories}
           wallets={wallets}
           onSave={handleModalSave}
           onClose={() => {
-            setShowLogModal(false)
-            setEditingExpense(null)
+            setShowLogModal(false);
+            setEditingExpense(null);
           }}
           onCreateCategory={createCategory}
         />
@@ -353,5 +432,5 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
         />
       )}
     </div>
-  )
+  );
 }

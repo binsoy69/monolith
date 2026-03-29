@@ -1,72 +1,67 @@
-const isMac = navigator.platform.toLowerCase().includes('mac');
+const isMac = navigator.platform.toLowerCase().includes("mac");
 
-const controlButtonStyle = (color: string): React.CSSProperties => ({
-  width: '12px',
-  height: '12px',
-  borderRadius: '50%',
-  backgroundColor: color,
-  border: 'none',
-  padding: 0,
-  cursor: 'pointer',
-  WebkitAppRegion: 'no-drag',
-  flexShrink: 0,
-} as React.CSSProperties);
+interface WindowChromeProps {
+  activeModule: "dashboard" | "habits" | "planner" | "expenses" | "settings";
+}
 
-export function WindowChrome() {
+const MODULE_COPY: Record<WindowChromeProps["activeModule"], string> = {
+  dashboard: "daily brief",
+  habits: "habit tracking",
+  planner: "planner flow",
+  expenses: "expense control",
+  settings: "workspace settings",
+};
+
+const controlButtonStyle = (color: string): React.CSSProperties =>
+  ({
+    backgroundColor: color,
+    WebkitAppRegion: "no-drag",
+  }) as React.CSSProperties;
+
+export function WindowChrome({
+  activeModule,
+}: WindowChromeProps): React.JSX.Element {
   return (
-    <div
-      style={{
-        width: '100%',
-        height: 'var(--drag-region-height)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        WebkitAppRegion: 'drag',
-        flexShrink: 0,
-      } as React.CSSProperties}
-    >
-      <span
-        style={{
-          fontSize: 'var(--font-size-body)',
-          fontWeight: 400,
-          color: 'var(--color-text-secondary)',
-          userSelect: 'none',
-          pointerEvents: 'none',
-        }}
-      >
-        Monolith
-      </span>
+    <div className="chrome-surface">
+      <div className="chrome-brand">
+        <div className="chrome-brand-mark">M</div>
+        <div className="chrome-brand-copy">
+          <span className="chrome-brand-title">Monolith</span>
+          <span className="chrome-brand-subtitle">
+            personal operations console
+          </span>
+        </div>
+      </div>
+
+      <div className="chrome-current">
+        <span className="chrome-current-label">active surface</span>
+        <span className="chrome-current-value">
+          {MODULE_COPY[activeModule]}
+        </span>
+      </div>
 
       {!isMac && (
-        <div
-          style={{
-            position: 'absolute',
-            right: 'var(--space-2)',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}
-        >
+        <div className="window-controls">
           <button
+            className="control-button"
             onClick={() => window.api.window.minimize()}
             title="Minimize"
             aria-label="Minimize window"
-            style={controlButtonStyle('#f59e0b')}
+            style={controlButtonStyle("#d4a05f")}
           />
           <button
+            className="control-button"
             onClick={() => window.api.window.maximize()}
             title="Maximize"
             aria-label="Maximize window"
-            style={controlButtonStyle('#22c55e')}
+            style={controlButtonStyle("#78aa86")}
           />
           <button
+            className="control-button"
             onClick={() => window.api.window.close()}
             title="Close"
             aria-label="Close window"
-            style={controlButtonStyle('#ef4444')}
+            style={controlButtonStyle("#cd6d68")}
           />
         </div>
       )}

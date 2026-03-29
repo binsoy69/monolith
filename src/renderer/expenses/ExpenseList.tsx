@@ -1,15 +1,19 @@
-import type { Expense, Category, Wallet } from '../../shared/domain-types'
-import { ExpenseFilterBar } from './ExpenseFilterBar'
-import { ExpenseRow } from './ExpenseRow'
+import type { Expense, Category, Wallet } from "../../shared/domain-types";
+import { ExpenseFilterBar } from "./ExpenseFilterBar";
+import { ExpenseRow } from "./ExpenseRow";
 
 interface ExpenseListProps {
-  expenses: Expense[]
-  categories: Category[]
-  wallets: Wallet[]
-  filters: { startDate?: string; endDate?: string; categoryId?: string }
-  onFiltersChange: (filters: { startDate?: string; endDate?: string; categoryId?: string }) => void
-  onClearFilters: () => void
-  onContextMenu: (e: React.MouseEvent, expense: Expense) => void
+  expenses: Expense[];
+  categories: Category[];
+  wallets: Wallet[];
+  filters: { startDate?: string; endDate?: string; categoryId?: string };
+  onFiltersChange: (filters: {
+    startDate?: string;
+    endDate?: string;
+    categoryId?: string;
+  }) => void;
+  onClearFilters: () => void;
+  onContextMenu: (e: React.MouseEvent, expense: Expense) => void;
 }
 
 export function ExpenseList({
@@ -20,18 +24,23 @@ export function ExpenseList({
   onFiltersChange,
   onClearFilters,
   onContextMenu,
-}: ExpenseListProps) {
-  function getCategoryById(id: string): Category | undefined {
-    return categories.find((c) => c.id === id)
-  }
-
-  function getWalletName(id: string | null): string {
-    if (!id) return ''
-    return wallets.find((w) => w.id === id)?.name ?? ''
-  }
+}: ExpenseListProps): React.JSX.Element {
+  const categoriesById = new Map(
+    categories.map((category) => [category.id, category]),
+  );
+  const walletNamesById = new Map(
+    wallets.map((wallet) => [wallet.id, wallet.name]),
+  );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        overflow: "hidden",
+      }}
+    >
       <ExpenseFilterBar
         filters={filters}
         categories={categories}
@@ -40,22 +49,22 @@ export function ExpenseList({
       />
 
       {/* Expense rows */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ flex: 1, overflowY: "auto" }}>
         {expenses.length === 0 ? (
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              gap: 'var(--space-2)',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "100%",
+              gap: "var(--space-2)",
             }}
           >
             <span
               style={{
-                fontSize: 'var(--font-size-body)',
-                color: 'var(--color-text-muted)',
+                fontSize: "var(--font-size-body)",
+                color: "var(--color-text-muted)",
                 fontWeight: 600,
               }}
             >
@@ -63,8 +72,8 @@ export function ExpenseList({
             </span>
             <span
               style={{
-                fontSize: 'var(--font-size-small)',
-                color: 'var(--color-text-muted)',
+                fontSize: "var(--font-size-small)",
+                color: "var(--color-text-muted)",
               }}
             >
               Your expense history will appear here.
@@ -75,13 +84,17 @@ export function ExpenseList({
             <ExpenseRow
               key={expense.id}
               expense={expense}
-              category={getCategoryById(expense.categoryId)}
-              walletName={getWalletName(expense.walletId)}
+              category={categoriesById.get(expense.categoryId)}
+              walletName={
+                expense.walletId
+                  ? (walletNamesById.get(expense.walletId) ?? "")
+                  : ""
+              }
               onContextMenu={(e) => onContextMenu(e, expense)}
             />
           ))
         )}
       </div>
     </div>
-  )
+  );
 }

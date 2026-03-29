@@ -5,3 +5,4 @@ dist/
 *.local
 .eslintcache
 .cache/
+.claude/worktrees/

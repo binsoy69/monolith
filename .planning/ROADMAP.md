@@ -107,7 +107,7 @@ Plans:
   2. User can invoke global search (keyboard shortcut) and find matching habits, tasks, expenses, and notes by keyword — results appear instantly as they type
   3. User receives a desktop notification for habits that have not been checked off (at a time configured in settings); clicking the notification focuses the habit module
   4. The app installs and runs as a signed native binary on the target platform; auto-update checks GitHub Releases on startup
-**Plans**: TBD
+**Plans**: 4/4 planned
 
 Plans:
 - [ ] 05-01: Tags system — schema, IPC handlers, tag UI on all three modules, cross-module filter view

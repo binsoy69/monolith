@@ -108,12 +108,12 @@ Plans:
   2. User can invoke global search (keyboard shortcut) and find matching habits, tasks, expenses, and notes by keyword — results appear instantly as they type
   3. User receives a desktop notification for habits that have not been checked off (at a time configured in settings); clicking the notification focuses the habit module
   4. The app installs and runs as a signed native binary on the target platform; auto-update checks GitHub Releases on startup
-**Plans**: 2/4 complete
+**Plans**: 3/4 complete
 
 Plans:
 - [x] 05-01: Tags system — schema, IPC handlers, tag UI on all three modules, cross-module filter view
 - [x] 05-02: Global search — IPC handler with full-text search across all module tables, search UI with keyboard navigation
-- [ ] 05-03: Desktop notifications — node-cron scheduler in main process, habit notification logic, notification click handler
+- [x] 05-03: Desktop notifications — node-cron scheduler in main process, habit notification logic, notification click handler
 - [ ] 05-04: Packaging and distribution — electron-builder config, code signing, auto-updater wired to GitHub Releases
 
 ## Progress
@@ -127,7 +127,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 2. Module Core | 9/9 | Complete   | 2026-03-21 |
 | 3. Dashboard + Navigation | 2/2 | Complete   | 2026-03-21 |
 | 4. Depth + Differentiators | 7/7 | Complete   | 2026-03-28 |
-| 5. Cross-Module + Distribution | 2/4 | In Progress | - |
+| 5. Cross-Module + Distribution | 3/4 | In Progress | - |
 | 6. Wallet Edit Fix & Transaction Logging | 2/2 | Complete   | 2026-03-29 |
 
 ### Phase 6: Wallet Edit Fix & Transaction Logging

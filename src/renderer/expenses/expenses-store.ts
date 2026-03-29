@@ -21,8 +21,8 @@ interface ExpensesStore {
   loadAnalytics: (month: string, trendMonths: 3 | 6 | 12) => Promise<void>
 
   createWallet: (data: { name: string; balance: number }) => Promise<void>
-  updateWallet: (id: string, data: { name?: string }) => Promise<void>
-  adjustWalletBalance: (id: string, mode: 'set' | 'delta', amount: number) => Promise<void>
+  updateWallet: (id: string, data: { name?: string; balance?: number; description?: string }) => Promise<void>
+  adjustWalletBalance: (id: string, mode: 'set' | 'delta', amount: number, description?: string) => Promise<void>
   deleteWallet: (id: string) => Promise<boolean>
 
   createExpense: (data: { amount: number; date: string; categoryId: string; walletId: string; notes?: string }) => Promise<void>
@@ -107,7 +107,7 @@ export const useExpensesStore = create<ExpensesStore>((set, get) => ({
     }
   },
 
-  adjustWalletBalance: async (id, mode, amount) => {
+  adjustWalletBalance: async (id, mode, amount, description) => {
     // Optimistic update
     const prev = get().wallets
     set((state) => ({
@@ -118,7 +118,7 @@ export const useExpensesStore = create<ExpensesStore>((set, get) => ({
       }),
     }))
     try {
-      await window.api.expenses.adjustWalletBalance({ id, mode, amount })
+      await window.api.expenses.adjustWalletBalance({ id, mode, amount, description })
     } catch {
       // Rollback on error
       set({ wallets: prev })

@@ -48,6 +48,7 @@ const api: API = {
     updateWallet: (data) => ipcRenderer.invoke('expenses:updateWallet', data),
     adjustWalletBalance: (data) => ipcRenderer.invoke('expenses:adjustWalletBalance', data),
     deleteWallet: (id) => ipcRenderer.invoke('expenses:deleteWallet', id),
+    listWalletTransactions: (walletId) => ipcRenderer.invoke('expenses:listWalletTransactions', walletId),
     getAnalytics: (data) => ipcRenderer.invoke('expenses:getAnalytics', data),
   },
   dashboard: {

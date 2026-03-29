@@ -84,6 +84,8 @@ function createApiMock(): typeof window.api {
     },
     shell: {
       onNavigate: vi.fn(),
+      onUpdateStatus: vi.fn(),
+      installUpdate: vi.fn(),
     },
     search: {
       query: vi.fn().mockResolvedValue([]),

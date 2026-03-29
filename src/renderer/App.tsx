@@ -3,6 +3,7 @@ import { Sidebar } from "./shell/Sidebar";
 import { WindowChrome } from "./shell/WindowChrome";
 import { ModuleHeader } from "./shell/ModuleHeader";
 import { SettingsView } from "./settings/SettingsView";
+import { UpdateBanner } from "./shell/UpdateBanner";
 import { KeyboardRouter } from "./shell/KeyboardRouter";
 import { KeyboardShortcutOverlay } from "./shell/KeyboardShortcutOverlay";
 import { CommandPalette } from "./shell/CommandPalette";
@@ -17,7 +18,7 @@ import { TagsView } from "./tags/TagsView";
 import { usePlannerStore } from "./planner/planner-store";
 import { useExpensesStore } from "./expenses/expenses-store";
 import type { ShellModuleId } from "../shared/domain-types";
-import type { SearchResult } from "../shared/ipc-types";
+import type { SearchResult, UpdateStatus } from "../shared/ipc-types";
 
 export type ModuleId = ShellModuleId;
 
@@ -71,6 +72,9 @@ export default function App(): React.JSX.Element {
   const [highlightHabitId, setHighlightHabitId] = useState<string>();
   const [highlightTaskId, setHighlightTaskId] = useState<string>();
   const [highlightExpenseId, setHighlightExpenseId] = useState<string>();
+  const [updateStatus, setUpdateStatus] = useState<UpdateStatus>({
+    state: "idle",
+  });
 
   const plannerNavigateDay = usePlannerStore((s) => s.navigateDay);
   const plannerGoToToday = usePlannerStore((s) => s.goToToday);
@@ -141,6 +145,12 @@ export default function App(): React.JSX.Element {
       if (payload.module === "habits") {
         setActiveModule("habits");
       }
+    });
+  }, []);
+
+  useEffect(() => {
+    return window.api.shell.onUpdateStatus((payload) => {
+      setUpdateStatus(payload);
     });
   }, []);
 
@@ -219,6 +229,13 @@ export default function App(): React.JSX.Element {
         onGoToToday={plannerGoToToday}
         onCommandPalette={() => setShowCommandPalette(true)}
       />
+
+      {updateStatus.state !== "idle" && updateStatus.state !== "not-available" ? (
+        <UpdateBanner
+          status={updateStatus}
+          onInstall={() => void window.api.shell.installUpdate()}
+        />
+      ) : null}
 
       <div className="app-frame">
         <WindowChrome activeModule={activeModule} />

@@ -140,8 +140,19 @@ export interface ShellNavigatePayload {
   module: ShellModuleId
 }
 
+export type UpdateStatus =
+  | { state: 'idle' }
+  | { state: 'checking' }
+  | { state: 'available'; version: string }
+  | { state: 'downloading'; percent: number }
+  | { state: 'not-available' }
+  | { state: 'downloaded'; version: string }
+  | { state: 'error'; message: string }
+
 export interface ShellAPI {
   onNavigate: (callback: (payload: ShellNavigatePayload) => void) => () => void
+  onUpdateStatus: (callback: (payload: UpdateStatus) => void) => () => void
+  installUpdate: () => Promise<void>
 }
 
 export type SearchResultType = 'habit' | 'task' | 'expense' | 'daily_note'

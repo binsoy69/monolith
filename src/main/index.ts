@@ -3,6 +3,7 @@ import { join } from 'path'
 import { getDb, closeDb } from './db/connection'
 import { registerAllHandlers } from './ipc/index'
 import { HabitReminderService } from './services/HabitReminderService'
+import { AppUpdater } from './services/AppUpdater'
 import { getStore } from './settings/store'
 
 // Single instance lock — prevents concurrent SQLite writes
@@ -12,6 +13,7 @@ if (!app.requestSingleInstanceLock()) {
 
 let mainWindow: BrowserWindow | null = null
 let habitReminderService: HabitReminderService | null = null
+let appUpdater: AppUpdater | null = null
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -66,6 +68,15 @@ app.whenReady().then(async () => {
     getMainWindow: () => mainWindow,
   })
   habitReminderService.start()
+  appUpdater = new AppUpdater({
+    getMainWindow: () => mainWindow,
+  })
+
+  if (app.isPackaged) {
+    appUpdater.start()
+  }
+
+  ipcMain.handle('shell:installUpdate', () => appUpdater?.installUpdate())
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

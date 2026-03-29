@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { API } from '../shared/ipc-types'
+import type { API, ShellNavigatePayload, UpdateStatus } from '../shared/ipc-types'
 
 const api: API = {
   settings: {
@@ -64,12 +64,26 @@ const api: API = {
   },
   shell: {
     onNavigate: (callback) => {
-      const listener = (_event: Electron.IpcRendererEvent, payload: { module: 'dashboard' | 'habits' | 'planner' | 'expenses' | 'settings' | 'tags' }) => {
+      const listener = (
+        _event: Electron.IpcRendererEvent,
+        payload: ShellNavigatePayload
+      ) => {
         callback(payload)
       }
       ipcRenderer.on('shell:navigate', listener)
       return () => ipcRenderer.removeListener('shell:navigate', listener)
     },
+    onUpdateStatus: (callback) => {
+      const listener = (
+        _event: Electron.IpcRendererEvent,
+        payload: UpdateStatus
+      ) => {
+        callback(payload)
+      }
+      ipcRenderer.on('shell:update-status', listener)
+      return () => ipcRenderer.removeListener('shell:update-status', listener)
+    },
+    installUpdate: () => ipcRenderer.invoke('shell:installUpdate'),
   },
   search: {
     query: (data) => ipcRenderer.invoke('search:query', data),

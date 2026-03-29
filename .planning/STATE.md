@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: unknown
-stopped_at: Completed 04-depth-differentiators 04-03-PLAN.md
-last_updated: "2026-03-22T23:17:30.649Z"
+stopped_at: Completed 06-wallet-edit-fix-and-transaction-logging 06-01-PLAN.md
+last_updated: "2026-03-29T02:53:26.793Z"
 progress:
   total_phases: 5
   completed_phases: 4
@@ -60,6 +60,7 @@ Plan: Not started
 | Phase 04 P01 | 19 min | 2 tasks | 14 files |
 | Phase 04 P02 | 13 min | 2 tasks | 10 files |
 | Phase 04 P03 | 8 min | 2 tasks | 12 files |
+| Phase 06-wallet-edit-fix-and-transaction-logging P01 | 3 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -127,6 +128,8 @@ Recent decisions affecting current work:
 - [Phase 04]: Trend windows are zero-filled in the repository — The renderer toggle receives complete 3 / 6 / 12 month series without client-side backfill
 - [Phase 04]: Expense analytics stay collapsed by default above the list — Preserves the module's dense list-first workflow
 - [Phase 04]: Donut legend rows and trend tooltip/grid are custom-themed inline — Avoids visible default Recharts styling
+- [Phase 06]: wallet_transactions amount is signed (negative=deduction, positive=reversal) for single-column direction encoding
+- [Phase 06]: All 4 balance mutation paths log to wallet_transactions atomically inside db.transaction() — enforces audit completeness
 
 ### Pending Todos
 
@@ -139,6 +142,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T23:17:30.649Z
-Stopped at: Completed 04-depth-differentiators 04-03-PLAN.md
+Last session: 2026-03-29T02:53:26.788Z
+Stopped at: Completed 06-wallet-edit-fix-and-transaction-logging 06-01-PLAN.md
 Resume file: None

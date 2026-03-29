@@ -141,6 +141,11 @@ export class ExpenseRepository {
       this.db
         .prepare('UPDATE wallets SET balance = balance - ? WHERE id = ?')
         .run(data.amount, data.walletId)
+      this.db
+        .prepare(
+          'INSERT INTO wallet_transactions (id, wallet_id, amount, type, description, date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        )
+        .run(randomUUID(), data.walletId, -data.amount, 'expense_deduction', null, data.date, now)
     })
     tx()
 
@@ -158,6 +163,8 @@ export class ExpenseRepository {
     }
   ): void {
     const tx = this.db.transaction(() => {
+      const now = new Date().toISOString()
+
       // Read original expense to get old amount and walletId
       const original = this.db
         .prepare('SELECT amount, wallet_id FROM expenses WHERE id = ?')
@@ -169,11 +176,21 @@ export class ExpenseRepository {
       this.db
         .prepare('UPDATE wallets SET balance = balance + ? WHERE id = ?')
         .run(original.amount, original.wallet_id)
+      this.db
+        .prepare(
+          'INSERT INTO wallet_transactions (id, wallet_id, amount, type, description, date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        )
+        .run(randomUUID(), original.wallet_id, original.amount, 'expense_reversal', null, data.date, now)
 
       // Apply new deduction
       this.db
         .prepare('UPDATE wallets SET balance = balance - ? WHERE id = ?')
         .run(data.amount, data.walletId)
+      this.db
+        .prepare(
+          'INSERT INTO wallet_transactions (id, wallet_id, amount, type, description, date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        )
+        .run(randomUUID(), data.walletId, -data.amount, 'expense_deduction', null, data.date, now)
 
       // Update expense record
       this.db
@@ -189,8 +206,8 @@ export class ExpenseRepository {
     const tx = this.db.transaction(() => {
       // Read expense to get amount and walletId for reversal
       const expense = this.db
-        .prepare('SELECT amount, wallet_id FROM expenses WHERE id = ?')
-        .get(id) as { amount: number; wallet_id: string | null } | undefined
+        .prepare('SELECT amount, wallet_id, date FROM expenses WHERE id = ?')
+        .get(id) as { amount: number; wallet_id: string | null; date: string } | undefined
 
       if (!expense) return
 
@@ -202,6 +219,12 @@ export class ExpenseRepository {
         this.db
           .prepare('UPDATE wallets SET balance = balance + ? WHERE id = ?')
           .run(expense.amount, expense.wallet_id)
+        const now = new Date().toISOString()
+        this.db
+          .prepare(
+            'INSERT INTO wallet_transactions (id, wallet_id, amount, type, description, date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+          )
+          .run(randomUUID(), expense.wallet_id, expense.amount, 'expense_reversal', null, expense.date, now)
       }
     })
     tx()

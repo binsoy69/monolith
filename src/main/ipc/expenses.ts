@@ -38,7 +38,10 @@ export function registerExpensesHandlers(): void {
     walletRepo.update(id, rest)
   })
   ipcMain.handle('expenses:adjustWalletBalance', (_, data) =>
-    walletRepo.adjustBalance(data.id, data.mode, data.amount)
+    walletRepo.adjustBalance(data.id, data.mode, data.amount, data.description)
   )
   ipcMain.handle('expenses:deleteWallet', (_, id) => walletRepo.delete(id))
+  ipcMain.handle('expenses:listWalletTransactions', (_, walletId) =>
+    walletRepo.listTransactions(walletId)
+  )
 }

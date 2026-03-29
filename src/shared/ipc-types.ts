@@ -7,6 +7,7 @@ import type {
   Category,
   Wallet,
   Expense,
+  WalletTransaction,
 } from './domain-types'
 
 export interface AppSettings {
@@ -71,9 +72,10 @@ export interface ExpensesAPI {
   deleteCategory: (id: string) => Promise<boolean>
   listWallets: () => Promise<Wallet[]>
   createWallet: (data: { name: string; balance: number }) => Promise<Wallet>
-  updateWallet: (data: { id: string; name?: string }) => Promise<void>
-  adjustWalletBalance: (data: { id: string; mode: 'set' | 'delta'; amount: number }) => Promise<void>
+  updateWallet: (data: { id: string; name?: string; balance?: number; description?: string }) => Promise<void>
+  adjustWalletBalance: (data: { id: string; mode: 'set' | 'delta'; amount: number; description?: string }) => Promise<void>
   deleteWallet: (id: string) => Promise<boolean>
+  listWalletTransactions: (walletId: string) => Promise<WalletTransaction[]>
   getAnalytics: (data: { month: string; trendMonths: 3 | 6 | 12 }) => Promise<ExpenseAnalytics>
 }
 

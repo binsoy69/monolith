@@ -50,3 +50,15 @@ export interface Expense {
   notes: string | null
   createdAt: string
 }
+
+export type WalletTransactionType = 'manual_set' | 'manual_delta' | 'expense_deduction' | 'expense_reversal'
+
+export interface WalletTransaction {
+  id: string
+  walletId: string
+  amount: number      // signed integer cents - positive = credit, negative = debit
+  type: WalletTransactionType
+  description: string | null
+  date: string        // ISO date YYYY-MM-DD
+  createdAt: string
+}

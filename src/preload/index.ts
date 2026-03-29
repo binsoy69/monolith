@@ -62,6 +62,15 @@ const api: API = {
     setAssignment: (data) => ipcRenderer.invoke('tags:setAssignment', data),
     getItemsByTag: (tagId) => ipcRenderer.invoke('tags:getItemsByTag', tagId),
   },
+  shell: {
+    onNavigate: (callback) => {
+      const listener = (_event: Electron.IpcRendererEvent, payload: { module: 'dashboard' | 'habits' | 'planner' | 'expenses' | 'settings' | 'tags' }) => {
+        callback(payload)
+      }
+      ipcRenderer.on('shell:navigate', listener)
+      return () => ipcRenderer.removeListener('shell:navigate', listener)
+    },
+  },
   search: {
     query: (data) => ipcRenderer.invoke('search:query', data),
   }

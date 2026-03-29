@@ -137,6 +137,14 @@ export default function App(): React.JSX.Element {
   );
 
   useEffect(() => {
+    return window.api.shell.onNavigate((payload) => {
+      if (payload.module === "habits") {
+        setActiveModule("habits");
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (!showCommandPalette || searchQuery.trim().length === 0) {
       setSearchResults([]);
       setIsSearching(false);

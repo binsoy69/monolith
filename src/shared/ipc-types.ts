@@ -11,11 +11,13 @@ import type {
   Tag,
   TaggableItemType,
   TaggedItemSummary,
+  ShellModuleId,
 } from './domain-types'
 
 export interface AppSettings {
   dateFormat: 'DD/MM/YYYY' | 'MM/DD/YYYY'
   notificationTime: string // "HH:mm" format e.g. "09:00"
+  notificationsEnabled: boolean
   windowBounds?: { width: number; height: number; x: number; y: number }
 }
 
@@ -134,6 +136,14 @@ export interface TagsAPI {
   getItemsByTag: (tagId: string) => Promise<TaggedItemSummary[]>
 }
 
+export interface ShellNavigatePayload {
+  module: ShellModuleId
+}
+
+export interface ShellAPI {
+  onNavigate: (callback: (payload: ShellNavigatePayload) => void) => () => void
+}
+
 export type SearchResultType = 'habit' | 'task' | 'expense' | 'daily_note'
 
 export interface SearchResult {
@@ -157,5 +167,6 @@ export interface API {
   expenses: ExpensesAPI
   dashboard: DashboardAPI
   tags: TagsAPI
+  shell: ShellAPI
   search: SearchAPI
 }

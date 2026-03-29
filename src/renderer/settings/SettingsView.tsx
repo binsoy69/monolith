@@ -51,7 +51,7 @@ export function SettingsView() {
   const controlHandlers = useControlHandlers();
 
   const handleChange = useCallback(
-    (field: keyof AppSettings, value: string) => {
+    (field: keyof AppSettings, value: AppSettings[keyof AppSettings]) => {
       updateSettings.mutate({ [field]: value });
       setFlashField(field);
     },
@@ -131,15 +131,36 @@ export function SettingsView() {
 
       {/* Notifications section */}
       <SettingsSection title="Notifications">
+        <SettingRow
+          label="Enable habit reminder"
+          flashActive={flashField === 'notificationsEnabled'}
+        >
+          <input
+            type="checkbox"
+            aria-label="Enable habit reminder"
+            checked={settings.notificationsEnabled}
+            onChange={(e) => handleChange('notificationsEnabled', e.target.checked)}
+            style={{
+              width: 16,
+              height: 16,
+              accentColor: 'var(--color-accent)',
+              cursor: 'pointer',
+            }}
+          />
+        </SettingRow>
         <SettingRow label="Habit Reminder" flashActive={flashField === 'notificationTime'}>
           <input
             type="time"
+            aria-label="Habit Reminder"
             value={settings.notificationTime}
             onChange={(e) => handleChange('notificationTime', e.target.value)}
+            disabled={!settings.notificationsEnabled}
             style={{
               ...controlBase,
               colorScheme: 'dark',
               minWidth: 130,
+              opacity: settings.notificationsEnabled ? 1 : 0.55,
+              cursor: settings.notificationsEnabled ? 'pointer' : 'not-allowed',
             }}
             {...controlHandlers}
           />

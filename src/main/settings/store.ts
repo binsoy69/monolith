@@ -1,16 +1,21 @@
+import type Store from 'electron-store';
 import type { AppSettings } from '../../shared/ipc-types';
 
-const defaults: AppSettings = {
+export type StoredAppSettings = AppSettings & { _lastHabitReminderDate?: string };
+
+const defaults: StoredAppSettings = {
   dateFormat: 'DD/MM/YYYY',
   notificationTime: '09:00',
+  notificationsEnabled: false,
+  _lastHabitReminderDate: '',
 };
 
-let _store: any | null = null;
+let _store: Store<StoredAppSettings> | null = null;
 
-async function getStore(): Promise<any> {
+async function getStore(): Promise<Store<StoredAppSettings>> {
   if (!_store) {
     const { default: Store } = await import('electron-store');
-    _store = new Store<AppSettings>({ defaults, name: 'settings' });
+    _store = new Store<StoredAppSettings>({ defaults, name: 'settings' });
   }
   return _store;
 }

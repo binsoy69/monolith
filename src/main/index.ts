@@ -2,6 +2,8 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { getDb, closeDb } from './db/connection'
 import { registerAllHandlers } from './ipc/index'
+import { HabitReminderService } from './services/HabitReminderService'
+import { getStore } from './settings/store'
 
 // Single instance lock — prevents concurrent SQLite writes
 if (!app.requestSingleInstanceLock()) {
@@ -9,6 +11,7 @@ if (!app.requestSingleInstanceLock()) {
 }
 
 let mainWindow: BrowserWindow | null = null
+let habitReminderService: HabitReminderService | null = null
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -49,7 +52,9 @@ ipcMain.on('window:maximize', () => {
 })
 ipcMain.on('window:close', () => mainWindow?.close())
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  await getStore()
+
   // Initialize DB + run migrations
   getDb()
 
@@ -57,12 +62,20 @@ app.whenReady().then(() => {
   registerAllHandlers()
 
   createWindow()
+  habitReminderService = new HabitReminderService({
+    getMainWindow: () => mainWindow,
+  })
+  habitReminderService.start()
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow()
     }
   })
+})
+
+app.on('before-quit', () => {
+  habitReminderService?.stop()
 })
 
 app.on('window-all-closed', () => {

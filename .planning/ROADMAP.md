@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Dashboard + Navigation** - Unified dashboard with real data, full keyboard navigation, sidebar complete (completed 2026-03-21)
 - [x] **Phase 4: Depth + Differentiators** - Charts, heatmaps, task carry-forward, habit scheduling, spending trends (completed 2026-03-28)
 - [ ] **Phase 5: Cross-Module + Distribution** - Tags, global search, desktop notifications, packaging, code signing
-- [ ] **Phase 6: Wallet Edit Fix & Transaction Logging** - Fix wallet edit button, require descriptions on balance changes, transaction history log
+- [x] **Phase 6: Wallet Edit Fix & Transaction Logging** - Fix wallet edit button, require descriptions on balance changes, transaction history log (completed 2026-03-29)
 
 ## Phase Details
 
@@ -127,14 +127,14 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 3. Dashboard + Navigation | 2/2 | Complete   | 2026-03-21 |
 | 4. Depth + Differentiators | 7/7 | Complete   | 2026-03-28 |
 | 5. Cross-Module + Distribution | 0/4 | Not started | - |
-| 6. Wallet Edit Fix & Transaction Logging | 0/2 | Not started | - |
+| 6. Wallet Edit Fix & Transaction Logging | 2/2 | Complete   | 2026-03-29 |
 
 ### Phase 6: Wallet Edit Fix & Transaction Logging
 **Goal:** Fix the wallet edit button in the expense module, require descriptions on wallet balance adjustments, and log all wallet balance changes in a transaction history.
 **Depends on:** Phase 2
 **Requirements:** WALL-01, WALL-02, WALL-03
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 06-01-PLAN.md — Backend: types, migration (wallet_transactions table), repository transaction logging, IPC + preload + store wiring
-- [ ] 06-02-PLAN.md — UI: inline wallet edit form, description field in balance adjust modal, wallet transaction history modal
+- [x] 06-01-PLAN.md — Backend: types, migration (wallet_transactions table), repository transaction logging, IPC + preload + store wiring
+- [x] 06-02-PLAN.md — UI: inline wallet edit form, description field in balance adjust modal, wallet transaction history modal

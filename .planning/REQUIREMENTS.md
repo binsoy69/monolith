@@ -46,9 +46,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Wallet Enhancements
 
-- [ ] **WALL-01**: User can edit wallet name and balance via inline form (fix broken edit button)
-- [ ] **WALL-02**: Balance adjustments accept an optional description (nudge pattern with visible field)
-- [ ] **WALL-03**: All wallet balance changes are logged in a transaction history viewable per wallet
+- [x] **WALL-01**: User can edit wallet name and balance via inline form (fix broken edit button)
+- [x] **WALL-02**: Balance adjustments accept an optional description (nudge pattern with visible field)
+- [x] **WALL-03**: All wallet balance changes are logged in a transaction history viewable per wallet
 
 ### Shell & UI
 
@@ -167,9 +167,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TAG-02 | Phase 5 | Pending |
 | KBD-04 | Phase 5 | Pending |
 | HAB-09 | Phase 5 | Pending |
-| WALL-01 | Phase 6 | Pending |
-| WALL-02 | Phase 6 | Pending |
-| WALL-03 | Phase 6 | Pending |
+| WALL-01 | Phase 6 | Complete |
+| WALL-02 | Phase 6 | Complete |
+| WALL-03 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 43 total

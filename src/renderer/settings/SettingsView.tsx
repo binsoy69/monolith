@@ -59,10 +59,12 @@ export function SettingsView() {
   );
 
   useEffect(() => {
-    if (flashField) {
-      const timer = setTimeout(() => setFlashField(null), 450);
-      return () => clearTimeout(timer);
+    if (!flashField) {
+      return undefined;
     }
+
+    const timer = setTimeout(() => setFlashField(null), 450);
+    return () => clearTimeout(timer);
   }, [flashField]);
 
   if (isError) {

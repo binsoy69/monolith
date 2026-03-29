@@ -41,6 +41,7 @@ interface HabitsStore {
   toggleComplete: (habitId: string, date: string) => Promise<void>
   reorderHabits: (ids: string[]) => Promise<void>
   incrementCount: (habitId: string, date: string) => Promise<void>
+  setCount: (habitId: string, date: string, value: number) => Promise<void>
   resetCount: (habitId: string, date: string) => Promise<void>
   createHabit: (data: { name: string; daysOfWeek: string; kind?: HabitKind; targetCount?: number | null }) => Promise<void>
   updateHabit: (id: string, data: { name?: string; daysOfWeek?: string; kind?: HabitKind; targetCount?: number | null }) => Promise<void>
@@ -165,6 +166,44 @@ export const useHabitsStore = create<HabitsStore>((set, get) => ({
 
     try {
       const result = await window.api.habits.incrementCount({ habitId, date })
+      set((state) => ({
+        habits: state.habits.map((item) =>
+          item.id === habitId
+            ? {
+                ...item,
+                todayValue: result.todayValue,
+                completedToday: result.completedToday,
+                currentStreak: result.currentStreak,
+                bestStreak: result.bestStreak,
+              }
+            : item
+        ),
+      }))
+    } catch {
+      set({ habits: previousHabits })
+      addToast({ type: 'error', message: 'Failed to save habit count. Changes were not applied.' })
+    }
+  },
+
+  setCount: async (habitId: string, date: string, value: number) => {
+    const previousHabits = get().habits
+    const habit = previousHabits.find((item) => item.id === habitId)
+    if (!habit) return
+
+    set({
+      habits: previousHabits.map((item) =>
+        item.id === habitId
+          ? {
+              ...item,
+              todayValue: value,
+              completedToday: isHabitCompleted(item.kind, item.targetCount, value),
+            }
+          : item
+      ),
+    })
+
+    try {
+      const result = await window.api.habits.setCount({ habitId, date, value })
       set((state) => ({
         habits: state.habits.map((item) =>
           item.id === habitId

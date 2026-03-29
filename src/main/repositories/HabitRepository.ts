@@ -33,6 +33,12 @@ function isCompleteValue(habit: Pick<Habit, 'kind' | 'targetCount'>, value: numb
   return value > 0
 }
 
+function assertNonNegativeInteger(value: number): void {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new Error('Habit count must be a non-negative integer.')
+  }
+}
+
 function parseLocalDate(dateStr: string): Date {
   const [year, month, day] = dateStr.split('-').map(Number)
   return new Date(year, month - 1, day)
@@ -170,6 +176,8 @@ export class HabitRepository {
   }
 
   setCompletionValue(habitId: string, date: string, value: number): void {
+    assertNonNegativeInteger(value)
+
     if (value <= 0) {
       this.db.prepare('DELETE FROM habit_completions WHERE habit_id = ? AND date = ?').run(habitId, date)
       return
@@ -182,6 +190,11 @@ export class HabitRepository {
          ON CONFLICT(habit_id, date) DO UPDATE SET value = excluded.value`
       )
       .run(habitId, date, value)
+  }
+
+  setCount(habitId: string, date: string, value: number): void {
+    assertNonNegativeInteger(value)
+    this.setCompletionValue(habitId, date, value)
   }
 
   isCompleted(habitId: string, date: string): boolean {

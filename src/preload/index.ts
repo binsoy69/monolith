@@ -22,6 +22,7 @@ const api: API = {
     getHistory: (data) => ipcRenderer.invoke('habits:getHistory', data),
     reorder: (data) => ipcRenderer.invoke('habits:reorder', data),
     incrementCount: (data) => ipcRenderer.invoke('habits:incrementCount', data),
+    setCount: (data) => ipcRenderer.invoke('habits:setCount', data),
     resetCount: (data) => ipcRenderer.invoke('habits:resetCount', data),
   },
   planner: {

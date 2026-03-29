@@ -20,25 +20,75 @@ export function ExpenseAnalyticsSection({
   onSelectTrendMonths,
   isAnimationActive = true,
 }: ExpenseAnalyticsSectionProps) {
+  const sectionId = 'expense-analytics-panel'
+  const previewLabel = analytics?.monthLabel ?? 'This month'
+  const previewTotal = analytics ? formatPeso(analytics.monthTotal) : 'Loading total...'
+  const previewHint = analytics
+    ? 'View category breakdown and trend charts'
+    : 'Monthly totals and charts will appear here'
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
       <button
         onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-controls={sectionId}
         style={{
-          alignSelf: 'flex-start',
-          background: 'none',
-          border: 'none',
+          width: '100%',
+          background: 'var(--color-bg-elevated)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-md)',
           cursor: 'pointer',
-          fontSize: 'var(--font-size-small)',
-          color: isOpen ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-          padding: 0,
+          padding: 'var(--space-4)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 'var(--space-4)',
+          textAlign: 'left',
         }}
       >
-        {isOpen ? 'Hide charts' : 'Show charts'}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
+          <span
+            style={{
+              fontSize: 'var(--font-size-small)',
+              color: 'var(--color-text-muted)',
+            }}
+          >
+            Monthly analytics
+          </span>
+          <span
+            style={{
+              fontSize: 'var(--font-size-heading)',
+              fontWeight: 600,
+              color: 'var(--color-text-primary)',
+            }}
+          >
+            {previewLabel}: {previewTotal}
+          </span>
+          <span
+            style={{
+              fontSize: 'var(--font-size-small)',
+              color: 'var(--color-text-secondary)',
+            }}
+          >
+            {previewHint}
+          </span>
+        </div>
+
+        <span
+          style={{
+            fontSize: 'var(--font-size-small)',
+            color: isOpen ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+            flexShrink: 0,
+          }}
+        >
+          {isOpen ? 'Hide charts' : 'Show charts'}
+        </span>
       </button>
 
       {isOpen && (
         <section
+          id={sectionId}
           style={{
             background: 'var(--color-bg-elevated)',
             border: '1px solid var(--color-border)',

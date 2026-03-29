@@ -1,11 +1,6 @@
 import { useState, useCallback } from 'react'
 import type { ContextMenuItem } from './ContextMenu'
 
-type ContextMenuState = {
-  position: { x: number; y: number }
-  items: ContextMenuItem[]
-} | null
-
 export function useContextMenu() {
   const [contextMenu, setContextMenu] = useState<{
     position: { x: number; y: number }

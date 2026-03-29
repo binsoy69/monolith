@@ -45,6 +45,42 @@ function formatMonthLabel(dateStr: string): string {
   return new Date(year, month - 1, day).toLocaleString('en-US', { month: 'short' })
 }
 
+export interface HeatmapMonthLabel {
+  label: string
+  column: number
+}
+
+export function buildMonthLabels(points: HabitHistoryPoint[]): HeatmapMonthLabel[] {
+  const heatmapPoints = padPoints(points)
+  const labels: HeatmapMonthLabel[] = []
+
+  for (let column = 0; column < COLUMNS; column += 1) {
+    const startIndex = column * ROWS
+    const columnPoints = heatmapPoints.slice(startIndex, startIndex + ROWS)
+    const monthStartsInColumn = columnPoints.filter((point, index) => {
+      const previousPoint = index === 0 ? heatmapPoints[startIndex - 1] : columnPoints[index - 1]
+      return point.date.slice(0, 7) !== previousPoint?.date.slice(0, 7)
+    })
+
+    if (monthStartsInColumn.length === 0) {
+      continue
+    }
+
+    // Prefer the newest month in a crowded boundary column so Dec/Jan does not stack unreadably.
+    const selectedPoint = monthStartsInColumn[monthStartsInColumn.length - 1]
+    const label = formatMonthLabel(selectedPoint.date)
+
+    if (labels[labels.length - 1]?.column === column) {
+      labels[labels.length - 1] = { label, column }
+      continue
+    }
+
+    labels.push({ label, column })
+  }
+
+  return labels
+}
+
 interface HabitHeatmapProps {
   points: HabitHistoryPoint[]
 }
@@ -52,16 +88,7 @@ interface HabitHeatmapProps {
 export function HabitHeatmap({ points }: HabitHeatmapProps) {
   const heatmapPoints = padPoints(points)
   const maxValue = Math.max(...heatmapPoints.map((point) => point.value), 1)
-  const monthLabels = heatmapPoints.reduce<Array<{ label: string; column: number }>>((labels, point, index) => {
-    const previousMonth = heatmapPoints[index - 1]?.date.slice(0, 7)
-    if (point.date.slice(0, 7) !== previousMonth) {
-      labels.push({
-        label: formatMonthLabel(point.date),
-        column: Math.floor(index / ROWS),
-      })
-    }
-    return labels
-  }, [])
+  const monthLabels = buildMonthLabels(heatmapPoints)
 
   return (
     <div

@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
-import { is } from '@electron-toolkit/utils'
 import { getDb, closeDb } from './db/connection'
 import { registerAllHandlers } from './ipc/index'
 
@@ -27,12 +26,12 @@ function createWindow(): void {
   })
 
   // DevTools only in development
-  if (is.dev) {
+  if (!app.isPackaged) {
     mainWindow.webContents.openDevTools()
   }
 
   // Load the remote URL for development or the local html file for production
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
+  if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))

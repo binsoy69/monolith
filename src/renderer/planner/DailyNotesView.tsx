@@ -8,7 +8,7 @@ interface DailyNotesViewProps {
 export function DailyNotesView({ date }: DailyNotesViewProps) {
   const { notesContent, loadNotes, saveNotes } = usePlannerStore()
   const [localContent, setLocalContent] = useState('')
-  const timerRef = useRef<ReturnType<typeof setTimeout>>()
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const hasChanged = useRef(false)
   const prevDate = useRef<string | null>(null)
 

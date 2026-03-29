@@ -77,6 +77,35 @@ describe('Habits Depth & IPC Features', () => {
     expect(repo.isCompleted('h3', '2026-03-21')).toBe(true)
   })
 
+  it('setCount persists large exact values without clamping to the target', () => {
+    db.prepare('INSERT INTO habits (id, name, days_of_week, kind, target_count, created_at, position) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .run('h5', 'Read 8 Pages', '1111111', 'count', 8, '2026-03-01T00:00:00Z', 0)
+
+    repo.setCount('h5', '2026-03-21', 1000)
+
+    const completion = db.prepare('SELECT value FROM habit_completions WHERE habit_id = ? AND date = ?').get('h5', '2026-03-21') as { value: number }
+    expect(completion.value).toBe(1000)
+    expect(repo.isCompleted('h5', '2026-03-21')).toBe(true)
+  })
+
+  it('setCount stores below-target values without marking the habit complete', () => {
+    db.prepare('INSERT INTO habits (id, name, days_of_week, kind, target_count, created_at, position) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .run('h6', 'Read 8 Pages', '1111111', 'count', 8, '2026-03-01T00:00:00Z', 0)
+
+    repo.setCount('h6', '2026-03-21', 7)
+
+    const completion = db.prepare('SELECT value FROM habit_completions WHERE habit_id = ? AND date = ?').get('h6', '2026-03-21') as { value: number }
+    expect(completion.value).toBe(7)
+    expect(repo.isCompleted('h6', '2026-03-21')).toBe(false)
+  })
+
+  it('setCount rejects negative values', () => {
+    db.prepare('INSERT INTO habits (id, name, days_of_week, kind, target_count, created_at, position) VALUES (?, ?, ?, ?, ?, ?, ?)')
+      .run('h7', 'Read 8 Pages', '1111111', 'count', 8, '2026-03-01T00:00:00Z', 0)
+
+    expect(() => repo.setCount('h7', '2026-03-21', -1)).toThrow('Habit count must be a non-negative integer.')
+  })
+
   it('history window returns the requested date span and completion flags', () => {
     db.prepare('INSERT INTO habits (id, name, days_of_week, kind, target_count, created_at, position) VALUES (?, ?, ?, ?, ?, ?, ?)')
       .run('h4', 'Read Pages', '1111111', 'count', 3, '2026-03-01T00:00:00Z', 0)

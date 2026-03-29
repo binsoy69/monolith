@@ -47,6 +47,7 @@ export interface HabitsAPI {
   getHistory: (data: { habitId: string; endDate: string; days: number }) => Promise<HabitHistoryPoint[]>
   reorder: (data: { ids: string[] }) => Promise<void>
   incrementCount: (data: { habitId: string; date: string }) => Promise<{ todayValue: number; completedToday: boolean; currentStreak: number; bestStreak: number }>
+  setCount: (data: { habitId: string; date: string; value: number }) => Promise<{ todayValue: number; completedToday: boolean; currentStreak: number; bestStreak: number }>
   resetCount: (data: { habitId: string; date: string }) => Promise<{ todayValue: number; completedToday: boolean; currentStreak: number; bestStreak: number }>
 }
 

@@ -135,4 +135,36 @@ describe('PlannerRepository planner depth', () => {
     const task = repo.listForDate('2026-03-21').find((entry) => entry.id === created.id)
     expect((task as { priority?: number } | undefined)?.priority).toBe(0)
   })
+
+  it('orders incomplete tasks by carried status, then priority, then manual position', () => {
+    db.prepare(
+      'INSERT INTO tasks (id, title, date, completed, carried_from_date, position, priority, created_at) VALUES (?, ?, ?, 0, ?, ?, ?, ?)'
+    ).run('carried-p2', 'Carried P2', '2026-03-21', '2026-03-19', 1, 2, '2026-03-19T00:00:00Z')
+    db.prepare(
+      'INSERT INTO tasks (id, title, date, completed, carried_from_date, position, priority, created_at) VALUES (?, ?, ?, 0, ?, ?, ?, ?)'
+    ).run('carried-p1', 'Carried P1', '2026-03-21', '2026-03-18', 3, 1, '2026-03-18T00:00:00Z')
+    db.prepare(
+      'INSERT INTO tasks (id, title, date, completed, carried_from_date, position, priority, created_at) VALUES (?, ?, ?, 0, NULL, ?, ?, ?)'
+    ).run('today-p1', 'Today P1', '2026-03-21', 2, 1, '2026-03-21T00:00:00Z')
+    db.prepare(
+      'INSERT INTO tasks (id, title, date, completed, carried_from_date, position, priority, created_at) VALUES (?, ?, ?, 0, NULL, ?, ?, ?)'
+    ).run('today-none-a', 'Today none A', '2026-03-21', 0, 0, '2026-03-21T02:00:00Z')
+    db.prepare(
+      'INSERT INTO tasks (id, title, date, completed, carried_from_date, position, priority, created_at) VALUES (?, ?, ?, 0, NULL, ?, ?, ?)'
+    ).run('today-none-b', 'Today none B', '2026-03-21', 0, 0, '2026-03-21T01:00:00Z')
+    db.prepare(
+      'INSERT INTO tasks (id, title, date, completed, carried_from_date, position, priority, created_at) VALUES (?, ?, ?, 1, NULL, ?, ?, ?)'
+    ).run('done', 'Done', '2026-03-21', 0, 1, '2026-03-21T03:00:00Z')
+
+    const tasks = repo.listForDate('2026-03-21')
+
+    expect(tasks.map((task) => task.id)).toEqual([
+      'carried-p1',
+      'carried-p2',
+      'today-p1',
+      'today-none-b',
+      'today-none-a',
+      'done',
+    ])
+  })
 })

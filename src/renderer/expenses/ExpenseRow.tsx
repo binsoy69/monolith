@@ -4,7 +4,7 @@ import { formatPeso } from '../../shared/format'
 
 function formatDate(dateStr: string): string {
   // Parse YYYY-MM-DD without timezone issues
-  const [year, month, day] = dateStr.split('-').map(Number)
+  const [, month, day] = dateStr.split('-').map(Number)
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   return `${months[month - 1]} ${day}`
 }

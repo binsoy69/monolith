@@ -150,6 +150,21 @@ export function registerHabitsHandlers(): void {
   )
 
   ipcMain.handle(
+    'habits:setCount',
+    (_, data: { habitId: string; date: string; value: number }) => {
+      const db = getDb()
+      const repo = new HabitRepository(db)
+      const habit = repo.getById(data.habitId)
+      if (!habit) {
+        return { todayValue: 0, completedToday: false, currentStreak: 0, bestStreak: 0 }
+      }
+
+      repo.setCount(data.habitId, data.date, data.value)
+      return buildProgressSnapshot(repo, habit, data.habitId, data.value)
+    }
+  )
+
+  ipcMain.handle(
     'habits:resetCount',
     (_, data: { habitId: string; date: string }) => {
       const db = getDb()

@@ -53,7 +53,24 @@ export class PlannerRepository {
   listForDate(date: string): Task[] {
     const rows = this.db
       .prepare(
-        `SELECT ${this.getSelectColumns()} FROM tasks WHERE date = ? ORDER BY completed ASC, position ASC, created_at ASC`
+        `SELECT ${this.getSelectColumns()}
+         FROM tasks
+         WHERE date = ?
+         ORDER BY
+           completed ASC,
+           CASE
+             WHEN completed = 0 AND carriedFromDate IS NOT NULL THEN 0
+             WHEN completed = 0 THEN 1
+             ELSE 2
+           END ASC,
+           CASE priority
+             WHEN 1 THEN 0
+             WHEN 2 THEN 1
+             WHEN 3 THEN 2
+             ELSE 3
+           END ASC,
+           position ASC,
+           created_at ASC`
       )
       .all(date) as TaskRow[]
     return rows.map(mapTask)

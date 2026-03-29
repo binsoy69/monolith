@@ -11,6 +11,7 @@ import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-ki
 import { useHabitsStore } from './habits-store'
 import type { HabitWithToday } from './habits-store'
 import { HabitCard } from './HabitCard'
+import { HabitCountEditor } from './HabitCountEditor'
 import { HabitHeatmap } from './HabitHeatmap'
 import { HabitProgressBar } from './HabitProgressBar'
 import { HabitForm } from './HabitForm'
@@ -50,6 +51,7 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
   const loadHistory = useHabitsStore((state) => state.loadHistory)
   const reorderHabits = useHabitsStore((state) => state.reorderHabits)
   const incrementCount = useHabitsStore((state) => state.incrementCount)
+  const setCount = useHabitsStore((state) => state.setCount)
   const resetCount = useHabitsStore((state) => state.resetCount)
   const showArchived = useHabitsStore((state) => state.showArchived)
   const setShowArchived = useHabitsStore((state) => state.setShowArchived)
@@ -345,6 +347,15 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
           paddingTop: 'var(--space-4)',
         }}
       >
+        {habit.kind === 'count' && (
+          <HabitCountEditor
+            habitName={habit.name}
+            value={habit.todayValue}
+            targetCount={habit.targetCount ?? 1}
+            onApply={(value) => setCount(habit.id, todayStr, value)}
+          />
+        )}
+
         <div
           style={{
             display: 'grid',

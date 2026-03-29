@@ -10,6 +10,38 @@ import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-ki
 import { TaskRow } from './TaskRow'
 import type { Task } from '../../shared/domain-types'
 
+function getCarryBucket(task: Task): 0 | 1 | 2 {
+  if (task.completed) {
+    return 2
+  }
+  return task.carriedFromDate !== null ? 0 : 1
+}
+
+function getPriorityRank(task: Task): number {
+  if (task.priority === 1) return 0
+  if (task.priority === 2) return 1
+  if (task.priority === 3) return 2
+  return 3
+}
+
+function isSameOrderingBand(left: Task, right: Task): boolean {
+  return getCarryBucket(left) === getCarryBucket(right) && getPriorityRank(left) === getPriorityRank(right)
+}
+
+export function canReorderTasks(activeTask: Task, overTask: Task): boolean {
+  return isSameOrderingBand(activeTask, overTask)
+}
+
+export function compareTasksForDisplay(a: Task, b: Task): number {
+  const carryDiff = getCarryBucket(a) - getCarryBucket(b)
+  if (carryDiff !== 0) return carryDiff
+
+  const priorityDiff = getPriorityRank(a) - getPriorityRank(b)
+  if (priorityDiff !== 0) return priorityDiff
+
+  return a.position - b.position || a.createdAt.localeCompare(b.createdAt)
+}
+
 interface TaskListProps {
   tasks: Task[]
   onToggleComplete: (id: string) => void
@@ -43,11 +75,11 @@ export function TaskList({
 }: TaskListProps) {
   const incompleteTasks = tasks
     .filter((t) => !t.completed)
-    .sort((a, b) => a.position - b.position || a.createdAt.localeCompare(b.createdAt))
+    .sort(compareTasksForDisplay)
 
   const completedTasks = tasks
     .filter((t) => t.completed)
-    .sort((a, b) => a.position - b.position || a.createdAt.localeCompare(b.createdAt))
+    .sort(compareTasksForDisplay)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -60,6 +92,14 @@ export function TaskList({
     if (!over || active.id === over.id) return
     const oldIndex = incompleteTasks.findIndex((t) => t.id === active.id)
     const newIndex = incompleteTasks.findIndex((t) => t.id === over.id)
+    if (oldIndex < 0 || newIndex < 0) return
+
+    const activeTask = incompleteTasks[oldIndex]
+    const overTask = incompleteTasks[newIndex]
+    if (!canReorderTasks(activeTask, overTask)) {
+      return
+    }
+
     const reordered = arrayMove(incompleteTasks, oldIndex, newIndex)
     onReorder(reordered.map((t) => t.id))
   }

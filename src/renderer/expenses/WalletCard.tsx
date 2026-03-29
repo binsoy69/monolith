@@ -1,4 +1,4 @@
-import { Pencil, ArrowUpDown } from 'lucide-react'
+import { Pencil, ArrowUpDown, Clock } from 'lucide-react'
 import type { Wallet } from '../../shared/domain-types'
 import { formatPeso } from '../../shared/format'
 
@@ -6,9 +6,10 @@ interface WalletCardProps {
   wallet: Wallet
   onEdit: () => void
   onAdjust: () => void
+  onViewHistory: () => void
 }
 
-export function WalletCard({ wallet, onEdit, onAdjust }: WalletCardProps) {
+export function WalletCard({ wallet, onEdit, onAdjust, onViewHistory }: WalletCardProps) {
   return (
     <div
       style={{
@@ -100,6 +101,31 @@ export function WalletCard({ wallet, onEdit, onAdjust }: WalletCardProps) {
           }}
         >
           <ArrowUpDown size={16} strokeWidth={1.5} />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); onViewHistory() }}
+          title="View history"
+          style={{
+            background: 'none',
+            border: 'none',
+            padding: '4px',
+            cursor: 'pointer',
+            color: 'var(--color-text-secondary)',
+            display: 'flex',
+            alignItems: 'center',
+            borderRadius: 'var(--radius-sm)',
+            transition: 'color var(--duration-fast) ease-out',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = 'var(--color-text-primary)'
+            e.currentTarget.style.backgroundColor = 'var(--color-bg-subtle)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--color-text-secondary)'
+            e.currentTarget.style.backgroundColor = 'transparent'
+          }}
+        >
+          <Clock size={16} strokeWidth={1.5} />
         </button>
       </div>
     </div>

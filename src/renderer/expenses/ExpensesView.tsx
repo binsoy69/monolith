@@ -6,6 +6,7 @@ import { ExpenseLogModal } from './ExpenseLogModal'
 import { ExpenseList } from './ExpenseList'
 import { ExpenseAnalyticsSection } from './ExpenseAnalyticsSection'
 import { CategoryManageView } from './CategoryManageView'
+import { WalletHistoryModal } from './WalletHistoryModal'
 import { useExpensesStore } from './expenses-store'
 import { useContextMenu } from '../shared/useContextMenu'
 import { ContextMenu } from '../shared/ContextMenu'
@@ -34,6 +35,7 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
     loadExpenses,
     loadAnalytics,
     createWallet,
+    updateWallet,
     adjustWalletBalance,
     createExpense,
     updateExpense,
@@ -47,6 +49,7 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
   } = useExpensesStore()
 
   const [adjustingWallet, setAdjustingWallet] = useState<Wallet | null>(null)
+  const [historyWalletId, setHistoryWalletId] = useState<string | null>(null)
   const [showLogModal, setShowLogModal] = useState(false)
   const [showAnalytics, setShowAnalytics] = useState(false)
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
@@ -83,9 +86,9 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
     }
   }, [newItemTrigger])
 
-  function handleAdjustSave(mode: 'set' | 'delta', amount: number) {
+  function handleAdjustSave(mode: 'set' | 'delta', amount: number, description?: string) {
     if (!adjustingWallet) return
-    adjustWalletBalance(adjustingWallet.id, mode, amount)
+    adjustWalletBalance(adjustingWallet.id, mode, amount, description)
     setAdjustingWallet(null)
   }
 
@@ -169,10 +172,12 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
         <WalletPanel
           wallets={wallets}
           onCreateWallet={createWallet}
-          onEditWallet={(id) => {
-            console.log('Edit wallet', id)
+          onUpdateWallet={async (id, data) => {
+            await updateWallet(id, data)
+            loadWallets()
           }}
           onAdjustBalance={(wallet) => setAdjustingWallet(wallet)}
+          onViewHistory={(walletId) => setHistoryWalletId(walletId)}
         />
         {/* Right panel — expense list + category management */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
@@ -315,6 +320,13 @@ export function ExpensesView({ newItemTrigger }: ExpensesViewProps) {
           wallet={adjustingWallet}
           onSave={handleAdjustSave}
           onClose={() => setAdjustingWallet(null)}
+        />
+      )}
+
+      {historyWalletId && (
+        <WalletHistoryModal
+          wallet={wallets.find(w => w.id === historyWalletId)!}
+          onClose={() => setHistoryWalletId(null)}
         />
       )}
 

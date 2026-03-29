@@ -6,19 +6,27 @@ import { WalletCard } from './WalletCard'
 interface WalletPanelProps {
   wallets: Wallet[]
   onCreateWallet: (data: { name: string; balance: number }) => Promise<void>
-  onEditWallet: (id: string) => void
+  onUpdateWallet: (id: string, data: { name?: string; balance?: number; description?: string }) => Promise<void>
   onAdjustBalance: (wallet: Wallet) => void
+  onViewHistory: (walletId: string) => void
 }
 
 export function WalletPanel({
   wallets,
   onCreateWallet,
-  onEditWallet,
+  onUpdateWallet,
   onAdjustBalance,
+  onViewHistory,
 }: WalletPanelProps) {
   const [showAddForm, setShowAddForm] = useState(false)
   const [newName, setNewName] = useState('')
   const [newBalance, setNewBalance] = useState('')
+
+  // Inline edit state
+  const [editingWalletId, setEditingWalletId] = useState<string | null>(null)
+  const [editName, setEditName] = useState('')
+  const [editBalance, setEditBalance] = useState('')
+  const [editDescription, setEditDescription] = useState('')
 
   const totalBalance = wallets.reduce((sum, w) => sum + w.balance, 0)
 
@@ -37,6 +45,36 @@ export function WalletPanel({
     setShowAddForm(false)
     setNewName('')
     setNewBalance('')
+  }
+
+  function handleEditSave() {
+    if (!editingWalletId) return
+    const wallet = wallets.find(w => w.id === editingWalletId)
+    if (!wallet) return
+    const trimmedName = editName.trim()
+    if (!trimmedName) return
+
+    const newBalanceCents = Math.round(parseFloat(editBalance) * 100)
+    const balanceChanged = !isNaN(newBalanceCents) && newBalanceCents !== wallet.balance
+
+    // Per D-03: description required if balance changed
+    if (balanceChanged && !editDescription.trim()) return
+
+    const updateData: { name?: string; balance?: number; description?: string } = {}
+    if (trimmedName !== wallet.name) updateData.name = trimmedName
+    if (balanceChanged) {
+      updateData.balance = newBalanceCents
+      updateData.description = editDescription.trim()
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      setEditingWalletId(null)
+      return
+    }
+
+    onUpdateWallet(editingWalletId, updateData).then(() => {
+      setEditingWalletId(null)
+    })
   }
 
   return (
@@ -238,14 +276,153 @@ export function WalletPanel({
             </button>
           </div>
         ) : (
-          wallets.map((wallet) => (
-            <WalletCard
-              key={wallet.id}
-              wallet={wallet}
-              onEdit={() => onEditWallet(wallet.id)}
-              onAdjust={() => onAdjustBalance(wallet)}
-            />
-          ))
+          wallets.map((wallet) => {
+            if (editingWalletId === wallet.id) {
+              const newBalanceCents = Math.round(parseFloat(editBalance) * 100)
+              const balanceChanged = !isNaN(newBalanceCents) && newBalanceCents !== wallet.balance
+
+              return (
+                <div
+                  key={wallet.id}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 'var(--space-2)',
+                  }}
+                >
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    placeholder="Wallet name"
+                    autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleEditSave()
+                      if (e.key === 'Escape') setEditingWalletId(null)
+                    }}
+                    style={{
+                      background: 'var(--color-bg-elevated)',
+                      border: '1px solid var(--color-border)',
+                      borderRadius: 'var(--radius-sm)',
+                      padding: '4px var(--space-2)',
+                      color: 'var(--color-text-primary)',
+                      fontSize: 'var(--font-size-small)',
+                      outline: 'none',
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--color-border-focused)'
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'var(--color-border)'
+                    }}
+                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)' }}>
+                    <span style={{ fontSize: 'var(--font-size-small)', color: 'var(--color-text-secondary)' }}>
+                      ₱
+                    </span>
+                    <input
+                      type="number"
+                      value={editBalance}
+                      onChange={(e) => setEditBalance(e.target.value)}
+                      placeholder="Balance"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleEditSave()
+                        if (e.key === 'Escape') setEditingWalletId(null)
+                      }}
+                      style={{
+                        flex: 1,
+                        background: 'var(--color-bg-elevated)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: '4px var(--space-2)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--font-size-small)',
+                        outline: 'none',
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--color-border-focused)'
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--color-border)'
+                      }}
+                    />
+                  </div>
+                  {balanceChanged && (
+                    <input
+                      type="text"
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      placeholder="Salary deposit, ATM withdrawal"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleEditSave()
+                        if (e.key === 'Escape') setEditingWalletId(null)
+                      }}
+                      style={{
+                        background: 'var(--color-bg-elevated)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: '4px var(--space-2)',
+                        color: 'var(--color-text-primary)',
+                        fontSize: 'var(--font-size-small)',
+                        outline: 'none',
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--color-border-focused)'
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'var(--color-border)'
+                      }}
+                    />
+                  )}
+                  <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                    <button
+                      onClick={() => setEditingWalletId(null)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        padding: '4px 0',
+                        cursor: 'pointer',
+                        fontSize: 'var(--font-size-small)',
+                        color: 'var(--color-text-secondary)',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleEditSave}
+                      style={{
+                        background: 'var(--color-accent)',
+                        border: 'none',
+                        borderRadius: 'var(--radius-sm)',
+                        padding: '4px var(--space-2)',
+                        cursor: 'pointer',
+                        fontSize: 'var(--font-size-small)',
+                        color: '#fff',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Save
+                    </button>
+                  </div>
+                </div>
+              )
+            }
+
+            return (
+              <WalletCard
+                key={wallet.id}
+                wallet={wallet}
+                onEdit={() => {
+                  setEditingWalletId(wallet.id)
+                  setEditName(wallet.name)
+                  setEditBalance(String(wallet.balance / 100))
+                  setEditDescription('')
+                }}
+                onAdjust={() => onAdjustBalance(wallet)}
+                onViewHistory={() => onViewHistory(wallet.id)}
+              />
+            )
+          })
         )}
       </div>
 

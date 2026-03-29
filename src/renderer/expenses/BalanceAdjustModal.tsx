@@ -3,19 +3,20 @@ import type { Wallet } from '../../shared/domain-types'
 
 interface BalanceAdjustModalProps {
   wallet: Wallet
-  onSave: (mode: 'set' | 'delta', amount: number) => void
+  onSave: (mode: 'set' | 'delta', amount: number, description?: string) => void
   onClose: () => void
 }
 
 export function BalanceAdjustModal({ wallet, onSave, onClose }: BalanceAdjustModalProps) {
   const [mode, setMode] = useState<'set' | 'delta'>('set')
   const [value, setValue] = useState('')
+  const [description, setDescription] = useState('')
 
   function handleSave() {
     const parsed = parseFloat(value)
     if (isNaN(parsed)) return
     const amountInCents = Math.round(parsed * 100)
-    onSave(mode, amountInCents)
+    onSave(mode, amountInCents, description.trim() || undefined)
     onClose()
   }
 
@@ -134,6 +135,34 @@ export function BalanceAdjustModal({ wallet, onSave, onClose }: BalanceAdjustMod
             }}
           />
         </div>
+
+        {/* Description input */}
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Salary deposit, ATM withdrawal"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') handleSave()
+            if (e.key === 'Escape') onClose()
+          }}
+          style={{
+            background: 'var(--color-bg-elevated)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 'var(--radius-sm)',
+            padding: '6px var(--space-2)',
+            color: 'var(--color-text-primary)',
+            fontSize: 'var(--font-size-body)',
+            outline: 'none',
+            width: '100%',
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = 'var(--color-border-focused)'
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = 'var(--color-border)'
+          }}
+        />
 
         {/* Action buttons */}
         <div style={{ display: 'flex', gap: 'var(--space-2)', justifyContent: 'flex-end' }}>

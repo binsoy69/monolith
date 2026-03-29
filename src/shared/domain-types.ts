@@ -1,5 +1,7 @@
 export type HabitKind = 'boolean' | 'count'
 export type TaskPriority = 0 | 1 | 2 | 3
+export type ShellModuleId = 'dashboard' | 'habits' | 'planner' | 'expenses' | 'settings' | 'tags'
+export type TaggableItemType = 'habit' | 'task' | 'expense'
 
 export interface Habit {
   id: string
@@ -61,4 +63,19 @@ export interface WalletTransaction {
   description: string | null
   date: string        // ISO date YYYY-MM-DD
   createdAt: string
+}
+
+export interface Tag {
+  id: string
+  name: string
+  color: string
+  createdAt: string
+}
+
+export interface TaggedItemSummary {
+  itemType: TaggableItemType
+  itemId: string
+  title: string
+  subtitle: string
+  date: string | null
 }

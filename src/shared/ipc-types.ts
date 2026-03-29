@@ -8,6 +8,9 @@ import type {
   Wallet,
   Expense,
   WalletTransaction,
+  Tag,
+  TaggableItemType,
+  TaggedItemSummary,
 } from './domain-types'
 
 export interface AppSettings {
@@ -123,6 +126,14 @@ export interface DashboardAPI {
   getToday: (date: string) => Promise<DashboardData>
 }
 
+export interface TagsAPI {
+  list: () => Promise<Tag[]>
+  create: (data: { name: string }) => Promise<Tag>
+  listForItem: (data: { itemType: TaggableItemType; itemId: string }) => Promise<Tag[]>
+  setAssignment: (data: { tagId: string; itemType: TaggableItemType; itemId: string; assigned: boolean }) => Promise<void>
+  getItemsByTag: (tagId: string) => Promise<TaggedItemSummary[]>
+}
+
 export interface API {
   settings: SettingsAPI
   window: WindowAPI
@@ -130,4 +141,5 @@ export interface API {
   planner: PlannerAPI
   expenses: ExpensesAPI
   dashboard: DashboardAPI
+  tags: TagsAPI
 }

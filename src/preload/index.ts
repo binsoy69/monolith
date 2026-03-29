@@ -54,6 +54,13 @@ const api: API = {
   },
   dashboard: {
     getToday: (date) => ipcRenderer.invoke('dashboard:getToday', date),
+  },
+  tags: {
+    list: () => ipcRenderer.invoke('tags:list'),
+    create: (data) => ipcRenderer.invoke('tags:create', data),
+    listForItem: (data) => ipcRenderer.invoke('tags:listForItem', data),
+    setAssignment: (data) => ipcRenderer.invoke('tags:setAssignment', data),
+    getItemsByTag: (tagId) => ipcRenderer.invoke('tags:getItemsByTag', tagId),
   }
 }
 

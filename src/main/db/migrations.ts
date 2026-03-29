@@ -96,5 +96,28 @@ export const migrations: Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_wallet_transactions_wallet_id
         ON wallet_transactions(wallet_id);
     `
+  },
+  {
+    version: 5,
+    sql: `
+      CREATE TABLE IF NOT EXISTS tags (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE COLLATE NOCASE,
+        color TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS item_tags (
+        tag_id TEXT NOT NULL,
+        item_type TEXT NOT NULL,
+        item_id TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        PRIMARY KEY (tag_id, item_type, item_id),
+        FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+      );
+      CREATE INDEX IF NOT EXISTS idx_item_tags_item
+        ON item_tags(item_type, item_id);
+      CREATE INDEX IF NOT EXISTS idx_item_tags_tag
+        ON item_tags(tag_id);
+    `,
   }
 ]

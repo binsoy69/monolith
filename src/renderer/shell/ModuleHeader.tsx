@@ -13,6 +13,7 @@ const MODULE_NAMES: Record<ModuleId, string> = {
   planner: "Planner",
   expenses: "Expenses",
   settings: "Settings",
+  tags: "Tags",
 };
 
 export function ModuleHeader({

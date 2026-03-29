@@ -11,7 +11,10 @@ import { WalletHistoryModal } from "./WalletHistoryModal";
 import { useExpensesStore } from "./expenses-store";
 import { useContextMenu } from "../shared/useContextMenu";
 import { ContextMenu } from "../shared/ContextMenu";
+import type { ContextMenuItem } from "../shared/ContextMenu";
 import type { Wallet, Expense } from "../../shared/domain-types";
+import { TagCreateDialog } from "../tags/TagCreateDialog";
+import { useTagsStore } from "../tags/tags-store";
 
 interface ExpensesViewProps {
   newItemTrigger?: number;
@@ -94,7 +97,13 @@ export function ExpensesView({
       ? true
       : !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
+  const [tagDialogExpenseId, setTagDialogExpenseId] = useState<string | null>(
+    null,
+  );
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
+  const ensureItemTags = useTagsStore((state) => state.ensureItemTags);
+  const setTagAssignment = useTagsStore((state) => state.setTagAssignment);
+  const createTag = useTagsStore((state) => state.createTag);
   const selectedHistoryWallet = historyWalletId
     ? (wallets.find((wallet) => wallet.id === historyWalletId) ?? null)
     : null;
@@ -153,10 +162,38 @@ export function ExpensesView({
     void loadAnalytics(currentMonthKey, trendMonths);
   }
 
-  function handleExpenseContextMenu(
+  async function handleExpenseContextMenu(
     e: React.MouseEvent,
     expense: Expense,
-  ): void {
+  ): Promise<void> {
+    const assignedTags = await ensureItemTags("expense", expense.id);
+    const assignedTagIds = new Set(assignedTags.map((tag) => tag.id));
+    const tags = useTagsStore.getState().tags;
+    const tagChildren: ContextMenuItem[] = [
+      ...tags.map((tag) => ({
+        label: tag.name,
+        checked: assignedTagIds.has(tag.id),
+        closeOnClick: false,
+        onClick: () => {
+          void (async () => {
+            const latestAssigned = await useTagsStore
+              .getState()
+              .ensureItemTags("expense", expense.id);
+            const isAssigned = latestAssigned.some(
+              (entry) => entry.id === tag.id,
+            );
+            await useTagsStore
+              .getState()
+              .setTagAssignment("expense", expense.id, tag.id, !isAssigned);
+          })();
+        },
+      })),
+      {
+        label: "New tag...",
+        onClick: () => setTagDialogExpenseId(expense.id),
+      },
+    ];
+
     showContextMenu(e, [
       {
         label: "Edit",
@@ -164,6 +201,11 @@ export function ExpensesView({
           setEditingExpense(expense);
           setShowLogModal(true);
         },
+      },
+      {
+        label: "Tags",
+        onClick: () => {},
+        children: tagChildren,
       },
       {
         label: "Delete",
@@ -431,6 +473,18 @@ export function ExpensesView({
           onClose={hideContextMenu}
         />
       )}
+
+      <TagCreateDialog
+        isOpen={tagDialogExpenseId !== null}
+        onClose={() => setTagDialogExpenseId(null)}
+        onCreate={async (name) => {
+          const tag = await createTag(name);
+          if (tag && tagDialogExpenseId) {
+            await setTagAssignment("expense", tagDialogExpenseId, tag.id, true);
+          }
+          setTagDialogExpenseId(null);
+        }}
+      />
     </div>
   );
 }

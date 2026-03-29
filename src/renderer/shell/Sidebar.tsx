@@ -6,7 +6,10 @@ import {
   SquaresFour,
   Wallet,
 } from "@phosphor-icons/react";
+import { useEffect } from "react";
 import type { ModuleId } from "../App";
+import { TagChip } from "../tags/TagChip";
+import { useTagsStore } from "../tags/tags-store";
 
 interface SidebarProps {
   activeModule: ModuleId;
@@ -31,6 +34,17 @@ export function Sidebar({
   onNavigate,
 }: SidebarProps): React.JSX.Element {
   const isSettingsActive = activeModule === "settings";
+  const tags = useTagsStore((state) => state.tags);
+  const selectedTagId = useTagsStore((state) => state.selectedTagId);
+  const isLoaded = useTagsStore((state) => state.isLoaded);
+  const loadTags = useTagsStore((state) => state.loadTags);
+  const selectTag = useTagsStore((state) => state.selectTag);
+
+  useEffect(() => {
+    if (!isLoaded) {
+      void loadTags();
+    }
+  }, [isLoaded, loadTags]);
 
   return (
     <nav className="sidebar-shell" aria-label="Main navigation">
@@ -62,6 +76,23 @@ export function Sidebar({
               </button>
             );
           })}
+        </div>
+      </div>
+
+      <div style={{ marginTop: "var(--space-5)" }}>
+        <div className="sidebar-label">Tags</div>
+        <div className="sidebar-nav" style={{ marginTop: "var(--space-2)" }}>
+          {tags.map((tag) => (
+            <TagChip
+              key={tag.id}
+              tag={tag}
+              active={activeModule === "tags" && selectedTagId === tag.id}
+              onClick={() => {
+                void selectTag(tag.id);
+                onNavigate("tags");
+              }}
+            />
+          ))}
         </div>
       </div>
 

@@ -1,7 +1,9 @@
+import type { ShellModuleId } from "../../shared/domain-types";
+
 const isMac = navigator.platform.toLowerCase().includes("mac");
 
 interface WindowChromeProps {
-  activeModule: "dashboard" | "habits" | "planner" | "expenses" | "settings";
+  activeModule: ShellModuleId;
 }
 
 const MODULE_COPY: Record<WindowChromeProps["activeModule"], string> = {
@@ -10,6 +12,7 @@ const MODULE_COPY: Record<WindowChromeProps["activeModule"], string> = {
   planner: "planner flow",
   expenses: "expense control",
   settings: "workspace settings",
+  tags: "tag browser",
 };
 
 const controlButtonStyle = (color: string): React.CSSProperties =>

@@ -13,14 +13,11 @@ import { HabitsView } from "./habits/HabitsView";
 import { PlannerView } from "./planner/PlannerView";
 import { ExpensesView } from "./expenses/ExpensesView";
 import { DashboardView } from "./dashboard/DashboardView";
+import { TagsView } from "./tags/TagsView";
 import { usePlannerStore } from "./planner/planner-store";
+import type { ShellModuleId } from "../shared/domain-types";
 
-export type ModuleId =
-  | "dashboard"
-  | "habits"
-  | "planner"
-  | "expenses"
-  | "settings";
+export type ModuleId = ShellModuleId;
 
 export default function App(): React.JSX.Element {
   const [activeModule, setActiveModule] = useState<ModuleId>("dashboard");
@@ -137,6 +134,20 @@ export default function App(): React.JSX.Element {
                     }}
                   >
                     <ExpensesView newItemTrigger={newItemTrigger} />
+                  </main>
+                </ErrorBoundary>
+              ) : activeModule === "tags" ? (
+                <ErrorBoundary moduleName="Tags">
+                  <main
+                    id="app-main"
+                    style={{
+                      flex: 1,
+                      overflow: "hidden",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <TagsView />
                   </main>
                 </ErrorBoundary>
               ) : (

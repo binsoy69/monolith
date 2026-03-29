@@ -103,6 +103,13 @@ function createApiMock() {
     dashboard: {
       getToday: vi.fn(),
     },
+    tags: {
+      list: vi.fn().mockResolvedValue([]),
+      create: vi.fn(),
+      listForItem: vi.fn().mockResolvedValue([]),
+      setAssignment: vi.fn(),
+      getItemsByTag: vi.fn().mockResolvedValue([]),
+    },
   }
 }
 

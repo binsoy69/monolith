@@ -75,6 +75,13 @@ function createApiMock(): typeof window.api {
     dashboard: {
       getToday: vi.fn(),
     },
+    tags: {
+      list: vi.fn(),
+      create: vi.fn(),
+      listForItem: vi.fn(),
+      setAssignment: vi.fn(),
+      getItemsByTag: vi.fn(),
+    },
   };
 }
 

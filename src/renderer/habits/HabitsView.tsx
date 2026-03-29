@@ -21,6 +21,8 @@ import { useContextMenu } from '../shared/useContextMenu'
 import { ContextMenu } from '../shared/ContextMenu'
 import { ArchiveConfirmation } from './ArchiveConfirmation'
 import { ArchivedHabitsView } from './ArchivedHabitsView'
+import { TagCreateDialog } from '../tags/TagCreateDialog'
+import { useTagsStore } from '../tags/tags-store'
 
 function getTodayDateStr(): string {
   const now = new Date()
@@ -60,8 +62,12 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
   const [editingHabit, setEditingHabit] = useState<HabitWithToday | null>(null)
   const [expandedHabitId, setExpandedHabitId] = useState<string | null>(null)
   const [archivingHabit, setArchivingHabit] = useState<HabitWithToday | null>(null)
+  const [tagDialogTargetId, setTagDialogTargetId] = useState<string | null>(null)
 
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu()
+  const ensureItemTags = useTagsStore((state) => state.ensureItemTags)
+  const setTagAssignment = useTagsStore((state) => state.setTagAssignment)
+  const createTag = useTagsStore((state) => state.createTag)
 
   const todayStr = getTodayDateStr()
   const todayDayIndex = new Date(`${todayStr}T12:00:00`).getDay()
@@ -112,7 +118,29 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
     closeForm()
   }
 
-  const handleContextMenu = (event: React.MouseEvent, habit: HabitWithToday) => {
+  const handleContextMenu = async (event: React.MouseEvent, habit: HabitWithToday) => {
+    const assignedTags = await ensureItemTags('habit', habit.id)
+    const assignedTagIds = new Set(assignedTags.map((tag) => tag.id))
+    const tags = useTagsStore.getState().tags
+    const tagChildren: ContextMenuItem[] = [
+      ...tags.map((tag) => ({
+        label: tag.name,
+        checked: assignedTagIds.has(tag.id),
+        closeOnClick: false,
+        onClick: () => {
+          void (async () => {
+            const latestAssigned = await useTagsStore.getState().ensureItemTags('habit', habit.id)
+            const isAssigned = latestAssigned.some((entry) => entry.id === tag.id)
+            await useTagsStore.getState().setTagAssignment('habit', habit.id, tag.id, !isAssigned)
+          })()
+        },
+      })),
+      {
+        label: 'New tag...',
+        onClick: () => setTagDialogTargetId(habit.id),
+      },
+    ]
+
     const items: ContextMenuItem[] = [
       {
         label: 'Edit',
@@ -126,6 +154,12 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
         onClick: () => resetCount(habit.id, todayStr),
       })
     }
+
+    items.push({
+      label: 'Tags',
+      onClick: () => {},
+      children: tagChildren,
+    })
 
     items.push({
       label: 'Archive',
@@ -497,6 +531,18 @@ export function HabitsView({ newItemTrigger }: HabitsViewProps) {
           onClose={hideContextMenu}
         />
       )}
+
+      <TagCreateDialog
+        isOpen={tagDialogTargetId !== null}
+        onClose={() => setTagDialogTargetId(null)}
+        onCreate={async (name) => {
+          const tag = await createTag(name)
+          if (tag && tagDialogTargetId) {
+            await setTagAssignment('habit', tagDialogTargetId, tag.id, true)
+          }
+          setTagDialogTargetId(null)
+        }}
+      />
     </div>
   )
 }

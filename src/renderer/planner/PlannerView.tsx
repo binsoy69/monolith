@@ -9,6 +9,9 @@ import { DailyNotesView } from "./DailyNotesView";
 import { ContextMenu } from "../shared/ContextMenu";
 import { useContextMenu } from "../shared/useContextMenu";
 import { CalendarPopup } from "../shared/CalendarPopup";
+import type { ContextMenuItem } from "../shared/ContextMenu";
+import { TagCreateDialog } from "../tags/TagCreateDialog";
+import { useTagsStore } from "../tags/tags-store";
 
 interface PlannerViewProps {
   newItemTrigger?: number;
@@ -58,6 +61,10 @@ export function PlannerView({
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const [movePickerTaskId, setMovePickerTaskId] = useState<string | null>(null);
   const [movePickerPos, setMovePickerPos] = useState({ x: 0, y: 0 });
+  const [tagDialogTaskId, setTagDialogTaskId] = useState<string | null>(null);
+  const ensureItemTags = useTagsStore((state) => state.ensureItemTags);
+  const setTagAssignment = useTagsStore((state) => state.setTagAssignment);
+  const createTag = useTagsStore((state) => state.createTag);
 
   useEffect(() => {
     void loadTasks(viewDate);
@@ -109,7 +116,38 @@ export function PlannerView({
     setExpandedTaskId((prev) => (prev === taskId ? null : taskId));
   }
 
-  function handleTaskContextMenu(e: React.MouseEvent, taskId: string): void {
+  async function handleTaskContextMenu(
+    e: React.MouseEvent,
+    taskId: string,
+  ): Promise<void> {
+    const assignedTags = await ensureItemTags("task", taskId);
+    const assignedTagIds = new Set(assignedTags.map((tag) => tag.id));
+    const tags = useTagsStore.getState().tags;
+    const tagChildren: ContextMenuItem[] = [
+      ...tags.map((tag) => ({
+        label: tag.name,
+        checked: assignedTagIds.has(tag.id),
+        closeOnClick: false,
+        onClick: () => {
+          void (async () => {
+            const latestAssigned = await useTagsStore
+              .getState()
+              .ensureItemTags("task", taskId);
+            const isAssigned = latestAssigned.some(
+              (entry) => entry.id === tag.id,
+            );
+            await useTagsStore
+              .getState()
+              .setTagAssignment("task", taskId, tag.id, !isAssigned);
+          })();
+        },
+      })),
+      {
+        label: "New tag...",
+        onClick: () => setTagDialogTaskId(taskId),
+      },
+    ];
+
     showContextMenu(e, [
       {
         label: "Edit",
@@ -149,6 +187,11 @@ export function PlannerView({
         onClick: () => {
           void updateTask(taskId, { priority: 0 });
         },
+      },
+      {
+        label: "Tags",
+        onClick: () => {},
+        children: tagChildren,
       },
       {
         label: "Delete",
@@ -281,6 +324,18 @@ export function PlannerView({
           showTaskDots={false}
         />
       )}
+
+      <TagCreateDialog
+        isOpen={tagDialogTaskId !== null}
+        onClose={() => setTagDialogTaskId(null)}
+        onCreate={async (name) => {
+          const tag = await createTag(name);
+          if (tag && tagDialogTaskId) {
+            await setTagAssignment("task", tagDialogTaskId, tag.id, true);
+          }
+          setTagDialogTaskId(null);
+        }}
+      />
     </div>
   );
 }

@@ -79,5 +79,22 @@ export const migrations: Migration[] = [
     sql: `
       ALTER TABLE tasks ADD COLUMN carried_from_date TEXT;
     `
+  },
+  {
+    version: 4,
+    sql: `
+      CREATE TABLE IF NOT EXISTS wallet_transactions (
+        id TEXT PRIMARY KEY,
+        wallet_id TEXT NOT NULL,
+        amount INTEGER NOT NULL,
+        type TEXT NOT NULL,
+        description TEXT,
+        date TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (wallet_id) REFERENCES wallets(id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_wallet_transactions_wallet_id
+        ON wallet_transactions(wallet_id);
+    `
   }
 ]

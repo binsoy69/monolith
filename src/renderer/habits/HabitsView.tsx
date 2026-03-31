@@ -37,11 +37,16 @@ function countCompletedDays(points: Array<{ completed: boolean }>, days: number)
 }
 
 interface HabitsViewProps {
-  newItemTrigger?: number
+  newItemRequestId?: number
+  onNewItemHandled?: (requestId: number) => void
   highlightHabitId?: string
 }
 
-export function HabitsView({ newItemTrigger, highlightHabitId }: HabitsViewProps) {
+export function HabitsView({
+  newItemRequestId,
+  onNewItemHandled,
+  highlightHabitId,
+}: HabitsViewProps) {
   const habits = useHabitsStore((state) => state.habits)
   const isLoaded = useHabitsStore((state) => state.isLoaded)
   const load = useHabitsStore((state) => state.load)
@@ -84,11 +89,12 @@ export function HabitsView({ newItemTrigger, highlightHabitId }: HabitsViewProps
   }, [load, todayStr])
 
   useEffect(() => {
-    if (newItemTrigger && newItemTrigger > 0) {
+    if (typeof newItemRequestId === 'number') {
       openCreateForm()
+      onNewItemHandled?.(newItemRequestId)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newItemTrigger])
+  }, [newItemRequestId, onNewItemHandled])
 
   const openCreateForm = () => {
     setEditingHabit(null)

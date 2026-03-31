@@ -51,11 +51,13 @@ interface TaskListProps {
   deletingTaskId: string | null
   onSaveEdit: (id: string, data: { title: string; notes: string }) => void
   onCancelEdit: () => void
+  editFocusField: 'title' | 'notes'
   onConfirmDelete: (id: string) => void
   onCancelDelete: () => void
   viewDate: string
   expandedTaskId: string | null
   onClickTask: (taskId: string) => void
+  onOpenNotesEditor: (taskId: string) => void
   highlightTaskId?: string
 }
 
@@ -68,11 +70,13 @@ export function TaskList({
   deletingTaskId,
   onSaveEdit,
   onCancelEdit,
+  editFocusField,
   onConfirmDelete,
   onCancelDelete,
   viewDate,
   expandedTaskId,
   onClickTask,
+  onOpenNotesEditor,
   highlightTaskId,
 }: TaskListProps) {
   const incompleteTasks = tasks
@@ -140,11 +144,13 @@ export function TaskList({
               isDeleting={deletingTaskId === task.id}
               onSaveEdit={onSaveEdit}
               onCancelEdit={onCancelEdit}
+              editFocusField={editFocusField}
               onConfirmDelete={onConfirmDelete}
               onCancelDelete={onCancelDelete}
               isDraggable={true}
               isExpanded={expandedTaskId === task.id}
               onClickRow={() => onClickTask(task.id)}
+              onOpenNotesEditor={onOpenNotesEditor}
               isHighlighted={highlightTaskId === task.id}
             />
           ))}
@@ -161,11 +167,13 @@ export function TaskList({
           isDeleting={deletingTaskId === task.id}
           onSaveEdit={onSaveEdit}
           onCancelEdit={onCancelEdit}
+          editFocusField={editFocusField}
           onConfirmDelete={onConfirmDelete}
           onCancelDelete={onCancelDelete}
           isDraggable={false}
           isExpanded={expandedTaskId === task.id}
           onClickRow={() => onClickTask(task.id)}
+          onOpenNotesEditor={onOpenNotesEditor}
           isHighlighted={highlightTaskId === task.id}
         />
       ))}

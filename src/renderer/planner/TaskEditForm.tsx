@@ -5,16 +5,27 @@ interface TaskEditFormProps {
   task: Task
   onSave: (id: string, data: { title: string; notes: string }) => void
   onCancel: () => void
+  initialFocusField?: 'title' | 'notes'
 }
 
-export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
+export function TaskEditForm({
+  task,
+  onSave,
+  onCancel,
+  initialFocusField = 'title',
+}: TaskEditFormProps) {
   const [title, setTitle] = useState(task.title)
   const [notes, setNotes] = useState(task.notes ?? '')
   const titleRef = useRef<HTMLInputElement>(null)
+  const notesRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
+    if (initialFocusField === 'notes') {
+      notesRef.current?.focus()
+      return
+    }
     titleRef.current?.focus()
-  }, [])
+  }, [initialFocusField])
 
   function handleSave() {
     if (!title.trim()) return
@@ -32,7 +43,10 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
   }
 
   function handleNotesKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === 'Escape') {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault()
+      handleSave()
+    } else if (e.key === 'Escape') {
       e.preventDefault()
       onCancel()
     }
@@ -85,10 +99,11 @@ export function TaskEditForm({ task, onSave, onCancel }: TaskEditFormProps) {
       />
 
       <textarea
+        ref={notesRef}
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         onKeyDown={handleNotesKeyDown}
-        placeholder="Add notes..."
+        placeholder="Add notes... (Ctrl+Enter to save)"
         style={{
           width: '100%',
           height: '64px',

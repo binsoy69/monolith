@@ -7,6 +7,7 @@ interface CalendarPopupProps {
   onClose: () => void
   position?: { x: number; y: number }
   showTaskDots?: boolean
+  showNoteIndicators?: boolean
 }
 
 const MONTHS = [
@@ -43,11 +44,13 @@ export function CalendarPopup({
   onClose,
   position,
   showTaskDots = false,
+  showNoteIndicators = false,
 }: CalendarPopupProps) {
   const parsed = parseDateStr(selectedDate)
   const [viewMonth, setViewMonth] = useState(parsed.month)
   const [viewYear, setViewYear] = useState(parsed.year)
   const [datesWithTasks, setDatesWithTasks] = useState<Set<string>>(new Set())
+  const [datesWithNotes, setDatesWithNotes] = useState<Set<string>>(new Set())
   const containerRef = useRef<HTMLDivElement>(null)
   const todayStr = getTodayStr()
 
@@ -62,6 +65,17 @@ export function CalendarPopup({
     })
     return () => { cancelled = true }
   }, [showTaskDots, viewMonth, viewYear])
+
+  useEffect(() => {
+    if (!showNoteIndicators) return
+    let cancelled = false
+    window.api.planner.getDatesWithNotes({ month: viewMonth + 1, year: viewYear }).then((dates) => {
+      if (!cancelled) {
+        setDatesWithNotes(new Set(dates))
+      }
+    })
+    return () => { cancelled = true }
+  }, [showNoteIndicators, viewMonth, viewYear])
 
   // Click-outside detection
   const handleMouseDown = useCallback(
@@ -215,6 +229,7 @@ export function CalendarPopup({
           const isSelected = cell.dateStr === selectedDate
           const isToday = cell.dateStr === todayStr
           const hasTasks = showTaskDots && datesWithTasks.has(cell.dateStr)
+          const hasNotes = showNoteIndicators && datesWithNotes.has(cell.dateStr)
 
           const cellStyle: React.CSSProperties = {
             width: '32px',
@@ -253,8 +268,23 @@ export function CalendarPopup({
               }}
             >
               <span>{cell.day}</span>
+              {hasNotes && (
+                <div
+                  data-testid={`calendar-note-indicator-${cell.dateStr}`}
+                  style={{
+                    position: 'absolute',
+                    top: '5px',
+                    right: '5px',
+                    width: '6px',
+                    height: '6px',
+                    borderRadius: '2px',
+                    backgroundColor: isSelected ? 'white' : 'var(--color-text-secondary)',
+                  }}
+                />
+              )}
               {hasTasks && (
                 <div
+                  data-testid={`calendar-task-indicator-${cell.dateStr}`}
                   style={{
                     position: 'absolute',
                     bottom: '3px',

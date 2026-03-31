@@ -14,12 +14,14 @@ import { TagCreateDialog } from "../tags/TagCreateDialog";
 import { useTagsStore } from "../tags/tags-store";
 
 interface PlannerViewProps {
-  newItemTrigger?: number;
+  newItemRequestId?: number;
+  onNewItemHandled?: (requestId: number) => void;
   highlightTaskId?: string;
 }
 
 export function PlannerView({
-  newItemTrigger = 0,
+  newItemRequestId,
+  onNewItemHandled,
   highlightTaskId,
 }: PlannerViewProps): React.JSX.Element {
   const quickAddRef = useRef<HTMLInputElement>(null);
@@ -59,6 +61,9 @@ export function PlannerView({
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu();
 
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [taskEditorInitialFocus, setTaskEditorInitialFocus] = useState<
+    "title" | "notes"
+  >("title");
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
   const [movePickerTaskId, setMovePickerTaskId] = useState<string | null>(null);
@@ -79,12 +84,17 @@ export function PlannerView({
     }
   }, [activeTab, loadNotes, viewDate]);
 
-  // Focus quick-add input when newItemTrigger changes (from command palette or N shortcut)
   useEffect(() => {
-    if (newItemTrigger > 0) {
-      quickAddRef.current?.focus();
+    if (typeof newItemRequestId !== "number") {
+      return;
     }
-  }, [newItemTrigger]);
+    setActiveTab("tasks");
+    const frameId = window.requestAnimationFrame(() => {
+      quickAddRef.current?.focus();
+    });
+    onNewItemHandled?.(newItemRequestId);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [newItemRequestId, onNewItemHandled, setActiveTab]);
 
   const tasksDone = tasks.filter((t) => t.completed).length;
   const tasksTotal = tasks.length;
@@ -116,6 +126,20 @@ export function PlannerView({
 
   function handleClickTask(taskId: string): void {
     setExpandedTaskId((prev) => (prev === taskId ? null : taskId));
+  }
+
+  function openTaskEditor(
+    taskId: string,
+    focusField: "title" | "notes" = "title",
+  ): void {
+    setDeletingTaskId(null);
+    setTaskEditorInitialFocus(focusField);
+    setEditingTaskId(taskId);
+  }
+
+  function handleOpenNotesEditor(taskId: string): void {
+    setExpandedTaskId(taskId);
+    openTaskEditor(taskId, "notes");
   }
 
   async function handleTaskContextMenu(
@@ -154,9 +178,8 @@ export function PlannerView({
       {
         label: "Edit",
         onClick: () => {
-          setDeletingTaskId(null);
           setExpandedTaskId(null);
-          setEditingTaskId(taskId);
+          openTaskEditor(taskId);
         },
       },
       {
@@ -212,6 +235,7 @@ export function PlannerView({
   ): void {
     void updateTask(id, { title: data.title, notes: data.notes });
     setEditingTaskId(null);
+    setTaskEditorInitialFocus("title");
   }
 
   function handleConfirmDelete(id: string): void {
@@ -223,6 +247,11 @@ export function PlannerView({
     if (!movePickerTaskId || !newDate) return;
     await updateTask(movePickerTaskId, { date: newDate });
     setMovePickerTaskId(null);
+  }
+
+  function handleCancelEdit(): void {
+    setEditingTaskId(null);
+    setTaskEditorInitialFocus("title");
   }
 
   return (
@@ -291,12 +320,14 @@ export function PlannerView({
                 editingTaskId={editingTaskId}
                 deletingTaskId={deletingTaskId}
                 onSaveEdit={handleSaveEdit}
-                onCancelEdit={() => setEditingTaskId(null)}
+                onCancelEdit={handleCancelEdit}
+                editFocusField={taskEditorInitialFocus}
                 onConfirmDelete={handleConfirmDelete}
                 onCancelDelete={() => setDeletingTaskId(null)}
                 viewDate={viewDate}
                 expandedTaskId={expandedTaskId}
                 onClickTask={handleClickTask}
+                onOpenNotesEditor={handleOpenNotesEditor}
                 highlightTaskId={highlightTaskId}
               />
             )}

@@ -167,4 +167,18 @@ describe('PlannerRepository planner depth', () => {
       'done',
     ])
   })
+
+  it('returns only dates with non-empty daily notes for the requested month', () => {
+    db.prepare(
+      'INSERT INTO daily_notes (date, content, updated_at) VALUES (?, ?, ?)'
+    ).run('2026-03-05', 'Captured meeting notes.', '2026-03-05T00:00:00Z')
+    db.prepare(
+      'INSERT INTO daily_notes (date, content, updated_at) VALUES (?, ?, ?)'
+    ).run('2026-03-06', '   ', '2026-03-06T00:00:00Z')
+    db.prepare(
+      'INSERT INTO daily_notes (date, content, updated_at) VALUES (?, ?, ?)'
+    ).run('2026-04-01', 'Different month.', '2026-04-01T00:00:00Z')
+
+    expect(repo.getDatesWithNotes(3, 2026)).toEqual(['2026-03-05'])
+  })
 })

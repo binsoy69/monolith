@@ -21,6 +21,12 @@ import type { ShellModuleId } from "../shared/domain-types";
 import type { SearchResult, UpdateStatus } from "../shared/ipc-types";
 
 export type ModuleId = ShellModuleId;
+type NewItemModuleId = Extract<ModuleId, "habits" | "planner" | "expenses">;
+
+interface NewItemRequest {
+  id: number;
+  module: NewItemModuleId;
+}
 
 export function handleSearchSelect(
   result: SearchResult,
@@ -65,7 +71,9 @@ export default function App(): React.JSX.Element {
   const [activeModule, setActiveModule] = useState<ModuleId>("dashboard");
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const [newItemTrigger, setNewItemTrigger] = useState(0);
+  const [newItemRequest, setNewItemRequest] = useState<NewItemRequest | null>(
+    null,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -100,8 +108,27 @@ export default function App(): React.JSX.Element {
     }
   }, [showCommandPalette, showShortcuts, activeModule, closeCommandPalette]);
 
+  const requestNewItem = useCallback((module: NewItemModuleId) => {
+    setNewItemRequest((current) => ({
+      id: (current?.id ?? 0) + 1,
+      module,
+    }));
+  }, []);
+
   const handleNewItem = useCallback(() => {
-    setNewItemTrigger((n) => n + 1);
+    if (
+      activeModule === "habits" ||
+      activeModule === "planner" ||
+      activeModule === "expenses"
+    ) {
+      requestNewItem(activeModule);
+    }
+  }, [activeModule, requestNewItem]);
+
+  const handleNewItemHandled = useCallback((requestId: number) => {
+    setNewItemRequest((current) =>
+      current?.id === requestId ? null : current,
+    );
   }, []);
 
   const handlePaletteAction = useCallback((action: PaletteAction) => {
@@ -109,18 +136,18 @@ export default function App(): React.JSX.Element {
     switch (action) {
       case "add-task":
         setActiveModule("planner");
-        setNewItemTrigger((n) => n + 1);
+        requestNewItem("planner");
         break;
       case "log-expense":
         setActiveModule("expenses");
-        setNewItemTrigger((n) => n + 1);
+        requestNewItem("expenses");
         break;
       case "check-habit":
         setActiveModule("habits");
-        setNewItemTrigger((n) => n + 1);
+        requestNewItem("habits");
         break;
     }
-  }, [closeCommandPalette]);
+  }, [closeCommandPalette, requestNewItem]);
 
   const onSearchQueryChange = useCallback((query: string) => {
     setSearchQuery(query);
@@ -262,7 +289,12 @@ export default function App(): React.JSX.Element {
                     }}
                   >
                     <HabitsView
-                      newItemTrigger={newItemTrigger}
+                      newItemRequestId={
+                        newItemRequest?.module === "habits"
+                          ? newItemRequest.id
+                          : undefined
+                      }
+                      onNewItemHandled={handleNewItemHandled}
                       highlightHabitId={highlightHabitId}
                     />
                   </main>
@@ -279,7 +311,12 @@ export default function App(): React.JSX.Element {
                     }}
                   >
                     <PlannerView
-                      newItemTrigger={newItemTrigger}
+                      newItemRequestId={
+                        newItemRequest?.module === "planner"
+                          ? newItemRequest.id
+                          : undefined
+                      }
+                      onNewItemHandled={handleNewItemHandled}
                       highlightTaskId={highlightTaskId}
                     />
                   </main>
@@ -296,7 +333,12 @@ export default function App(): React.JSX.Element {
                     }}
                   >
                     <ExpensesView
-                      newItemTrigger={newItemTrigger}
+                      newItemRequestId={
+                        newItemRequest?.module === "expenses"
+                          ? newItemRequest.id
+                          : undefined
+                      }
+                      onNewItemHandled={handleNewItemHandled}
                       highlightExpenseId={highlightExpenseId}
                     />
                   </main>

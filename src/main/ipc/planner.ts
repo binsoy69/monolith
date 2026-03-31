@@ -41,4 +41,8 @@ export function registerPlannerHandlers(): void {
   ipcMain.handle('planner:getDatesWithTasks', (_, data: { month: number; year: number }) =>
     repo.getDatesWithTasks(data.month, data.year)
   )
+
+  ipcMain.handle('planner:getDatesWithNotes', (_, data: { month: number; year: number }) =>
+    repo.getDatesWithNotes(data.month, data.year)
+  )
 }

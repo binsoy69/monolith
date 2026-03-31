@@ -105,6 +105,7 @@ export function DateNav({ viewDate, onPrev, onNext, tasksDone, tasksTotal, onDat
           }}
           onClose={() => setShowCalendar(false)}
           showTaskDots={true}
+          showNoteIndicators={true}
         />
       )}
     </div>

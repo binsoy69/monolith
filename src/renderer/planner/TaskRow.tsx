@@ -15,11 +15,13 @@ interface TaskRowProps {
   isDeleting?: boolean
   onSaveEdit?: (id: string, data: { title: string; notes: string }) => void
   onCancelEdit?: () => void
+  editFocusField?: 'title' | 'notes'
   onConfirmDelete?: (id: string) => void
   onCancelDelete?: () => void
   isDraggable?: boolean
   isExpanded?: boolean
   onClickRow?: () => void
+  onOpenNotesEditor?: (taskId: string) => void
   isHighlighted?: boolean
 }
 
@@ -50,7 +52,25 @@ function getPriorityMeta(
   return null
 }
 
-function renderExpandedNotes(task: Task) {
+const noteActionButtonStyle: React.CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: '24px',
+  padding: '0 var(--space-2)',
+  borderRadius: '999px',
+  border: '1px solid var(--color-border)',
+  backgroundColor: 'var(--color-bg-base)',
+  color: 'var(--color-text-secondary)',
+  fontSize: 'var(--font-size-small)',
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+}
+
+function renderExpandedNotes(
+  task: Task,
+  onOpenNotesEditor?: (taskId: string) => void
+) {
   const hasNotes = task.notes && task.notes.trim()
 
   return (
@@ -87,6 +107,20 @@ function renderExpandedNotes(task: Task) {
           No notes
         </div>
       )}
+      {onOpenNotesEditor && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--space-2)' }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              onOpenNotesEditor(task.id)
+            }}
+            style={noteActionButtonStyle}
+          >
+            {hasNotes ? 'Edit note' : 'Add note'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }
@@ -100,6 +134,7 @@ function RowBody({
   onToggleComplete,
   onContextMenu,
   onClickRow,
+  onOpenNotesEditor,
   dragHandleProps,
 }: {
   task: Task
@@ -110,6 +145,7 @@ function RowBody({
   onToggleComplete: (id: string) => void
   onContextMenu?: (e: React.MouseEvent) => void
   onClickRow?: () => void
+  onOpenNotesEditor?: (taskId: string) => void
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>
 }) {
   const hasNotes = task.notes && task.notes.trim()
@@ -249,17 +285,46 @@ function RowBody({
             )}
           </div>
 
-          {hasNotes && !isExpanded && (
-            <FileText
-              size={12}
-              strokeWidth={1.5}
-              style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}
-            />
+          {hasNotes && !isExpanded && onOpenNotesEditor && (
+            <button
+              type="button"
+              aria-label={`Edit note for ${task.title}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                onOpenNotesEditor(task.id)
+              }}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                padding: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--color-text-muted)',
+                cursor: 'pointer',
+                flexShrink: 0,
+              }}
+            >
+              <FileText size={12} strokeWidth={1.5} />
+            </button>
+          )}
+          {!hasNotes && !isExpanded && isHovered && onOpenNotesEditor && (
+            <button
+              type="button"
+              aria-label={`Add note to ${task.title}`}
+              onClick={(e) => {
+                e.stopPropagation()
+                onOpenNotesEditor(task.id)
+              }}
+              style={noteActionButtonStyle}
+            >
+              Add note
+            </button>
           )}
         </div>
       </div>
 
-      {isExpanded && renderExpandedNotes(task)}
+      {isExpanded && renderExpandedNotes(task, onOpenNotesEditor)}
     </div>
   )
 }
@@ -293,10 +358,12 @@ function SortableTaskRow({
   isDeleting,
   onSaveEdit,
   onCancelEdit,
+  editFocusField,
   onConfirmDelete,
   onCancelDelete,
   isExpanded,
   onClickRow,
+  onOpenNotesEditor,
   isHighlighted = false,
 }: TaskRowProps) {
   const [isHovered, setIsHovered] = useState(false)
@@ -346,11 +413,17 @@ function SortableTaskRow({
         onToggleComplete={onToggleComplete}
         onContextMenu={onContextMenu}
         onClickRow={onClickRow}
+        onOpenNotesEditor={onOpenNotesEditor}
         dragHandleProps={listeners}
       />
 
       {isEditing && onSaveEdit && onCancelEdit && (
-        <TaskEditForm task={task} onSave={onSaveEdit} onCancel={onCancelEdit} />
+        <TaskEditForm
+          task={task}
+          onSave={onSaveEdit}
+          onCancel={onCancelEdit}
+          initialFocusField={editFocusField}
+        />
       )}
     </div>
   )
@@ -364,10 +437,12 @@ function PlainTaskRow({
   isDeleting,
   onSaveEdit,
   onCancelEdit,
+  editFocusField,
   onConfirmDelete,
   onCancelDelete,
   isExpanded,
   onClickRow,
+  onOpenNotesEditor,
   isHighlighted = false,
 }: TaskRowProps) {
   const [isHovered, setIsHovered] = useState(false)
@@ -396,10 +471,16 @@ function PlainTaskRow({
         onToggleComplete={onToggleComplete}
         onContextMenu={onContextMenu}
         onClickRow={onClickRow}
+        onOpenNotesEditor={onOpenNotesEditor}
       />
 
       {isEditing && onSaveEdit && onCancelEdit && (
-        <TaskEditForm task={task} onSave={onSaveEdit} onCancel={onCancelEdit} />
+        <TaskEditForm
+          task={task}
+          onSave={onSaveEdit}
+          onCancel={onCancelEdit}
+          initialFocusField={editFocusField}
+        />
       )}
     </div>
   )

@@ -211,4 +211,17 @@ export class PlannerRepository {
       .all(`${year}-${paddedMonth}-%`) as { date: string }[]
     return rows.map((r) => r.date)
   }
+
+  getDatesWithNotes(month: number, year: number): string[] {
+    const paddedMonth = String(month).padStart(2, '0')
+    const rows = this.db
+      .prepare(
+        `SELECT date
+         FROM daily_notes
+         WHERE date LIKE ?
+           AND LENGTH(TRIM(content)) > 0`
+      )
+      .all(`${year}-${paddedMonth}-%`) as { date: string }[]
+    return rows.map((r) => r.date)
+  }
 }

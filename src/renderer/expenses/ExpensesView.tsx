@@ -17,7 +17,8 @@ import { TagCreateDialog } from "../tags/TagCreateDialog";
 import { useTagsStore } from "../tags/tags-store";
 
 interface ExpensesViewProps {
-  newItemTrigger?: number;
+  newItemRequestId?: number;
+  onNewItemHandled?: (requestId: number) => void;
   highlightExpenseId?: string;
 }
 
@@ -27,7 +28,8 @@ function getCurrentMonthKey(): string {
 }
 
 export function ExpensesView({
-  newItemTrigger,
+  newItemRequestId,
+  onNewItemHandled,
   highlightExpenseId,
 }: ExpensesViewProps): React.JSX.Element {
   const {
@@ -130,12 +132,15 @@ export function ExpensesView({
 
   // "N" key shortcut: open log modal when in expenses module
   useEffect(() => {
-    if (newItemTrigger && newItemTrigger > 0 && wallets.length > 0) {
-      // This is driven by a parent shortcut/event trigger, not derived UI state.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setShowLogModal(true);
+    if (typeof newItemRequestId === "number") {
+      if (wallets.length > 0) {
+        // This is driven by a parent shortcut/event trigger, not derived UI state.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setShowLogModal(true);
+      }
+      onNewItemHandled?.(newItemRequestId);
     }
-  }, [newItemTrigger, wallets.length]);
+  }, [newItemRequestId, onNewItemHandled, wallets.length]);
 
   function handleAdjustSave(
     mode: "set" | "delta",

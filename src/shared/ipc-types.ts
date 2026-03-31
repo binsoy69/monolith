@@ -65,6 +65,7 @@ export interface PlannerAPI {
   getNotes: (date: string) => Promise<string>
   saveNotes: (data: { date: string; content: string }) => Promise<void>
   getDatesWithTasks: (data: { month: number; year: number }) => Promise<string[]>
+  getDatesWithNotes: (data: { month: number; year: number }) => Promise<string[]>
 }
 
 export interface ExpensesAPI {

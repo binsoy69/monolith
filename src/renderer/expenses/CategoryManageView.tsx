@@ -53,20 +53,32 @@ export function CategoryManageView({ categories, onUpdate, onDelete, onCreate }:
       style={{
         padding: 'var(--space-4)',
         borderTop: '1px solid var(--color-border)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--space-2)',
       }}
     >
       <h3
         style={{
-          margin: '0 0 var(--space-4) 0',
+          margin: 0,
           fontSize: 'var(--font-size-heading)',
           fontWeight: 600,
           color: 'var(--color-text-primary)',
+          flexShrink: 0,
         }}
       >
         Manage Categories
       </h3>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+      <div
+        aria-label="Manage categories list"
+        role="region"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-2)',
+        }}
+      >
         {categories.map((cat) => (
           <div
             key={cat.id}

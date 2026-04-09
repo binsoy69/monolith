@@ -281,90 +281,103 @@ export function ExpensesView({
             flex: 1,
             display: "flex",
             flexDirection: "column",
-            overflow: "hidden",
+            minHeight: 0,
           }}
         >
           <div
-            style={{
-              padding: "var(--space-4) var(--space-4) 0",
-              flexShrink: 0,
-            }}
-          >
-            <ExpenseAnalyticsSection
-              analytics={analytics}
-              isOpen={showAnalytics}
-              trendMonths={trendMonths}
-              onToggle={() => setShowAnalytics((value) => !value)}
-              onSelectTrendMonths={setTrendMonths}
-              isAnimationActive={isChartAnimationActive}
-            />
-          </div>
-          <div
+            aria-label="Expenses content"
+            role="region"
             style={{
               flex: 1,
-              overflow: "hidden",
+              overflowY: "auto",
               display: "flex",
               flexDirection: "column",
+              minHeight: 0,
             }}
           >
-            <ExpenseList
-              expenses={expenses}
-              categories={categories}
-              wallets={wallets}
-              filters={filters}
-              onFiltersChange={(f) => setFilters(f)}
-              onClearFilters={clearFilters}
-              onContextMenu={handleExpenseContextMenu}
-              highlightExpenseId={highlightExpenseId}
-            />
-          </div>
-
-          {/* Manage categories toggle */}
-          <div
-            style={{
-              padding: "var(--space-2) var(--space-4)",
-              borderTop: showCategoryManage
-                ? "none"
-                : "1px solid var(--color-border)",
-              flexShrink: 0,
-            }}
-          >
-            <button
-              onClick={() => setShowCategoryManage((v) => !v)}
+            <div
               style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "var(--font-size-small)",
-                color: showCategoryManage
-                  ? "var(--color-accent)"
-                  : "var(--color-text-secondary)",
-                padding: 0,
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  showCategoryManage
-                    ? "var(--color-accent-hover)"
-                    : "var(--color-text-secondary)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  showCategoryManage
-                    ? "var(--color-accent)"
-                    : "var(--color-text-secondary)";
+                padding: "var(--space-4) var(--space-4) 0",
+                flexShrink: 0,
               }}
             >
-              {showCategoryManage ? "Hide categories" : "Manage categories"}
-            </button>
-
-            {showCategoryManage && (
-              <CategoryManageView
-                categories={categories}
-                onUpdate={(id, data) => updateCategory(id, data)}
-                onDelete={deleteCategory}
-                onCreate={createCategory}
+              <ExpenseAnalyticsSection
+                analytics={analytics}
+                isOpen={showAnalytics}
+                trendMonths={trendMonths}
+                onToggle={() => setShowAnalytics((value) => !value)}
+                onSelectTrendMonths={setTrendMonths}
+                isAnimationActive={isChartAnimationActive}
               />
-            )}
+            </div>
+
+            <div
+              style={{
+                flex: "1 0 320px",
+                minHeight: "320px",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <ExpenseList
+                expenses={expenses}
+                categories={categories}
+                wallets={wallets}
+                filters={filters}
+                onFiltersChange={(f) => setFilters(f)}
+                onClearFilters={clearFilters}
+                onContextMenu={handleExpenseContextMenu}
+                highlightExpenseId={highlightExpenseId}
+              />
+            </div>
+
+            {/* Manage categories toggle */}
+            <div
+              style={{
+                padding: "var(--space-2) var(--space-4)",
+                borderTop: showCategoryManage
+                  ? "none"
+                  : "1px solid var(--color-border)",
+                flexShrink: 0,
+              }}
+            >
+              <button
+                onClick={() => setShowCategoryManage((v) => !v)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "var(--font-size-small)",
+                  color: showCategoryManage
+                    ? "var(--color-accent)"
+                    : "var(--color-text-secondary)",
+                  padding: 0,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    showCategoryManage
+                      ? "var(--color-accent-hover)"
+                      : "var(--color-text-secondary)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    showCategoryManage
+                      ? "var(--color-accent)"
+                      : "var(--color-text-secondary)";
+                }}
+              >
+                {showCategoryManage ? "Hide categories" : "Manage categories"}
+              </button>
+
+              {showCategoryManage && (
+                <CategoryManageView
+                  categories={categories}
+                  onUpdate={(id, data) => updateCategory(id, data)}
+                  onDelete={deleteCategory}
+                  onCreate={createCategory}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

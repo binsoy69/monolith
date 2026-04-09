@@ -33,7 +33,7 @@ export function ExpenseDonutChart({
         gap: 'var(--space-4)',
       }}
     >
-      <div style={{ position: 'relative', height: '160px' }}>
+      <div style={{ position: 'relative', height: '160px', flexShrink: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
@@ -89,7 +89,15 @@ export function ExpenseDonutChart({
       </div>
 
       {hasExpenses ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+        <div
+          aria-label="Category breakdown"
+          role="region"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)',
+          }}
+        >
           {breakdown.map((item, index) => (
             <div
               key={item.categoryId}

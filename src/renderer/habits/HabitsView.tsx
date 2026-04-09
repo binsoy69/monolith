@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   DndContext,
   PointerSensor,
@@ -69,6 +69,7 @@ export function HabitsView({
   const [expandedHabitId, setExpandedHabitId] = useState<string | null>(null)
   const [archivingHabit, setArchivingHabit] = useState<HabitWithToday | null>(null)
   const [tagDialogTargetId, setTagDialogTargetId] = useState<string | null>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const { contextMenu, showContextMenu, hideContextMenu } = useContextMenu()
   const ensureItemTags = useTagsStore((state) => state.ensureItemTags)
@@ -96,14 +97,30 @@ export function HabitsView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newItemRequestId, onNewItemHandled])
 
+  const scrollFormIntoView = () => {
+    const container = scrollContainerRef.current
+    if (!container) {
+      return
+    }
+
+    if (typeof container.scrollTo === 'function') {
+      container.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+
+    container.scrollTop = 0
+  }
+
   const openCreateForm = () => {
     setEditingHabit(null)
     setShowForm(true)
+    scrollFormIntoView()
   }
 
   const openEditForm = (habit: HabitWithToday) => {
     setEditingHabit(habit)
     setShowForm(true)
+    scrollFormIntoView()
   }
 
   const closeForm = () => {
@@ -486,6 +503,7 @@ export function HabitsView({
       <HabitProgressBar completed={completedCount} total={totalScheduled} />
 
       <div
+        ref={scrollContainerRef}
         style={{
           flex: 1,
           overflowY: 'auto',
@@ -498,6 +516,7 @@ export function HabitsView({
       >
         {showForm && (
           <HabitForm
+            key={editingHabit?.id ?? 'create'}
             mode={editingHabit ? 'edit' : 'create'}
             initialName={editingHabit?.name ?? ''}
             initialDaysOfWeek={editingHabit?.daysOfWeek ?? '1111111'}

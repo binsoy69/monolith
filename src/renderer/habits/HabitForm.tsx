@@ -32,8 +32,15 @@ export function HabitForm({
   const nameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
+    setName(initialName)
+    setDaysOfWeek(initialDaysOfWeek)
+    setKind(initialKind)
+    setTargetCount(initialTargetCount === null ? '1' : String(initialTargetCount))
+  }, [initialDaysOfWeek, initialKind, initialName, initialTargetCount, mode])
+
+  useEffect(() => {
     nameInputRef.current?.focus()
-  }, [])
+  }, [initialName, mode])
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -83,10 +90,8 @@ export function HabitForm({
         padding: 'var(--space-4)',
         display: 'flex',
         flexDirection: 'column',
-        gap: 'var(--space-2)',
-        maxHeight: '320px',
-        overflow: 'hidden',
-        transition: `max-height var(--duration-normal) ease-out`,
+        gap: 'var(--space-3)',
+        flexShrink: 0,
       }}
     >
       <input

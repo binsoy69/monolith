@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React from "react";
-import { cleanup, render, waitFor } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ExpensesView } from "../src/renderer/expenses/ExpensesView";
 import { useExpensesStore } from "../src/renderer/expenses/expenses-store";
@@ -120,6 +120,10 @@ describe("ExpensesView", () => {
     window.api = api as typeof window.api;
 
     render(<ExpensesView />);
+
+    expect(
+      screen.getByRole("region", { name: "Expenses content" }),
+    ).toHaveStyle({ overflowY: "auto" });
 
     await waitFor(() => {
       expect(api.expenses.listWallets).toHaveBeenCalledTimes(1);

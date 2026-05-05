@@ -2,7 +2,7 @@
 
 ## Overview
 
-Five phases build Monolith from nothing to a shippable daily-driver desktop app. Phase 1 lays the structural foundation — Electron security model, SQLite migrations, design tokens, and keyboard router — before any feature code is written. Phase 2 gives each of the three modules a complete data entry loop. Phase 3 wires the unified dashboard and full keyboard navigation, validating the core product identity. Phase 4 adds the differentiating depth features (heatmaps, charts, carry-forward) that make the app worth opening every day. Phase 5 connects the modules through cross-cutting concerns (tags, global search, notifications) and prepares a distributable binary.
+Seven phases build Monolith from nothing to a shippable daily-driver desktop app. Phase 1 lays the structural foundation - Electron security model, SQLite migrations, design tokens, and keyboard router - before any feature code is written. Phase 2 gives each of the original three modules a complete data entry loop. Phase 3 wires the unified dashboard and full keyboard navigation, validating the core product identity. Phase 4 adds the differentiating depth features (heatmaps, charts, carry-forward) that make the app worth opening every day. Phase 5 connects the modules through cross-cutting concerns (tags, global search, notifications) and prepares a distributable binary. Phase 6 closes wallet logging gaps. Phase 7 expands Monolith into food journaling with meal logging, searchable history, food grouping, and eating frequency analytics.
 
 ## Phases
 
@@ -19,6 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 5: Cross-Module + Distribution** - Tags, global search, desktop notifications, packaging, code signing
 - [x] **Phase 6: Wallet Edit Fix & Transaction Logging** - Fix wallet edit button, require descriptions on balance changes, transaction history log
  (completed 2026-03-29)
+- [ ] **Phase 7: Food Tracker** - Meal logging, searchable food history, grouped foods, and weekly/monthly eating frequency analytics
 
 ## Phase Details
 
@@ -119,7 +120,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -129,6 +130,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 | 4. Depth + Differentiators | 7/7 | Complete   | 2026-03-28 |
 | 5. Cross-Module + Distribution | 4/4 | Ready for Release | - |
 | 6. Wallet Edit Fix & Transaction Logging | 2/2 | Complete   | 2026-03-29 |
+| 7. Food Tracker | 0/0 | Planned | - |
 
 ### Phase 6: Wallet Edit Fix & Transaction Logging
 **Goal:** Fix the wallet edit button in the expense module, require descriptions on wallet balance adjustments, and log all wallet balance changes in a transaction history.
@@ -139,3 +141,14 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 Plans:
 - [x] 06-01-PLAN.md — Backend: types, migration (wallet_transactions table), repository transaction logging, IPC + preload + store wiring
 - [x] 06-02-PLAN.md — UI: inline wallet edit form, description field in balance adjust modal, wallet transaction history modal
+
+### Phase 7: Food Tracker
+**Goal:** Add simple meal logging so the user can record food name, meal type/time, and notes, then review searchable food history with weekly/monthly frequency counts and auto-suggested grouping for similar food names.
+**Depends on:** Phase 3
+**Requirements:** FOOD-01, FOOD-02, FOOD-03
+**Success Criteria** (what must be TRUE):
+  1. User can log a meal quickly with food name, meal type/time, and optional notes, and entries persist across restarts
+  2. User can search or filter food history by food name and see how many times that food was eaten in the current week and month
+  3. Similar food names can be grouped through auto-suggestions during logging, so variants like restaurant-specific or descriptive names can roll up into one food
+  4. Food analytics shows most-eaten foods and eating trends over time without requiring calorie or macro tracking
+**Plans:** 0/0 plans created

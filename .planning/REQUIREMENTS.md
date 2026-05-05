@@ -44,6 +44,12 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **EXP-09**: User can add optional notes to expenses
 - [x] **EXP-10**: User can view spending trends over 6-12 months (line chart)
 
+### Food Tracker
+
+- [ ] **FOOD-01**: User can log a meal with food name, meal type/time, and optional notes
+- [ ] **FOOD-02**: User can search or filter food history and see how many times a food was eaten over weekly and monthly windows
+- [ ] **FOOD-03**: Similar food names can be grouped, with auto-suggestions during meal logging so variants roll up into a single food
+
 ### Wallet Enhancements
 
 - [x] **WALL-01**: User can edit wallet name and balance via inline form (fix broken edit button)
@@ -170,12 +176,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WALL-01 | Phase 6 | Complete |
 | WALL-02 | Phase 6 | Complete |
 | WALL-03 | Phase 6 | Complete |
+| FOOD-01 | Phase 7 | Pending |
+| FOOD-02 | Phase 7 | Pending |
+| FOOD-03 | Phase 7 | Pending |
 
 **Coverage:**
-- v1 requirements: 43 total
-- Mapped to phases: 43
+- v1 requirements: 46 total
+- Mapped to phases: 46
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-19*
-*Last updated: 2026-03-28 after phase 6 planning*
+*Last updated: 2026-05-06 after food tracker exploration*

@@ -11,10 +11,12 @@ const SHORTCUTS = {
     { keys: ["Alt", "2"], label: "Habits" },
     { keys: ["Alt", "3"], label: "Planner" },
     { keys: ["Alt", "4"], label: "Expenses" },
+    { keys: ["Alt", "5"], label: "Food" },
     { keys: ["Esc"], label: "Close or return to dashboard" },
   ],
   "Module actions": [
     { keys: ["N"], label: "Create a new item in the active module" },
+    { keys: ["M"], label: "Log a meal" },
     { keys: ["Left"], label: "Previous day in planner" },
     { keys: ["Right"], label: "Next day in planner" },
     { keys: ["T"], label: "Jump to today in planner" },

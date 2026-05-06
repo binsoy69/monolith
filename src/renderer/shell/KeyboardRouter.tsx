@@ -10,6 +10,7 @@ interface KeyboardRouterProps {
   onNavigateDay?: (direction: -1 | 1) => void;
   onGoToToday?: () => void;
   onCommandPalette: () => void;
+  onLogMeal: () => void;
 }
 
 export function KeyboardRouter({
@@ -21,6 +22,7 @@ export function KeyboardRouter({
   onNavigateDay,
   onGoToToday,
   onCommandPalette,
+  onLogMeal,
 }: KeyboardRouterProps) {
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     // Input guard — check if user is typing in an editable field
@@ -37,6 +39,7 @@ export function KeyboardRouter({
         case '2': e.preventDefault(); onNavigate('habits'); return;
         case '3': e.preventDefault(); onNavigate('planner'); return;
         case '4': e.preventDefault(); onNavigate('expenses'); return;
+        case '5': e.preventDefault(); onNavigate('food'); return;
       }
     }
 
@@ -69,6 +72,12 @@ export function KeyboardRouter({
         return;
       }
 
+      if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault();
+        onLogMeal();
+        return;
+      }
+
       // Planner day navigation — ArrowLeft / ArrowRight
       if (e.key === 'ArrowLeft' && activeModule === 'planner') {
         e.preventDefault();
@@ -89,7 +98,7 @@ export function KeyboardRouter({
         return;
       }
     }
-  }, [onNavigate, onShowShortcuts, onEscape, onNewItem, activeModule, onNavigateDay, onGoToToday, onCommandPalette]);
+  }, [onNavigate, onShowShortcuts, onEscape, onNewItem, activeModule, onNavigateDay, onGoToToday, onCommandPalette, onLogMeal]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);

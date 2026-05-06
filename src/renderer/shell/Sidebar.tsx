@@ -1,5 +1,6 @@
 import {
   Checks,
+  ForkKnife,
   type Icon,
   Pulse,
   SlidersHorizontal,
@@ -27,6 +28,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "habits", label: "Habits", icon: Pulse },
   { id: "planner", label: "Planner", icon: Checks },
   { id: "expenses", label: "Expenses", icon: Wallet },
+  { id: "food", label: "Food", icon: ForkKnife },
 ];
 
 export function Sidebar({

@@ -13,15 +13,17 @@ import { ToastContainer } from "./shared/ToastContainer";
 import { HabitsView } from "./habits/HabitsView";
 import { PlannerView } from "./planner/PlannerView";
 import { ExpensesView } from "./expenses/ExpensesView";
+import { FoodView } from "./food/FoodView";
 import { DashboardView } from "./dashboard/DashboardView";
 import { TagsView } from "./tags/TagsView";
 import { usePlannerStore } from "./planner/planner-store";
 import { useExpensesStore } from "./expenses/expenses-store";
+import { useFoodStore } from "./food/food-store";
 import type { ShellModuleId } from "../shared/domain-types";
 import type { SearchResult, UpdateStatus } from "../shared/ipc-types";
 
 export type ModuleId = ShellModuleId;
-type NewItemModuleId = Extract<ModuleId, "habits" | "planner" | "expenses">;
+type NewItemModuleId = Extract<ModuleId, "habits" | "planner" | "expenses" | "food">;
 
 interface NewItemRequest {
   id: number;
@@ -34,10 +36,12 @@ export function handleSearchSelect(
   setHighlightHabitId: (id: string | undefined) => void,
   setHighlightTaskId: (id: string | undefined) => void,
   setHighlightExpenseId: (id: string | undefined) => void,
+  setHighlightFoodEntryId: (id: string | undefined) => void = () => {},
 ): void {
   setHighlightHabitId(undefined);
   setHighlightTaskId(undefined);
   setHighlightExpenseId(undefined);
+  setHighlightFoodEntryId(undefined);
 
   switch (result.type) {
     case "habit":
@@ -64,6 +68,15 @@ export function handleSearchSelect(
       });
       setHighlightExpenseId(result.id);
       break;
+    case "food":
+      setActiveModule("food");
+      useFoodStore.getState().setFilters({ query: result.title, foodId: undefined });
+      break;
+    case "food_entry":
+      setActiveModule("food");
+      useFoodStore.getState().setFilters({ query: result.title, foodId: undefined });
+      setHighlightFoodEntryId(result.id);
+      break;
   }
 }
 
@@ -80,6 +93,7 @@ export default function App(): React.JSX.Element {
   const [highlightHabitId, setHighlightHabitId] = useState<string>();
   const [highlightTaskId, setHighlightTaskId] = useState<string>();
   const [highlightExpenseId, setHighlightExpenseId] = useState<string>();
+  const [highlightFoodEntryId, setHighlightFoodEntryId] = useState<string>();
   const [updateStatus, setUpdateStatus] = useState<UpdateStatus>({
     state: "idle",
   });
@@ -119,7 +133,8 @@ export default function App(): React.JSX.Element {
     if (
       activeModule === "habits" ||
       activeModule === "planner" ||
-      activeModule === "expenses"
+      activeModule === "expenses" ||
+      activeModule === "food"
     ) {
       requestNewItem(activeModule);
     }
@@ -142,6 +157,10 @@ export default function App(): React.JSX.Element {
         setActiveModule("expenses");
         requestNewItem("expenses");
         break;
+      case "log-meal":
+        setActiveModule("food");
+        requestNewItem("food");
+        break;
       case "check-habit":
         setActiveModule("habits");
         requestNewItem("habits");
@@ -161,6 +180,7 @@ export default function App(): React.JSX.Element {
         setHighlightHabitId,
         setHighlightTaskId,
         setHighlightExpenseId,
+        setHighlightFoodEntryId,
       );
       closeCommandPalette();
     },
@@ -240,6 +260,14 @@ export default function App(): React.JSX.Element {
     return () => window.clearTimeout(timer);
   }, [highlightExpenseId]);
 
+  useEffect(() => {
+    if (!highlightFoodEntryId) {
+      return;
+    }
+    const timer = window.setTimeout(() => setHighlightFoodEntryId(undefined), 1500);
+    return () => window.clearTimeout(timer);
+  }, [highlightFoodEntryId]);
+
   return (
     <div className="app-shell">
       <a className="app-skip-link" href="#app-main">
@@ -255,6 +283,10 @@ export default function App(): React.JSX.Element {
         onNavigateDay={plannerNavigateDay}
         onGoToToday={plannerGoToToday}
         onCommandPalette={() => setShowCommandPalette(true)}
+        onLogMeal={() => {
+          setActiveModule("food");
+          requestNewItem("food");
+        }}
       />
 
       {updateStatus.state !== "idle" && updateStatus.state !== "not-available" ? (
@@ -340,6 +372,28 @@ export default function App(): React.JSX.Element {
                       }
                       onNewItemHandled={handleNewItemHandled}
                       highlightExpenseId={highlightExpenseId}
+                    />
+                  </main>
+                </ErrorBoundary>
+              ) : activeModule === "food" ? (
+                <ErrorBoundary moduleName="Food">
+                  <main
+                    id="app-main"
+                    style={{
+                      flex: 1,
+                      overflow: "hidden",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <FoodView
+                      newItemRequestId={
+                        newItemRequest?.module === "food"
+                          ? newItemRequest.id
+                          : undefined
+                      }
+                      onNewItemHandled={handleNewItemHandled}
+                      highlightEntryId={highlightFoodEntryId}
                     />
                   </main>
                 </ErrorBoundary>

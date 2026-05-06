@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SearchResult } from "../../shared/ipc-types";
 
-export type PaletteAction = "add-task" | "log-expense" | "check-habit";
+export type PaletteAction = "add-task" | "log-expense" | "log-meal" | "check-habit";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -16,6 +16,7 @@ interface CommandPaletteProps {
 const ACTIONS: Array<{ id: PaletteAction; label: string }> = [
   { id: "add-task", label: "Add task" },
   { id: "log-expense", label: "Log expense" },
+  { id: "log-meal", label: "Log meal" },
   { id: "check-habit", label: "Check habit" },
 ];
 

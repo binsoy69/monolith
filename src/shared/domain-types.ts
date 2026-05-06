@@ -2,7 +2,7 @@ export type HabitKind = 'boolean' | 'count'
 export type TaskPriority = 0 | 1 | 2 | 3
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack'
 export type ShellModuleId = 'dashboard' | 'habits' | 'planner' | 'expenses' | 'food' | 'settings' | 'tags'
-export type TaggableItemType = 'habit' | 'task' | 'expense'
+export type TaggableItemType = 'habit' | 'task' | 'expense' | 'food_entry'
 
 export interface Habit {
   id: string

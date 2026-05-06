@@ -119,5 +119,45 @@ export const migrations: Migration[] = [
       CREATE INDEX IF NOT EXISTS idx_item_tags_tag
         ON item_tags(tag_id);
     `,
+  },
+  {
+    version: 6,
+    sql: `
+      CREATE TABLE IF NOT EXISTS foods (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        normalized_name TEXT NOT NULL UNIQUE,
+        group_food_id TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS meal_entries (
+        id TEXT PRIMARY KEY,
+        food_id TEXT NOT NULL,
+        food_name TEXT NOT NULL,
+        meal_type TEXT NOT NULL,
+        meal_time TEXT NOT NULL,
+        date TEXT NOT NULL,
+        notes TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS food_group_suppressions (
+        input_normalized TEXT NOT NULL,
+        suggested_food_id TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        PRIMARY KEY(input_normalized, suggested_food_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_foods_normalized_name
+        ON foods(normalized_name);
+      CREATE INDEX IF NOT EXISTS idx_foods_group_food_id
+        ON foods(group_food_id);
+      CREATE INDEX IF NOT EXISTS idx_meal_entries_date_meal_time
+        ON meal_entries(date, meal_time);
+      CREATE INDEX IF NOT EXISTS idx_meal_entries_food_id_date
+        ON meal_entries(food_id, date);
+      CREATE INDEX IF NOT EXISTS idx_food_group_suppressions_pair
+        ON food_group_suppressions(input_normalized, suggested_food_id);
+    `,
   }
 ]

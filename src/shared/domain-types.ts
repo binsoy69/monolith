@@ -1,5 +1,6 @@
 export type HabitKind = 'boolean' | 'count'
 export type TaskPriority = 0 | 1 | 2 | 3
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack'
 export type ShellModuleId = 'dashboard' | 'habits' | 'planner' | 'expenses' | 'settings' | 'tags'
 export type TaggableItemType = 'habit' | 'task' | 'expense'
 
@@ -51,6 +52,40 @@ export interface Expense {
   walletId: string | null
   notes: string | null
   createdAt: string
+}
+
+export interface Food {
+  id: string
+  name: string
+  normalizedName: string
+  groupFoodId: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface MealEntry {
+  id: string
+  foodId: string
+  foodName: string
+  mealType: MealType
+  mealTime: string
+  date: string
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FoodGroupingSuggestion {
+  inputName: string
+  inputNormalized: string
+  suggestedFood: Food
+  score: number
+}
+
+export interface FoodFrequencySummary {
+  foodId: string
+  name: string
+  count: number
 }
 
 export type WalletTransactionType = 'manual_set' | 'manual_delta' | 'expense_deduction' | 'expense_reversal'

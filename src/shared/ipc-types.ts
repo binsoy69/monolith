@@ -2,6 +2,11 @@ import type {
   Habit,
   HabitHistoryPoint as DomainHabitHistoryPoint,
   HabitKind,
+  MealType,
+  Food,
+  MealEntry,
+  FoodGroupingSuggestion,
+  FoodFrequencySummary,
   Task,
   TaskPriority,
   Category,
@@ -108,6 +113,27 @@ export interface ExpenseAnalytics {
   trend: ExpenseTrendPoint[]
 }
 
+export interface FoodAnalytics {
+  period: 'week' | 'month'
+  date: string
+  startDate: string
+  endDate: string
+  totalEntries: number
+  mostEatenFoods: FoodFrequencySummary[]
+}
+
+export interface FoodAPI {
+  listEntries: (filters?: { startDate?: string; endDate?: string; foodId?: string; query?: string }) => Promise<MealEntry[]>
+  createEntry: (data: { foodName: string; mealType: MealType; mealTime: string; notes?: string; confirmedGroupFoodId?: string | null }) => Promise<MealEntry>
+  updateEntry: (data: { id: string; foodName?: string; mealType?: MealType; mealTime?: string; notes?: string | null; confirmedGroupFoodId?: string | null }) => Promise<void>
+  deleteEntry: (id: string) => Promise<void>
+  suggestFoods: (data: { query: string; limit?: number }) => Promise<Food[]>
+  getGroupingSuggestion: (data: { foodName: string }) => Promise<FoodGroupingSuggestion | null>
+  suppressGroupingSuggestion: (data: { inputName: string; suggestedFoodId: string }) => Promise<void>
+  setFoodGroup: (data: { foodId: string; groupFoodId: string | null }) => Promise<void>
+  getAnalytics: (data: { date: string; period: 'week' | 'month' }) => Promise<FoodAnalytics>
+}
+
 export interface DashboardData {
   habits: {
     total: number
@@ -179,6 +205,7 @@ export interface API {
   expenses: ExpensesAPI
   dashboard: DashboardAPI
   tags: TagsAPI
+  food: FoodAPI
   shell: ShellAPI
   search: SearchAPI
 }

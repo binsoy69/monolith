@@ -63,6 +63,18 @@ const api: API = {
     setAssignment: (data) => ipcRenderer.invoke('tags:setAssignment', data),
     getItemsByTag: (tagId) => ipcRenderer.invoke('tags:getItemsByTag', tagId),
   },
+  food: {
+    listEntries: (filters) => ipcRenderer.invoke('food:listEntries', filters),
+    createEntry: (data) => ipcRenderer.invoke('food:createEntry', data),
+    updateEntry: (data) => ipcRenderer.invoke('food:updateEntry', data),
+    deleteEntry: (id) => ipcRenderer.invoke('food:deleteEntry', id),
+    suggestFoods: (data) => ipcRenderer.invoke('food:suggestFoods', data),
+    getGroupingSuggestion: (data) => ipcRenderer.invoke('food:getGroupingSuggestion', data),
+    suppressGroupingSuggestion: (data) =>
+      ipcRenderer.invoke('food:suppressGroupingSuggestion', data),
+    setFoodGroup: (data) => ipcRenderer.invoke('food:setFoodGroup', data),
+    getAnalytics: (data) => ipcRenderer.invoke('food:getAnalytics', data),
+  },
   shell: {
     onNavigate: (callback) => {
       const listener = (

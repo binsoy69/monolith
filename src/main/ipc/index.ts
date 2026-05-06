@@ -5,6 +5,7 @@ import { registerExpensesHandlers } from './expenses';
 import { registerDashboardHandlers } from './dashboard';
 import { registerTagsHandlers } from './tags';
 import { registerSearchHandlers } from './search';
+import { registerFoodHandlers } from './food';
 
 export function registerAllHandlers(): void {
   registerSettingsHandlers();
@@ -13,5 +14,6 @@ export function registerAllHandlers(): void {
   registerExpensesHandlers();
   registerDashboardHandlers();
   registerTagsHandlers();
+  registerFoodHandlers();
   registerSearchHandlers();
 }

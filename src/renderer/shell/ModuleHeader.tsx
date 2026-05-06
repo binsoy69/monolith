@@ -12,6 +12,7 @@ const MODULE_NAMES: Record<ModuleId, string> = {
   habits: "Habits",
   planner: "Planner",
   expenses: "Expenses",
+  food: "Food",
   settings: "Settings",
   tags: "Tags",
 };

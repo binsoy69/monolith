@@ -11,6 +11,7 @@ const MODULE_COPY: Record<WindowChromeProps["activeModule"], string> = {
   habits: "habit tracking",
   planner: "planner flow",
   expenses: "expense control",
+  food: "meal journal",
   settings: "workspace settings",
   tags: "tag browser",
 };

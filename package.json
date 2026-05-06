@@ -1,6 +1,6 @@
 {
   "name": "monolith",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Personal productivity desktop app — habits, tasks, and expenses in one place",
   "main": "./out/main/index.js",
   "author": "",

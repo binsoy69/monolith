@@ -149,6 +149,11 @@ export interface DashboardData {
     todayTotal: number
     topCategories: Array<{ name: string; color: string; amount: number }>
   }
+  food: {
+    mealsToday: number
+    mostEatenThisWeek: Array<{ foodId: string; name: string; count: number }>
+    mostEatenThisMonth: Array<{ foodId: string; name: string; count: number }>
+  }
 }
 
 export interface DashboardAPI {
@@ -182,7 +187,7 @@ export interface ShellAPI {
   installUpdate: () => Promise<void>
 }
 
-export type SearchResultType = 'habit' | 'task' | 'expense' | 'daily_note'
+export type SearchResultType = 'habit' | 'task' | 'expense' | 'daily_note' | 'food' | 'food_entry'
 
 export interface SearchResult {
   type: SearchResultType

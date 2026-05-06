@@ -1,4 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("@phosphor-icons/react", () => {
+  const Icon = () => null;
+  return {
+    Checks: Icon,
+    ForkKnife: Icon,
+    Pulse: Icon,
+    SlidersHorizontal: Icon,
+    SquaresFour: Icon,
+    Wallet: Icon,
+  };
+});
+
 import { handleSearchSelect } from "../src/renderer/App";
 import { useExpensesStore } from "../src/renderer/expenses/expenses-store";
 import { usePlannerStore } from "../src/renderer/planner/planner-store";

@@ -148,6 +148,11 @@ describe('getDashboardData', () => {
         todayTotal: 0,
         topCategories: [],
       },
+      food: {
+        mealsToday: 0,
+        mostEatenThisWeek: [],
+        mostEatenThisMonth: [],
+      },
     })
   })
 

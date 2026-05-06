@@ -2,6 +2,19 @@
 import React from "react";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+vi.mock("@phosphor-icons/react", () => {
+  const Icon = () => null;
+  return {
+    Checks: Icon,
+    ForkKnife: Icon,
+    Pulse: Icon,
+    SlidersHorizontal: Icon,
+    SquaresFour: Icon,
+    Wallet: Icon,
+  };
+});
+
 import { Sidebar } from "../src/renderer/shell/Sidebar";
 import { TagsView } from "../src/renderer/tags/TagsView";
 import { useTagsStore } from "../src/renderer/tags/tags-store";

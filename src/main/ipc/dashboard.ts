@@ -6,6 +6,78 @@ import { PlannerRepository } from '../repositories/PlannerRepository'
 import { calculateStreaks, getTodayStr } from '../utils/streaks'
 import type { DashboardData } from '../../shared/ipc-types'
 
+function hasTable(db: Database.Database, tableName: string): boolean {
+  const row = db
+    .prepare('SELECT 1 FROM sqlite_master WHERE type = ? AND name = ? LIMIT 1')
+    .get('table', tableName) as { 1: number } | undefined
+  return row !== undefined
+}
+
+function getDateRange(date: string, period: 'week' | 'month'): { startDate: string; endDate: string } {
+  const dateValue = new Date(`${date}T12:00:00`)
+
+  function formatDate(value: Date): string {
+    return `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`
+  }
+
+  if (period === 'month') {
+    return {
+      startDate: formatDate(new Date(dateValue.getFullYear(), dateValue.getMonth(), 1)),
+      endDate: formatDate(new Date(dateValue.getFullYear(), dateValue.getMonth() + 1, 0)),
+    }
+  }
+
+  const day = dateValue.getDay()
+  const mondayOffset = day === 0 ? -6 : 1 - day
+  const start = new Date(dateValue)
+  start.setDate(dateValue.getDate() + mondayOffset)
+  const end = new Date(start)
+  end.setDate(start.getDate() + 6)
+  return {
+    startDate: formatDate(start),
+    endDate: formatDate(end),
+  }
+}
+
+function getFoodDashboardData(db: Database.Database, date: string): DashboardData['food'] {
+  if (!hasTable(db, 'meal_entries') || !hasTable(db, 'foods')) {
+    return {
+      mealsToday: 0,
+      mostEatenThisWeek: [],
+      mostEatenThisMonth: [],
+    }
+  }
+
+  const mealsTodayRow = db
+    .prepare('SELECT COUNT(*) AS count FROM meal_entries WHERE date = ?')
+    .get(date) as { count: number }
+
+  function topFoods(period: 'week' | 'month'): DashboardData['food']['mostEatenThisWeek'] {
+    const { startDate, endDate } = getDateRange(date, period)
+    return db
+      .prepare(
+        `SELECT
+           COALESCE(g.id, f.id) AS foodId,
+           COALESCE(g.name, f.name) AS name,
+           COUNT(m.id) AS count
+         FROM meal_entries m
+         JOIN foods f ON f.id = m.food_id
+         LEFT JOIN foods g ON g.id = f.group_food_id
+         WHERE m.date >= ? AND m.date <= ?
+         GROUP BY COALESCE(g.id, f.id), COALESCE(g.name, f.name)
+         ORDER BY count DESC, COALESCE(g.name, f.name) ASC
+         LIMIT 3`
+      )
+      .all(startDate, endDate) as DashboardData['food']['mostEatenThisWeek']
+  }
+
+  return {
+    mealsToday: mealsTodayRow.count,
+    mostEatenThisWeek: topFoods('week'),
+    mostEatenThisMonth: topFoods('month'),
+  }
+}
+
 /**
  * Pure aggregation function — extracted for testability.
  * Called by the IPC handler and directly by unit tests.
@@ -97,6 +169,7 @@ export function getDashboardData(db: Database.Database, date: string): Dashboard
       todayTotal,
       topCategories: topCategoriesRows,
     },
+    food: getFoodDashboardData(db, date),
   }
 }
 

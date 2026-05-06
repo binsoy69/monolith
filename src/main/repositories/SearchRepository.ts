@@ -25,6 +25,19 @@ interface DailyNoteSearchRow {
   content: string
 }
 
+interface FoodSearchRow {
+  id: string
+  name: string
+  lastDate: string | null
+}
+
+interface MealEntrySearchRow {
+  id: string
+  foodName: string
+  notes: string | null
+  date: string
+}
+
 function getSearchScore(title: string, snippet: string | null, query: string): number {
   const normalizedTitle = title.toLowerCase()
   const normalizedSnippet = (snippet ?? '').toLowerCase()
@@ -83,6 +96,13 @@ function buildDailyNoteSnippet(content: string, query: string): string {
 
 export class SearchRepository {
   constructor(private readonly db: Database.Database) {}
+
+  private hasTable(tableName: string): boolean {
+    const row = this.db
+      .prepare('SELECT 1 FROM sqlite_master WHERE type = ? AND name = ? LIMIT 1')
+      .get('table', tableName) as { 1: number } | undefined
+    return row !== undefined
+  }
 
   query(query: string, limit = 8): SearchResult[] {
     const normalizedQuery = query.trim().toLowerCase()
@@ -185,7 +205,56 @@ export class SearchRepository {
       })
     )
 
-    return [...habits, ...tasks, ...expenses, ...dailyNotes]
+    const foodResults: SearchResult[] = this.hasTable('foods')
+      ? (
+          this.db
+            .prepare(
+              `SELECT
+                 f.id AS id,
+                 f.name AS name,
+                 MAX(m.date) AS lastDate
+               FROM foods f
+               LEFT JOIN meal_entries m ON m.food_id = f.id
+               WHERE LOWER(f.name) LIKE ?
+                 OR LOWER(f.normalized_name) LIKE ?
+               GROUP BY f.id
+               ORDER BY lastDate DESC, f.name COLLATE NOCASE ASC
+               LIMIT ?`
+            )
+            .all(likeQuery, likeQuery, limit) as FoodSearchRow[]
+        ).map((row): SearchResult => ({
+          type: 'food',
+          id: row.id,
+          title: row.name,
+          subtitle: 'Food',
+          snippet: null,
+          date: row.lastDate,
+        }))
+      : []
+
+    const mealEntryResults: SearchResult[] = this.hasTable('meal_entries')
+      ? (
+          this.db
+            .prepare(
+              `SELECT id, food_name AS foodName, notes, date
+               FROM meal_entries
+               WHERE LOWER(food_name) LIKE ?
+                 OR LOWER(COALESCE(notes, '')) LIKE ?
+               ORDER BY date DESC, meal_time DESC
+               LIMIT ?`
+            )
+            .all(likeQuery, likeQuery, limit) as MealEntrySearchRow[]
+        ).map((row): SearchResult => ({
+          type: 'food_entry',
+          id: row.id,
+          title: row.foodName,
+          subtitle: 'Meal',
+          snippet: row.notes,
+          date: row.date,
+        }))
+      : []
+
+    return [...habits, ...tasks, ...expenses, ...dailyNotes, ...foodResults, ...mealEntryResults]
       .sort((left, right) => compareResults(left, right, normalizedQuery))
       .slice(0, limit)
   }

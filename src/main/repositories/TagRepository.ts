@@ -46,6 +46,13 @@ function compareTaggedItems(left: TaggedItemSummary, right: TaggedItemSummary): 
 export class TagRepository {
   constructor(private readonly db: Database.Database) {}
 
+  private hasTable(tableName: string): boolean {
+    const row = this.db
+      .prepare('SELECT 1 FROM sqlite_master WHERE type = ? AND name = ? LIMIT 1')
+      .get('table', tableName) as { 1: number } | undefined
+    return row !== undefined
+  }
+
   list(): Tag[] {
     const rows = this.db
       .prepare('SELECT id, name, color, created_at FROM tags ORDER BY name COLLATE NOCASE ASC')
@@ -165,6 +172,29 @@ export class TagRepository {
       date: row.date,
     }))
 
-    return [...habits, ...tasks, ...expenses].sort(compareTaggedItems)
+    const foodEntries = this.hasTable('meal_entries')
+      ? (
+          this.db
+            .prepare(
+              `SELECT
+                 m.id as itemId,
+                 m.food_name as title,
+                 'Meal' as subtitle,
+                 m.date as date
+               FROM item_tags it
+               JOIN meal_entries m ON m.id = it.item_id
+               WHERE it.tag_id = ? AND it.item_type = 'food_entry'`
+            )
+            .all(tagId) as TaggedItemRow[]
+        ).map((row) => ({
+          itemType: 'food_entry' as const,
+          itemId: row.itemId,
+          title: row.title,
+          subtitle: row.subtitle,
+          date: row.date,
+        }))
+      : []
+
+    return [...habits, ...tasks, ...expenses, ...foodEntries].sort(compareTaggedItems)
   }
 }

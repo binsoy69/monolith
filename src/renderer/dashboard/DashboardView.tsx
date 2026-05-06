@@ -100,10 +100,13 @@ export function DashboardView({
   const habits = data?.habits;
   const tasks = data?.tasks;
   const spending = data?.spending;
+  const food = data?.food;
   const tasksTotal = tasks?.totalIncomplete ?? 0;
   const habitsCompleted = habits?.completed ?? 0;
   const habitsTotal = habits?.total ?? 0;
   const spendingTotal = spending?.todayTotal ?? 0;
+  const mealsToday = food?.mealsToday ?? 0;
+  const topFoodThisWeek = food?.mostEatenThisWeek[0];
 
   return (
     <div className="dashboard-shell">
@@ -136,6 +139,12 @@ export function DashboardView({
             >
               Review spending
             </button>
+            <button
+              className="dashboard-action"
+              onClick={() => onNavigate("food")}
+            >
+              Log meal
+            </button>
           </div>
         </div>
 
@@ -158,10 +167,14 @@ export function DashboardView({
                 P{(spendingTotal / 100).toLocaleString()}
               </span>
             </div>
+            <div className="dashboard-pulse-stat">
+              <span className="dashboard-pulse-label">meals</span>
+              <span className="dashboard-pulse-value">{mealsToday}</span>
+            </div>
           </div>
           <p className="dashboard-pulse-foot">
-            Keep the three daily loops visible: consistency, commitments, and
-            cash outflow.
+            Keep the daily loops visible: consistency, commitments, cash
+            outflow, and food rhythm.
           </p>
         </div>
       </section>
@@ -173,6 +186,29 @@ export function DashboardView({
             data={spending}
             onClick={() => onNavigate("expenses")}
           />
+          <button
+            className="surface-panel surface-panel--interactive dashboard-card"
+            onClick={() => onNavigate("food")}
+            style={{ textAlign: "left", border: "1px solid var(--color-border)" }}
+          >
+            <div className="dashboard-card__header">
+              <div>
+                <div className="dashboard-card__eyebrow">food</div>
+                <div className="dashboard-card__title">Food rhythm</div>
+              </div>
+              <span className="dashboard-pill">{mealsToday} today</span>
+            </div>
+            <div>
+              <div className="dashboard-card__value" style={{ fontSize: 30 }}>
+                {topFoodThisWeek?.name ?? "No meals"}
+              </div>
+              <div className="dashboard-card__subvalue">
+                {topFoodThisWeek
+                  ? `${topFoodThisWeek.count} this week`
+                  : "Log meals to build a weekly signal"}
+              </div>
+            </div>
+          </button>
         </div>
         <TasksCard data={tasks} onClick={() => onNavigate("planner")} />
       </section>
